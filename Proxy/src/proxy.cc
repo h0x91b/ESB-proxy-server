@@ -8,16 +8,20 @@ void InitAll(Handle<Object> exports) {
 
 Persistent<Function> Proxy::constructor;
 
-Proxy::Proxy(char *connectionString)
+Proxy::Proxy(int port)
 {
-	printf("Create zmq context\n");
-	zContext = zmq_ctx_new();
-	
+	commander = NULL;
+	printf("Create zmq context `tcp://*:%i`\n", port);
+	char connectionString[256];
+	sprintf(connectionString, "tcp://*:%i", port);
+	commander = new Commander(connectionString);
 }
 
 Proxy::~Proxy()
 {
 	printf("terminator proxy\n");
+	commander->~Commander();
+	commander = NULL;
 }
 
 void Proxy::Init(Handle<Object> exports) {
@@ -26,8 +30,8 @@ void Proxy::Init(Handle<Object> exports) {
 	tpl->SetClassName(String::NewSymbol("Proxy"));
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	// Prototype
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("plusOne"),
-	FunctionTemplate::New(PlusOne)->GetFunction());
+	// tpl->PrototypeTemplate()->Set(String::NewSymbol("plusOne"),
+	// FunctionTemplate::New(PlusOne)->GetFunction());
 	constructor = Persistent<Function>::New(tpl->GetFunction());
 	exports->Set(String::NewSymbol("Proxy"), constructor);
 }
@@ -37,17 +41,11 @@ Handle<Value> Proxy::New(const Arguments& args) {
 
 	if (args.IsConstructCall()) {
 		// Invoked as constructor: `new Proxy(...)`
-		
 		printf("Proxy::New with #args %i\n", args.Length());
 		
-		char *connectionString = NULL;
-		if(args[0]->IsUndefined()) {
-			v8::String::Utf8Value param1(args[0]->ToString());
-		} else {
-			connectionString = DEFAULT_REQRES_CONNECTION_STRING;
-		} 
-		Proxy* obj = new Proxy(connectionString);
+		Proxy* obj = new Proxy(args[0]->Uint32Value());
 		obj->Wrap(args.This());
+		obj->Ref();
 		return args.This();
 	} else {
 		// Invoked as plain function `Proxy(...)`, turn into construct call.
@@ -57,13 +55,38 @@ Handle<Value> Proxy::New(const Arguments& args) {
 	}
 }
 
-Handle<Value> Proxy::PlusOne(const Arguments& args) {
-	HandleScope scope;
+Commander::Commander(char *connectionString) 
+{
+	printf("Commander::Commander(%s)\n", connectionString);
+	zContext = zmq_ctx_new();
+	zResponder = zmq_socket (zContext, ZMQ_REP);
+	int rc = zmq_bind (zResponder, "tcp://*:5555");
+	assert (rc == 0);
+	printf("Commander::Commander bind success\n");
+	isWork = true;
+	pthread_create(&thread, NULL, &Thread, this);
+}
 
-	Proxy* obj = ObjectWrap::Unwrap<Proxy>(args.This());
-	obj->value_ += 1;
+Commander::~Commander() 
+{
+	printf("Commander::~Commander()\n");
+	isWork = false;
+	pthread_cancel(thread);
+}
 
-	return scope.Close(Number::New(obj->value_));
+void *Commander::Thread(void* d) 
+{
+	printf("Commander::Thread start\n");
+	auto self = (Commander*)d;
+	while(self->isWork) {
+		printf("Commander::Thread wait for REQ\n");
+		char buffer [65536];
+		zmq_recv(self->zResponder, buffer, 65536, 0);
+		printf ("Commander::Thread received: %s\n", buffer);
+		zmq_send(self->zResponder, buffer, strlen(buffer), 0);
+	}
+	printf("Commander::Thread finished\n");
+	return 0;
 }
 
 NODE_MODULE(proxy, InitAll)

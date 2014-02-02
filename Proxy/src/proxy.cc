@@ -8,12 +8,15 @@ void InitAll(Handle<Object> exports) {
 
 Persistent<Function> Proxy::constructor;
 
-Proxy::Proxy(unsigned int commanderPort, unsigned int publisherPort)
+Proxy::Proxy(unsigned int commanderPort, unsigned int publisherPort, char *_guid)
 {
 	commander = NULL;
+	strncpy(guid, _guid, 36);
+	guid[36] = '\0';
+	printf("guid: %s\n", guid);
 	char connectionString[256];
 	sprintf(connectionString, "tcp://*:%i", commanderPort);
-    printf("Create commander with connection string: %s", connectionString);
+    printf("Create commander with connection string: %s\n", connectionString);
 	commander = new Commander(connectionString);
 }
 
@@ -58,12 +61,20 @@ Handle<Value> Proxy::New(const Arguments& args) {
             ThrowException(Exception::TypeError(String::New("Config doesnt have `commanderPort` variable")));
             return scope.Close(Undefined());
         }
+		
+		if(!confObj->Has(String::New("guid")))
+        {
+            ThrowException(Exception::TypeError(String::New("Config doesnt have `guid` variable")));
+            return scope.Close(Undefined());
+        }
+		
+		v8::String::Utf8Value str(confObj->Get(String::New("guid"))->ToString());
         
         unsigned int commanderPort = confObj->Get(String::New("commanderPort"))->Uint32Value();
         unsigned int publisherPort = confObj->Get(String::New("publisherPort"))->Uint32Value();
         printf("Proxy::New commanderPort: %i, publisherPort: %i\n", commanderPort, publisherPort);
 		
-		Proxy* obj = new Proxy(commanderPort, publisherPort);
+		Proxy* obj = new Proxy(commanderPort, publisherPort, *str);
 		obj->Wrap(args.This());
 		obj->Ref();
 		return args.This();

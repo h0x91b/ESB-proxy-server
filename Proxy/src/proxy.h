@@ -11,9 +11,10 @@
 class Proxy : public node::ObjectWrap {
 public:
 	static void Init(v8::Handle<v8::Object> exports);
+	char guid[37];
 
 private:
-	Proxy(unsigned int commanderPort, unsigned int publisherPort);
+	Proxy(unsigned int commanderPort, unsigned int publisherPort, char *_guid);
 	~Proxy();
 
 	static v8::Handle<v8::Value> New(const v8::Arguments& args);

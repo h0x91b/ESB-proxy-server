@@ -1,0 +1,11 @@
+package ESB;
+
+message Command {
+	enum Cmd {
+		INVOKE_CALL = 1;
+		INVOKE_RESPONSE = 2;
+	};
+	required Cmd cmd = 1;
+	optional string identifier = 2;
+	required int32 version = 3;
+}

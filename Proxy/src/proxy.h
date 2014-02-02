@@ -6,6 +6,7 @@
 #include <zmq.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include "command.pb.h"
 
 #define DEFAULT_REQRES_CONNECTION_STRING "tcp://*:5555"
 

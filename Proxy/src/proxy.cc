@@ -83,6 +83,18 @@ void *Commander::Thread(void* d)
 		char buffer [65536];
 		zmq_recv(self->zResponder, buffer, 65536, 0);
 		printf ("Commander::Thread received: %s\n", buffer);
+		
+		ESB::Command cmd;
+		cmd.set_identifier("/DEV/test/method/v1");
+		cmd.set_version(1);
+		cmd.set_cmd(ESB::Command::INVOKE_CALL);
+		
+		int size = cmd.ByteSize(); 
+		void *bb = calloc(size+1, size+1);
+		cmd.SerializeToArray(bb, size);
+		printf("Protobuf: `%s` len: %i bytes\n", bb, size);
+		free(bb);
+		
 		zmq_send(self->zResponder, buffer, strlen(buffer), 0);
 	}
 	printf("Commander::Thread finished\n");

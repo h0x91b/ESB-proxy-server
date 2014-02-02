@@ -8,19 +8,19 @@ void InitAll(Handle<Object> exports) {
 
 Persistent<Function> Proxy::constructor;
 
-Proxy::Proxy(int port)
+Proxy::Proxy(unsigned int commanderPort, unsigned int publisherPort)
 {
 	commander = NULL;
-	printf("Create zmq context `tcp://*:%i`\n", port);
 	char connectionString[256];
-	sprintf(connectionString, "tcp://*:%i", port);
+	sprintf(connectionString, "tcp://*:%i", commanderPort);
+    printf("Create commander with connection string: %s", connectionString);
 	commander = new Commander(connectionString);
 }
 
 Proxy::~Proxy()
 {
 	printf("terminator proxy\n");
-	commander->~Commander();
+	if(commander) commander->~Commander();
 	commander = NULL;
 }
 
@@ -41,9 +41,29 @@ Handle<Value> Proxy::New(const Arguments& args) {
 
 	if (args.IsConstructCall()) {
 		// Invoked as constructor: `new Proxy(...)`
-		printf("Proxy::New with #args %i\n", args.Length());
+        if(args.Length() != 1)
+        {
+            ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
+            return scope.Close(Undefined());
+        }
+        if(!args[0]->IsObject())
+        {
+            ThrowException(Exception::TypeError(String::New("Wrong type of arguments")));
+            return scope.Close(Undefined());
+        }
+        
+        Local<Object> confObj = args[0]->ToObject();
+        if(!confObj->Has(String::New("commanderPort")))
+        {
+            ThrowException(Exception::TypeError(String::New("Config doesnt have `commanderPort` variable")));
+            return scope.Close(Undefined());
+        }
+        
+        unsigned int commanderPort = confObj->Get(String::New("commanderPort"))->Uint32Value();
+        unsigned int publisherPort = confObj->Get(String::New("publisherPort"))->Uint32Value();
+        printf("Proxy::New commanderPort: %i, publisherPort: %i\n", commanderPort, publisherPort);
 		
-		Proxy* obj = new Proxy(args[0]->Uint32Value());
+		Proxy* obj = new Proxy(commanderPort, publisherPort);
 		obj->Wrap(args.This());
 		obj->Ref();
 		return args.This();
@@ -53,53 +73,6 @@ Handle<Value> Proxy::New(const Arguments& args) {
 		Local<Value> argv[argc] = { args[0] };
 		return scope.Close(constructor->NewInstance(argc, argv));
 	}
-}
-
-Commander::Commander(char *connectionString) 
-{
-	printf("Commander::Commander(%s)\n", connectionString);
-	zContext = zmq_ctx_new();
-	zResponder = zmq_socket (zContext, ZMQ_REP);
-	int rc = zmq_bind (zResponder, "tcp://*:5555");
-	assert (rc == 0);
-	printf("Commander::Commander bind success\n");
-	isWork = true;
-	pthread_create(&thread, NULL, &Thread, this);
-}
-
-Commander::~Commander() 
-{
-	printf("Commander::~Commander()\n");
-	isWork = false;
-	pthread_cancel(thread);
-}
-
-void *Commander::Thread(void* d) 
-{
-	printf("Commander::Thread start\n");
-	auto self = (Commander*)d;
-	while(self->isWork) {
-		printf("Commander::Thread wait for REQ\n");
-		char buffer [65536];
-		zmq_recv(self->zResponder, buffer, 65536, 0);
-		printf ("Commander::Thread received: %s\n", buffer);
-		
-		ESB::Command cmd;
-		cmd.set_identifier("/DEV/test/method/v1");
-		cmd.set_version(1);
-		cmd.set_cmd(ESB::Command::INVOKE_CALL);
-		
-		int size = cmd.ByteSize(); 
-		void *bb = calloc(size+1, size+1);
-		cmd.SerializeToArray(bb, size);
-		printf("Protobuf: `%s` len: %i bytes\n", bb, size);
-		
-		//zmq_send(self->zResponder, buffer, strlen(buffer), 0);
-        zmq_send(self->zResponder, bb, size, 0);
-        free(bb);
-	}
-	printf("Commander::Thread finished\n");
-	return 0;
 }
 
 NODE_MODULE(proxy, InitAll)

@@ -2,7 +2,11 @@
   'targets': [
     {
       'target_name': 'proxy',
-      'sources': [ 'src/command.pb.cc', 'src/proxy.cc' ],
+      'sources': [ 
+          'src/command.pb.cc',
+          'src/commander.cpp',
+          'src/proxy.cc',
+      ],
       'cflags': [
           '-I/usr/local/include/', '-std=c++0x', '-pthread'
       ],

@@ -1,10 +1,15 @@
 var argv = require('optimist')
 	.usage('ESB')
-	.options('p', {
-		alias: 'port',
+	.options('c', {
+		alias: 'commander-port',
 		default: 7770,
 		describe: 'Commander port'
 	})
+    .options('p', {
+         alias: 'publisher-port',
+         default: 7771,
+         describe: 'Publisher port'
+    })
 	.options('h', {
 		alias: 'help'
 	})
@@ -16,7 +21,10 @@ if (argv.help) {
 }
 
 var Proxy = require('./build/Debug/proxy');
-var p = new Proxy.Proxy(argv.port);
+var p = new Proxy.Proxy({
+    commanderPort: argv.c,
+    publisherPort: argv.p
+});
 
 function a() {
 	

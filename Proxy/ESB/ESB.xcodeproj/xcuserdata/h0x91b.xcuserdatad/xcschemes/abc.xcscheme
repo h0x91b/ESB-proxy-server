@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A4C44A25189E9B0100788D1E"
-               BuildableName = "a"
-               BlueprintName = "a"
+               BlueprintIdentifier = "A4C44A33189E9BDC00788D1E"
+               BuildableName = "libabc.a"
+               BlueprintName = "abc"
                ReferencedContainer = "container:ESB.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,15 +29,6 @@
       buildConfiguration = "Debug">
       <Testables>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A4C44A25189E9B0100788D1E"
-            BuildableName = "a"
-            BlueprintName = "a"
-            ReferencedContainer = "container:ESB.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </TestAction>
    <LaunchAction
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
@@ -48,15 +39,6 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A4C44A25189E9B0100788D1E"
-            BuildableName = "a"
-            BlueprintName = "a"
-            ReferencedContainer = "container:ESB.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -66,15 +48,6 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A4C44A25189E9B0100788D1E"
-            BuildableName = "a"
-            BlueprintName = "a"
-            ReferencedContainer = "container:ESB.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

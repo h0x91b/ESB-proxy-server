@@ -10,48 +10,102 @@
 #include <google/protobuf/stubs/once.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/wire_format_lite_inl.h>
+#include <google/protobuf/descriptor.h>
+#include <google/protobuf/generated_message_reflection.h>
+#include <google/protobuf/reflection_ops.h>
+#include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 
 namespace ESB {
 
-void protobuf_ShutdownFile_command_2eproto() {
-  delete Command::default_instance_;
+namespace {
+
+const ::google::protobuf::Descriptor* Command_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Command_reflection_ = NULL;
+const ::google::protobuf::EnumDescriptor* Command_Cmd_descriptor_ = NULL;
+
+}  // namespace
+
+
+void protobuf_AssignDesc_command_2eproto() {
+  protobuf_AddDesc_command_2eproto();
+  const ::google::protobuf::FileDescriptor* file =
+    ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
+      "command.proto");
+  GOOGLE_CHECK(file != NULL);
+  Command_descriptor_ = file->message_type(0);
+  static const int Command_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, cmd_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, identifier_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, version_),
+  };
+  Command_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      Command_descriptor_,
+      Command::default_instance_,
+      Command_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(Command));
+  Command_Cmd_descriptor_ = Command_descriptor_->enum_type(0);
 }
 
-#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
-void protobuf_AddDesc_command_2eproto_impl() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
+namespace {
 
-#else
+GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);
+inline void protobuf_AssignDescriptorsOnce() {
+  ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
+                 &protobuf_AssignDesc_command_2eproto);
+}
+
+void protobuf_RegisterTypes(const ::std::string&) {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    Command_descriptor_, &Command::default_instance());
+}
+
+}  // namespace
+
+void protobuf_ShutdownFile_command_2eproto() {
+  delete Command::default_instance_;
+  delete Command_reflection_;
+}
+
 void protobuf_AddDesc_command_2eproto() {
   static bool already_here = false;
   if (already_here) return;
   already_here = true;
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-#endif
+  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
+    "\n\rcommand.proto\022\003ESB\"z\n\007Command\022\035\n\003cmd\030\001"
+    " \002(\0162\020.ESB.Command.Cmd\022\022\n\nidentifier\030\002 \001"
+    "(\t\022\017\n\007version\030\003 \002(\005\"+\n\003Cmd\022\017\n\013INVOKE_CAL"
+    "L\020\001\022\023\n\017INVOKE_RESPONSE\020\002", 144);
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
+    "command.proto", &protobuf_RegisterTypes);
   Command::default_instance_ = new Command();
   Command::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_command_2eproto);
 }
 
-#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
-GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AddDesc_command_2eproto_once_);
-void protobuf_AddDesc_command_2eproto() {
-  ::google::protobuf::::google::protobuf::GoogleOnceInit(&protobuf_AddDesc_command_2eproto_once_,
-                 &protobuf_AddDesc_command_2eproto_impl);
-}
-#else
 // Force AddDescriptors() to be called at static initialization time.
 struct StaticDescriptorInitializer_command_2eproto {
   StaticDescriptorInitializer_command_2eproto() {
     protobuf_AddDesc_command_2eproto();
   }
 } static_descriptor_initializer_command_2eproto_;
-#endif
 
 // ===================================================================
 
+const ::google::protobuf::EnumDescriptor* Command_Cmd_descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Command_Cmd_descriptor_;
+}
 bool Command_Cmd_IsValid(int value) {
   switch(value) {
     case 1:
@@ -76,7 +130,7 @@ const int Command::kVersionFieldNumber;
 #endif  // !_MSC_VER
 
 Command::Command()
-  : ::google::protobuf::MessageLite() {
+  : ::google::protobuf::Message() {
   SharedCtor();
 }
 
@@ -84,7 +138,7 @@ void Command::InitAsDefaultInstance() {
 }
 
 Command::Command(const Command& from)
-  : ::google::protobuf::MessageLite() {
+  : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
@@ -105,11 +159,7 @@ void Command::SharedDtor() {
   if (identifier_ != &::google::protobuf::internal::kEmptyString) {
     delete identifier_;
   }
-  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
-  if (this != &default_instance()) {
-  #else
   if (this != default_instance_) {
-  #endif
   }
 }
 
@@ -118,12 +168,13 @@ void Command::SetCachedSize(int size) const {
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
+const ::google::protobuf::Descriptor* Command::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Command_descriptor_;
+}
+
 const Command& Command::default_instance() {
-#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
-  protobuf_AddDesc_command_2eproto();
-#else
   if (default_instance_ == NULL) protobuf_AddDesc_command_2eproto();
-#endif
   return *default_instance_;
 }
 
@@ -144,6 +195,7 @@ void Command::Clear() {
     version_ = 0;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
 }
 
 bool Command::MergePartialFromCodedStream(
@@ -162,6 +214,8 @@ bool Command::MergePartialFromCodedStream(
                  input, &value)));
           if (::ESB::Command_Cmd_IsValid(value)) {
             set_cmd(static_cast< ::ESB::Command_Cmd >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(1, value);
           }
         } else {
           goto handle_uninterpreted;
@@ -177,6 +231,9 @@ bool Command::MergePartialFromCodedStream(
          parse_identifier:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_identifier()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->identifier().data(), this->identifier().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
@@ -206,7 +263,8 @@ bool Command::MergePartialFromCodedStream(
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
           return true;
         }
-        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
         break;
       }
     }
@@ -225,6 +283,9 @@ void Command::SerializeWithCachedSizes(
 
   // optional string identifier = 2;
   if (has_identifier()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->identifier().data(), this->identifier().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
       2, this->identifier(), output);
   }
@@ -234,6 +295,40 @@ void Command::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->version(), output);
   }
 
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* Command::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required .ESB.Command.Cmd cmd = 1;
+  if (has_cmd()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      1, this->cmd(), target);
+  }
+
+  // optional string identifier = 2;
+  if (has_identifier()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->identifier().data(), this->identifier().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->identifier(), target);
+  }
+
+  // required int32 version = 3;
+  if (has_version()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->version(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
 }
 
 int Command::ByteSize() const {
@@ -261,15 +356,27 @@ int Command::ByteSize() const {
     }
 
   }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = total_size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
   return total_size;
 }
 
-void Command::CheckTypeAndMergeFrom(
-    const ::google::protobuf::MessageLite& from) {
-  MergeFrom(*::google::protobuf::down_cast<const Command*>(&from));
+void Command::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const Command* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const Command*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
 }
 
 void Command::MergeFrom(const Command& from) {
@@ -285,6 +392,13 @@ void Command::MergeFrom(const Command& from) {
       set_version(from.version());
     }
   }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void Command::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 void Command::CopyFrom(const Command& from) {
@@ -305,12 +419,17 @@ void Command::Swap(Command* other) {
     std::swap(identifier_, other->identifier_);
     std::swap(version_, other->version_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
   }
 }
 
-::std::string Command::GetTypeName() const {
-  return "ESB.Command";
+::google::protobuf::Metadata Command::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Command_descriptor_;
+  metadata.reflection = Command_reflection_;
+  return metadata;
 }
 
 

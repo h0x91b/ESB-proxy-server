@@ -20,9 +20,11 @@
 #endif
 
 #include <google/protobuf/generated_message_util.h>
-#include <google/protobuf/message_lite.h>
+#include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/extension_set.h>
+#include <google/protobuf/generated_enum_reflection.h>
+#include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 
 namespace ESB {
@@ -43,9 +45,19 @@ const Command_Cmd Command_Cmd_Cmd_MIN = Command_Cmd_INVOKE_CALL;
 const Command_Cmd Command_Cmd_Cmd_MAX = Command_Cmd_INVOKE_RESPONSE;
 const int Command_Cmd_Cmd_ARRAYSIZE = Command_Cmd_Cmd_MAX + 1;
 
+const ::google::protobuf::EnumDescriptor* Command_Cmd_descriptor();
+inline const ::std::string& Command_Cmd_Name(Command_Cmd value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    Command_Cmd_descriptor(), value);
+}
+inline bool Command_Cmd_Parse(
+    const ::std::string& name, Command_Cmd* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<Command_Cmd>(
+    Command_Cmd_descriptor(), name, value);
+}
 // ===================================================================
 
-class Command : public ::google::protobuf::MessageLite {
+class Command : public ::google::protobuf::Message {
  public:
   Command();
   virtual ~Command();
@@ -57,24 +69,24 @@ class Command : public ::google::protobuf::MessageLite {
     return *this;
   }
 
-  static const Command& default_instance();
-
-  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
-  // Returns the internal default instance pointer. This function can
-  // return NULL thus should not be used by the user. This is intended
-  // for Protobuf internal code. Please use default_instance() declared
-  // above instead.
-  static inline const Command* internal_default_instance() {
-    return default_instance_;
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
   }
-  #endif
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Command& default_instance();
 
   void Swap(Command* other);
 
   // implements Message ----------------------------------------------
 
   Command* New() const;
-  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
   void CopyFrom(const Command& from);
   void MergeFrom(const Command& from);
   void Clear();
@@ -85,6 +97,7 @@ class Command : public ::google::protobuf::MessageLite {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -92,7 +105,7 @@ class Command : public ::google::protobuf::MessageLite {
   void SetCachedSize(int size) const;
   public:
 
-  ::std::string GetTypeName() const;
+  ::google::protobuf::Metadata GetMetadata() const;
 
   // nested types ----------------------------------------------------
 
@@ -108,6 +121,17 @@ class Command : public ::google::protobuf::MessageLite {
     Command_Cmd_Cmd_MAX;
   static const int Cmd_ARRAYSIZE =
     Command_Cmd_Cmd_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  Cmd_descriptor() {
+    return Command_Cmd_descriptor();
+  }
+  static inline const ::std::string& Cmd_Name(Cmd value) {
+    return Command_Cmd_Name(value);
+  }
+  static inline bool Cmd_Parse(const ::std::string& name,
+      Cmd* value) {
+    return Command_Cmd_Parse(name, value);
+  }
 
   // accessors -------------------------------------------------------
 
@@ -146,6 +170,8 @@ class Command : public ::google::protobuf::MessageLite {
   inline void set_has_version();
   inline void clear_has_version();
 
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
   ::std::string* identifier_;
   int cmd_;
   ::google::protobuf::int32 version_;
@@ -153,11 +179,7 @@ class Command : public ::google::protobuf::MessageLite {
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
 
-  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
-  friend void  protobuf_AddDesc_command_2eproto_impl();
-  #else
   friend void  protobuf_AddDesc_command_2eproto();
-  #endif
   friend void protobuf_AssignDesc_command_2eproto();
   friend void protobuf_ShutdownFile_command_2eproto();
 
@@ -290,6 +312,19 @@ inline void Command::set_version(::google::protobuf::int32 value) {
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace ESB
+
+#ifndef SWIG
+namespace google {
+namespace protobuf {
+
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::ESB::Command_Cmd>() {
+  return ::ESB::Command_Cmd_descriptor();
+}
+
+}  // namespace google
+}  // namespace protobuf
+#endif  // SWIG
 
 // @@protoc_insertion_point(global_scope)
 

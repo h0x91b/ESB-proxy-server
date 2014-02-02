@@ -1,10 +1,22 @@
-var Proxy = require('./build/Release/proxy');
+var argv = require('optimist')
+	.usage('ESB')
+	.options('p', {
+		alias: 'port',
+		default: 7770,
+		describe: 'Commander port'
+	})
+	.options('h', {
+		alias: 'help'
+	})
+	.argv;
 
-console.log('proxy', Proxy);
+if (argv.help) {
+	require('optimist').showHelp();
+	process.exit(0);
+}
 
-var p = new Proxy.Proxy(5555);
-
-
+var Proxy = require('./build/Debug/proxy');
+var p = new Proxy.Proxy(argv.port);
 
 function a() {
 	

@@ -93,9 +93,10 @@ void *Commander::Thread(void* d)
 		void *bb = calloc(size+1, size+1);
 		cmd.SerializeToArray(bb, size);
 		printf("Protobuf: `%s` len: %i bytes\n", bb, size);
-		free(bb);
 		
-		zmq_send(self->zResponder, buffer, strlen(buffer), 0);
+		//zmq_send(self->zResponder, buffer, strlen(buffer), 0);
+        zmq_send(self->zResponder, bb, size, 0);
+        free(bb);
 	}
 	printf("Commander::Thread finished\n");
 	return 0;

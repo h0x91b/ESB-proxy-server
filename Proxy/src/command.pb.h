@@ -37,11 +37,14 @@ void protobuf_ShutdownFile_command_2eproto();
 class Command;
 
 enum Command_Cmd {
-  Command_Cmd_INFO = 1
+  Command_Cmd_ERROR = 1,
+  Command_Cmd_RESPONSE = 2,
+  Command_Cmd_INFO = 3,
+  Command_Cmd_STATS = 4
 };
 bool Command_Cmd_IsValid(int value);
-const Command_Cmd Command_Cmd_Cmd_MIN = Command_Cmd_INFO;
-const Command_Cmd Command_Cmd_Cmd_MAX = Command_Cmd_INFO;
+const Command_Cmd Command_Cmd_Cmd_MIN = Command_Cmd_ERROR;
+const Command_Cmd Command_Cmd_Cmd_MAX = Command_Cmd_STATS;
 const int Command_Cmd_Cmd_ARRAYSIZE = Command_Cmd_Cmd_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* Command_Cmd_descriptor();
@@ -109,7 +112,10 @@ class Command : public ::google::protobuf::Message {
   // nested types ----------------------------------------------------
 
   typedef Command_Cmd Cmd;
+  static const Cmd ERROR = Command_Cmd_ERROR;
+  static const Cmd RESPONSE = Command_Cmd_RESPONSE;
   static const Cmd INFO = Command_Cmd_INFO;
+  static const Cmd STATS = Command_Cmd_STATS;
   static inline bool Cmd_IsValid(int value) {
     return Command_Cmd_IsValid(value);
   }

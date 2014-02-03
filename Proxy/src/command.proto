@@ -2,7 +2,10 @@ package ESB;
 
 message Command {
 	enum Cmd {
-		INFO = 1;
+		ERROR = 1;
+		RESPONSE = 2;
+		INFO = 3;
+		STATS = 4;
 	};
 	required Cmd cmd = 1;
 	optional string identifier = 2;

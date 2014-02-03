@@ -18,7 +18,6 @@
           'OTHER_CFLAGS': [
               '-I/usr/local/include/', 
               '-pthread', 
-              '-O3', 
               '-mmacosx-version-min=10.7',
               '-std=c++11',
               '-stdlib=libc++',
@@ -26,14 +25,13 @@
           'OTHER_CPLUSPLUSFLAGS': [
               '-I/usr/local/include/', 
               '-pthread', 
-              '-O3', 
               '-mmacosx-version-min=10.7',
               '-std=c++11',
               '-stdlib=libc++',
           ]
       },
       'libraries': [
-        '-lzmq', '-lprotobuf', '-L/usr/local/lib/'
+        '-lzmq', '-lprotobuf', '-lhiredis', '-L/usr/local/lib/'
       ]
     }
   ]

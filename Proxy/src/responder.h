@@ -13,14 +13,16 @@
 #include <zmq.h>
 #include <stdbool.h>
 #include <stdlib.h>
+
 #include "command.pb.h"
 
 class Responder
 {
 public:
-	Responder(int port);
+	Responder(int, char*);
 	~Responder();
 	int port;
+	char *guid;
 
 private:
 	void *zContext;

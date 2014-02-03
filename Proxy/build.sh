@@ -9,6 +9,7 @@ case $1 in
   *)
     echo "Flag: $1"
     protoc -I=src/ --cpp_out=src/ src/command.proto
+    protoc src/command.proto -o src/command.desc
     V=1 node-gyp --debug reconfigure rebuild
     ;;
 esac

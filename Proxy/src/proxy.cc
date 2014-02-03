@@ -12,13 +12,66 @@ Proxy::Proxy()
 {
 	GenerateGuid(guid);
 	printf("Proxy::Proxy() guid: %s\n", guid);
-	responder = new Responder(7770);
+	responderPort = 7770;
+	strcpy(host, "localhost");
+	responder = new Responder(responderPort, guid);
+	
+	redisCtx = redisConnect("127.0.0.1", 6379);
+	if (redisCtx != NULL && redisCtx->err) {
+		printf("Redis connection error: %s\n", redisCtx->errstr);
+		redisCtx = NULL;
+	}
+	isWork = TRUE;
+	pthread_create(&thread, NULL, &Thread, this);
 }
 
 Proxy::~Proxy()
 {
 	printf("Proxy::~Proxy()\n");
+	isWork = FALSE;
 }
+
+void *Proxy::Thread(void* d)
+{
+	printf("Proxy::Thread start\n");
+	auto self = (Proxy*)d;
+	while (self->isWork)
+	{
+		printf("Proxy::Thread ping redis\n");
+		auto reply = (redisReply*)redisCommand(
+											   self->redisCtx,
+											   "ZADD ZSET:PROXIES %i %s#tcp://%s:%i",
+											   time(NULL),
+											   self->guid,
+											   self->host,
+											   self->responderPort
+		);
+		freeReplyObject(reply);
+		reply = (redisReply*)redisCommand(self->redisCtx, "ZREVRANGEBYSCORE ZSET:PROXIES +inf %i", time(NULL)-5);
+		if(reply->type == REDIS_REPLY_ARRAY) {
+			printf("Proxy::Thread get %i proxies from redis\n", reply->elements);
+			for(int n=0;n<reply->elements;n++) {
+				auto proxy = (redisReply*)reply->element[n];
+				auto vector = split(proxy->str, '#');
+				auto guid = vector[0].c_str();
+				auto connectionString = vector[1].c_str();
+				printf("guid: %s\nconnect string: %s\n", guid, connectionString);
+				if(strcmp(guid, self->guid) == 0) {
+					printf("found me in proxies, skip\n");
+					continue;
+				}
+				
+				//check if connected here...
+			}
+		} else {
+			printf("Redis return weird answer...\n");
+		}
+		freeReplyObject(reply);
+		sleep(5);
+	}
+	return 0;
+}
+
 
 void Proxy::Init(Handle<Object> exports) {
 	// Prepare constructor template
@@ -83,6 +136,21 @@ void GenerateGuid(char *guidStr)
 	
 	*pGuidStr++ = '}';
 	*pGuidStr = '\0';
+}
+
+std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+std::vector<std::string> split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
 }
 
 

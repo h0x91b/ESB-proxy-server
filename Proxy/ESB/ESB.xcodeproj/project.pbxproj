@@ -14,8 +14,14 @@
 		A4C44A18189E6B8100788D1E /* proxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = proxy.h; sourceTree = "<group>"; };
 		A4C44A1D189E875A00788D1E /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = main.js; path = ../main.js; sourceTree = "<group>"; };
 		A4C44A1F189E876600788D1E /* testCommander.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = testCommander.js; sourceTree = "<group>"; };
-		A4C44A38189EA72900788D1E /* commander.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = commander.cpp; sourceTree = "<group>"; };
-		A4C44A39189EA72900788D1E /* commander.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = commander.h; sourceTree = "<group>"; };
+		A4C44A3A189FB20300788D1E /* requester.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = requester.cc; sourceTree = "<group>"; };
+		A4C44A3B189FB20300788D1E /* requester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = requester.h; sourceTree = "<group>"; };
+		A4C44A3C189FB21200788D1E /* responder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = responder.cc; sourceTree = "<group>"; };
+		A4C44A3D189FB21200788D1E /* responder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = responder.h; sourceTree = "<group>"; };
+		A4C44A3E189FB21F00788D1E /* publisher.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = publisher.cc; sourceTree = "<group>"; };
+		A4C44A3F189FB21F00788D1E /* publisher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = publisher.h; sourceTree = "<group>"; };
+		A4C44A40189FB22900788D1E /* subscriber.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = subscriber.cc; sourceTree = "<group>"; };
+		A4C44A41189FB22900788D1E /* subscriber.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = subscriber.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -37,8 +43,14 @@
 				A4C44A16189E6B8100788D1E /* deps */,
 				A4C44A17189E6B8100788D1E /* proxy.cc */,
 				A4C44A18189E6B8100788D1E /* proxy.h */,
-				A4C44A38189EA72900788D1E /* commander.cpp */,
-				A4C44A39189EA72900788D1E /* commander.h */,
+				A4C44A3A189FB20300788D1E /* requester.cc */,
+				A4C44A3B189FB20300788D1E /* requester.h */,
+				A4C44A3C189FB21200788D1E /* responder.cc */,
+				A4C44A3D189FB21200788D1E /* responder.h */,
+				A4C44A3E189FB21F00788D1E /* publisher.cc */,
+				A4C44A3F189FB21F00788D1E /* publisher.h */,
+				A4C44A40189FB22900788D1E /* subscriber.cc */,
+				A4C44A41189FB22900788D1E /* subscriber.h */,
 			);
 			name = src;
 			path = ../src;

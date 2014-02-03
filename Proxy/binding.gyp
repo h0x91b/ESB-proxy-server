@@ -4,7 +4,10 @@
       'target_name': 'proxy',
       'sources': [ 
           'src/command.pb.cc',
-          'src/commander.cpp',
+          'src/responder.cc',
+          'src/requester.cc',
+          'src/publisher.cc',
+          'src/subscriber.cc',
           'src/proxy.cc',
       ],
       'cflags': [

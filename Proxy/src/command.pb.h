@@ -37,12 +37,11 @@ void protobuf_ShutdownFile_command_2eproto();
 class Command;
 
 enum Command_Cmd {
-  Command_Cmd_INVOKE_CALL = 1,
-  Command_Cmd_INVOKE_RESPONSE = 2
+  Command_Cmd_INFO = 1
 };
 bool Command_Cmd_IsValid(int value);
-const Command_Cmd Command_Cmd_Cmd_MIN = Command_Cmd_INVOKE_CALL;
-const Command_Cmd Command_Cmd_Cmd_MAX = Command_Cmd_INVOKE_RESPONSE;
+const Command_Cmd Command_Cmd_Cmd_MIN = Command_Cmd_INFO;
+const Command_Cmd Command_Cmd_Cmd_MAX = Command_Cmd_INFO;
 const int Command_Cmd_Cmd_ARRAYSIZE = Command_Cmd_Cmd_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* Command_Cmd_descriptor();
@@ -110,8 +109,7 @@ class Command : public ::google::protobuf::Message {
   // nested types ----------------------------------------------------
 
   typedef Command_Cmd Cmd;
-  static const Cmd INVOKE_CALL = Command_Cmd_INVOKE_CALL;
-  static const Cmd INVOKE_RESPONSE = Command_Cmd_INVOKE_RESPONSE;
+  static const Cmd INFO = Command_Cmd_INFO;
   static inline bool Cmd_IsValid(int value) {
     return Command_Cmd_IsValid(value);
   }
@@ -154,12 +152,48 @@ class Command : public ::google::protobuf::Message {
   inline ::std::string* release_identifier();
   inline void set_allocated_identifier(::std::string* identifier);
 
-  // required int32 version = 3;
+  // optional string guid_from = 3;
+  inline bool has_guid_from() const;
+  inline void clear_guid_from();
+  static const int kGuidFromFieldNumber = 3;
+  inline const ::std::string& guid_from() const;
+  inline void set_guid_from(const ::std::string& value);
+  inline void set_guid_from(const char* value);
+  inline void set_guid_from(const char* value, size_t size);
+  inline ::std::string* mutable_guid_from();
+  inline ::std::string* release_guid_from();
+  inline void set_allocated_guid_from(::std::string* guid_from);
+
+  // optional string guid_to = 4;
+  inline bool has_guid_to() const;
+  inline void clear_guid_to();
+  static const int kGuidToFieldNumber = 4;
+  inline const ::std::string& guid_to() const;
+  inline void set_guid_to(const ::std::string& value);
+  inline void set_guid_to(const char* value);
+  inline void set_guid_to(const char* value, size_t size);
+  inline ::std::string* mutable_guid_to();
+  inline ::std::string* release_guid_to();
+  inline void set_allocated_guid_to(::std::string* guid_to);
+
+  // optional int32 version = 5;
   inline bool has_version() const;
   inline void clear_version();
-  static const int kVersionFieldNumber = 3;
+  static const int kVersionFieldNumber = 5;
   inline ::google::protobuf::int32 version() const;
   inline void set_version(::google::protobuf::int32 value);
+
+  // required string payload = 6;
+  inline bool has_payload() const;
+  inline void clear_payload();
+  static const int kPayloadFieldNumber = 6;
+  inline const ::std::string& payload() const;
+  inline void set_payload(const ::std::string& value);
+  inline void set_payload(const char* value);
+  inline void set_payload(const char* value, size_t size);
+  inline ::std::string* mutable_payload();
+  inline ::std::string* release_payload();
+  inline void set_allocated_payload(::std::string* payload);
 
   // @@protoc_insertion_point(class_scope:ESB.Command)
  private:
@@ -167,17 +201,26 @@ class Command : public ::google::protobuf::Message {
   inline void clear_has_cmd();
   inline void set_has_identifier();
   inline void clear_has_identifier();
+  inline void set_has_guid_from();
+  inline void clear_has_guid_from();
+  inline void set_has_guid_to();
+  inline void clear_has_guid_to();
   inline void set_has_version();
   inline void clear_has_version();
+  inline void set_has_payload();
+  inline void clear_has_payload();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::std::string* identifier_;
+  ::std::string* guid_from_;
   int cmd_;
   ::google::protobuf::int32 version_;
+  ::std::string* guid_to_;
+  ::std::string* payload_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
 
   friend void  protobuf_AddDesc_command_2eproto();
   friend void protobuf_AssignDesc_command_2eproto();
@@ -286,15 +329,155 @@ inline void Command::set_allocated_identifier(::std::string* identifier) {
   }
 }
 
-// required int32 version = 3;
-inline bool Command::has_version() const {
+// optional string guid_from = 3;
+inline bool Command::has_guid_from() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void Command::set_has_version() {
+inline void Command::set_has_guid_from() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void Command::clear_has_version() {
+inline void Command::clear_has_guid_from() {
   _has_bits_[0] &= ~0x00000004u;
+}
+inline void Command::clear_guid_from() {
+  if (guid_from_ != &::google::protobuf::internal::kEmptyString) {
+    guid_from_->clear();
+  }
+  clear_has_guid_from();
+}
+inline const ::std::string& Command::guid_from() const {
+  return *guid_from_;
+}
+inline void Command::set_guid_from(const ::std::string& value) {
+  set_has_guid_from();
+  if (guid_from_ == &::google::protobuf::internal::kEmptyString) {
+    guid_from_ = new ::std::string;
+  }
+  guid_from_->assign(value);
+}
+inline void Command::set_guid_from(const char* value) {
+  set_has_guid_from();
+  if (guid_from_ == &::google::protobuf::internal::kEmptyString) {
+    guid_from_ = new ::std::string;
+  }
+  guid_from_->assign(value);
+}
+inline void Command::set_guid_from(const char* value, size_t size) {
+  set_has_guid_from();
+  if (guid_from_ == &::google::protobuf::internal::kEmptyString) {
+    guid_from_ = new ::std::string;
+  }
+  guid_from_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Command::mutable_guid_from() {
+  set_has_guid_from();
+  if (guid_from_ == &::google::protobuf::internal::kEmptyString) {
+    guid_from_ = new ::std::string;
+  }
+  return guid_from_;
+}
+inline ::std::string* Command::release_guid_from() {
+  clear_has_guid_from();
+  if (guid_from_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = guid_from_;
+    guid_from_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Command::set_allocated_guid_from(::std::string* guid_from) {
+  if (guid_from_ != &::google::protobuf::internal::kEmptyString) {
+    delete guid_from_;
+  }
+  if (guid_from) {
+    set_has_guid_from();
+    guid_from_ = guid_from;
+  } else {
+    clear_has_guid_from();
+    guid_from_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// optional string guid_to = 4;
+inline bool Command::has_guid_to() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void Command::set_has_guid_to() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void Command::clear_has_guid_to() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void Command::clear_guid_to() {
+  if (guid_to_ != &::google::protobuf::internal::kEmptyString) {
+    guid_to_->clear();
+  }
+  clear_has_guid_to();
+}
+inline const ::std::string& Command::guid_to() const {
+  return *guid_to_;
+}
+inline void Command::set_guid_to(const ::std::string& value) {
+  set_has_guid_to();
+  if (guid_to_ == &::google::protobuf::internal::kEmptyString) {
+    guid_to_ = new ::std::string;
+  }
+  guid_to_->assign(value);
+}
+inline void Command::set_guid_to(const char* value) {
+  set_has_guid_to();
+  if (guid_to_ == &::google::protobuf::internal::kEmptyString) {
+    guid_to_ = new ::std::string;
+  }
+  guid_to_->assign(value);
+}
+inline void Command::set_guid_to(const char* value, size_t size) {
+  set_has_guid_to();
+  if (guid_to_ == &::google::protobuf::internal::kEmptyString) {
+    guid_to_ = new ::std::string;
+  }
+  guid_to_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Command::mutable_guid_to() {
+  set_has_guid_to();
+  if (guid_to_ == &::google::protobuf::internal::kEmptyString) {
+    guid_to_ = new ::std::string;
+  }
+  return guid_to_;
+}
+inline ::std::string* Command::release_guid_to() {
+  clear_has_guid_to();
+  if (guid_to_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = guid_to_;
+    guid_to_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Command::set_allocated_guid_to(::std::string* guid_to) {
+  if (guid_to_ != &::google::protobuf::internal::kEmptyString) {
+    delete guid_to_;
+  }
+  if (guid_to) {
+    set_has_guid_to();
+    guid_to_ = guid_to;
+  } else {
+    clear_has_guid_to();
+    guid_to_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// optional int32 version = 5;
+inline bool Command::has_version() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void Command::set_has_version() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void Command::clear_has_version() {
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void Command::clear_version() {
   version_ = 0;
@@ -306,6 +489,76 @@ inline ::google::protobuf::int32 Command::version() const {
 inline void Command::set_version(::google::protobuf::int32 value) {
   set_has_version();
   version_ = value;
+}
+
+// required string payload = 6;
+inline bool Command::has_payload() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void Command::set_has_payload() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void Command::clear_has_payload() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void Command::clear_payload() {
+  if (payload_ != &::google::protobuf::internal::kEmptyString) {
+    payload_->clear();
+  }
+  clear_has_payload();
+}
+inline const ::std::string& Command::payload() const {
+  return *payload_;
+}
+inline void Command::set_payload(const ::std::string& value) {
+  set_has_payload();
+  if (payload_ == &::google::protobuf::internal::kEmptyString) {
+    payload_ = new ::std::string;
+  }
+  payload_->assign(value);
+}
+inline void Command::set_payload(const char* value) {
+  set_has_payload();
+  if (payload_ == &::google::protobuf::internal::kEmptyString) {
+    payload_ = new ::std::string;
+  }
+  payload_->assign(value);
+}
+inline void Command::set_payload(const char* value, size_t size) {
+  set_has_payload();
+  if (payload_ == &::google::protobuf::internal::kEmptyString) {
+    payload_ = new ::std::string;
+  }
+  payload_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Command::mutable_payload() {
+  set_has_payload();
+  if (payload_ == &::google::protobuf::internal::kEmptyString) {
+    payload_ = new ::std::string;
+  }
+  return payload_;
+}
+inline ::std::string* Command::release_payload() {
+  clear_has_payload();
+  if (payload_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = payload_;
+    payload_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Command::set_allocated_payload(::std::string* payload) {
+  if (payload_ != &::google::protobuf::internal::kEmptyString) {
+    delete payload_;
+  }
+  if (payload) {
+    set_has_payload();
+    payload_ = payload;
+  } else {
+    clear_has_payload();
+    payload_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
 }
 
 

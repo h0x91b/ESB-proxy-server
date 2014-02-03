@@ -6,20 +6,28 @@
 #include <zmq.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include "commander.h"
+
+#include "requester.h"
+#include "responder.h"
+#include "publisher.h"
+#include "subscriber.h"
+
+void GenerateGuid(char *guidStr);
 
 class Proxy : public node::ObjectWrap {
 public:
 	static void Init(v8::Handle<v8::Object> exports);
-	char guid[37];
+	char guid[38];
+	Responder *responder;
 
 private:
-	Proxy(unsigned int commanderPort, unsigned int publisherPort, char *_guid);
+	Proxy();
 	~Proxy();
 
 	static v8::Handle<v8::Value> New(const v8::Arguments& args);
 	static v8::Persistent<v8::Function> constructor;
-	Commander *commander;
 };
+
+
 
 #endif

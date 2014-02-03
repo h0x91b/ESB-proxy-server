@@ -10,27 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../src/proxy.cc"
-            timestampString = "413053388.803455"
+            timestampString = "413120666.804467"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "43"
-            endingLineNumber = "43"
-            landmarkName = "Proxy::New(const Arguments&amp; args)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../src/proxy.cc"
-            timestampString = "413053388.803455"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "77"
-            endingLineNumber = "77"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
             landmarkName = "Proxy::New(const Arguments&amp; args)"
             landmarkType = "5">
          </BreakpointContent>
@@ -42,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../src/proxy.cc"
-            timestampString = "413053428.182805"
+            timestampString = "413120666.804467"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "17"
-            endingLineNumber = "17"
-            landmarkName = "Proxy::Proxy(unsigned int commanderPort, unsigned int publisherPort, char *_guid)"
+            startingLineNumber = "40"
+            endingLineNumber = "40"
+            landmarkName = "Proxy::New(const Arguments&amp; args)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -58,12 +42,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../src/proxy.cc"
-            timestampString = "413053431.807208"
+            timestampString = "413121571.408786"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "15"
-            endingLineNumber = "15"
-            landmarkName = "Proxy::Proxy(unsigned int commanderPort, unsigned int publisherPort, char *_guid)"
+            startingLineNumber = "14"
+            endingLineNumber = "14"
+            landmarkName = "Proxy::Proxy()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/responder.cc"
+            timestampString = "413121578.555493"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "Responder::Thread(void* d)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

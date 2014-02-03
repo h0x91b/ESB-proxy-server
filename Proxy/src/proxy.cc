@@ -8,23 +8,16 @@ void InitAll(Handle<Object> exports) {
 
 Persistent<Function> Proxy::constructor;
 
-Proxy::Proxy(unsigned int commanderPort, unsigned int publisherPort, char *_guid)
+Proxy::Proxy()
 {
-	commander = NULL;
-	strncpy(guid, _guid, 36);
-	guid[36] = '\0';
-	printf("guid: %s\n", guid);
-	char connectionString[256];
-	sprintf(connectionString, "tcp://*:%i", commanderPort);
-    printf("Create commander with connection string: %s\n", connectionString);
-	commander = new Commander(connectionString);
+	GenerateGuid(guid);
+	printf("Proxy::Proxy() guid: %s\n", guid);
+	responder = new Responder(7770);
 }
 
 Proxy::~Proxy()
 {
-	printf("terminator proxy\n");
-	if(commander) commander->~Commander();
-	commander = NULL;
+	printf("Proxy::~Proxy()\n");
 }
 
 void Proxy::Init(Handle<Object> exports) {
@@ -44,37 +37,7 @@ Handle<Value> Proxy::New(const Arguments& args) {
 
 	if (args.IsConstructCall()) {
 		// Invoked as constructor: `new Proxy(...)`
-        if(args.Length() != 1)
-        {
-            ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-            return scope.Close(Undefined());
-        }
-        if(!args[0]->IsObject())
-        {
-            ThrowException(Exception::TypeError(String::New("Wrong type of arguments")));
-            return scope.Close(Undefined());
-        }
-        
-        Local<Object> confObj = args[0]->ToObject();
-        if(!confObj->Has(String::New("commanderPort")))
-        {
-            ThrowException(Exception::TypeError(String::New("Config doesnt have `commanderPort` variable")));
-            return scope.Close(Undefined());
-        }
-		
-		if(!confObj->Has(String::New("guid")))
-        {
-            ThrowException(Exception::TypeError(String::New("Config doesnt have `guid` variable")));
-            return scope.Close(Undefined());
-        }
-		
-		v8::String::Utf8Value str(confObj->Get(String::New("guid"))->ToString());
-        
-        unsigned int commanderPort = confObj->Get(String::New("commanderPort"))->Uint32Value();
-        unsigned int publisherPort = confObj->Get(String::New("publisherPort"))->Uint32Value();
-        printf("Proxy::New commanderPort: %i, publisherPort: %i\n", commanderPort, publisherPort);
-		
-		Proxy* obj = new Proxy(commanderPort, publisherPort, *str);
+		Proxy* obj = new Proxy();
 		obj->Wrap(args.This());
 		obj->Ref();
 		return args.This();
@@ -85,5 +48,42 @@ Handle<Value> Proxy::New(const Arguments& args) {
 		return scope.Close(constructor->NewInstance(argc, argv));
 	}
 }
+
+void GenerateGuid(char *guidStr)
+{
+	char *pGuidStr = guidStr;
+	int i;
+	
+	srand(static_cast<unsigned int> (time(NULL)));  /*Randomize based on time.*/
+	
+	/*Data1 - 8 characters.*/
+	*pGuidStr++ = '{';
+	for(i = 0; i < 8; i++, pGuidStr++)
+		((*pGuidStr = (rand() % 16)) < 10) ? *pGuidStr += 48 : *pGuidStr += 55;
+	
+	/*Data2 - 4 characters.*/
+	*pGuidStr++ = '-';
+	for(i = 0; i < 4; i++, pGuidStr++)
+		((*pGuidStr = (rand() % 16)) < 10) ? *pGuidStr += 48 : *pGuidStr += 55;
+	
+	/*Data3 - 4 characters.*/
+	*pGuidStr++ = '-';
+	for(i = 0; i < 4; i++, pGuidStr++)
+		((*pGuidStr = (rand() % 16)) < 10) ? *pGuidStr += 48 : *pGuidStr += 55;
+	
+	/*Data4 - 4 characters.*/
+	*pGuidStr++ = '-';
+	for(i = 0; i < 4; i++, pGuidStr++)
+		((*pGuidStr = (rand() % 16)) < 10) ? *pGuidStr += 48 : *pGuidStr += 55;
+	
+	/*Data5 - 12 characters.*/
+	*pGuidStr++ = '-';
+	for(i = 0; i < 12; i++, pGuidStr++)
+		((*pGuidStr = (rand() % 16)) < 10) ? *pGuidStr += 48 : *pGuidStr += 55;
+	
+	*pGuidStr++ = '}';
+	*pGuidStr = '\0';
+}
+
 
 NODE_MODULE(proxy, InitAll)

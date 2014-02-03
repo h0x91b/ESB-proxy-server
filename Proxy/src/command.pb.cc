@@ -35,10 +35,13 @@ void protobuf_AssignDesc_command_2eproto() {
       "command.proto");
   GOOGLE_CHECK(file != NULL);
   Command_descriptor_ = file->message_type(0);
-  static const int Command_offsets_[3] = {
+  static const int Command_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, cmd_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, identifier_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, guid_from_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, guid_to_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, version_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, payload_),
   };
   Command_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -82,10 +85,11 @@ void protobuf_AddDesc_command_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rcommand.proto\022\003ESB\"z\n\007Command\022\035\n\003cmd\030\001"
-    " \002(\0162\020.ESB.Command.Cmd\022\022\n\nidentifier\030\002 \001"
-    "(\t\022\017\n\007version\030\003 \002(\005\"+\n\003Cmd\022\017\n\013INVOKE_CAL"
-    "L\020\001\022\023\n\017INVOKE_RESPONSE\020\002", 144);
+    "\n\rcommand.proto\022\003ESB\"\223\001\n\007Command\022\035\n\003cmd\030"
+    "\001 \002(\0162\020.ESB.Command.Cmd\022\022\n\nidentifier\030\002 "
+    "\001(\t\022\021\n\tguid_from\030\003 \001(\t\022\017\n\007guid_to\030\004 \001(\t\022"
+    "\017\n\007version\030\005 \001(\005\022\017\n\007payload\030\006 \002(\t\"\017\n\003Cmd"
+    "\022\010\n\004INFO\020\001", 170);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "command.proto", &protobuf_RegisterTypes);
   Command::default_instance_ = new Command();
@@ -109,7 +113,6 @@ const ::google::protobuf::EnumDescriptor* Command_Cmd_descriptor() {
 bool Command_Cmd_IsValid(int value) {
   switch(value) {
     case 1:
-    case 2:
       return true;
     default:
       return false;
@@ -117,8 +120,7 @@ bool Command_Cmd_IsValid(int value) {
 }
 
 #ifndef _MSC_VER
-const Command_Cmd Command::INVOKE_CALL;
-const Command_Cmd Command::INVOKE_RESPONSE;
+const Command_Cmd Command::INFO;
 const Command_Cmd Command::Cmd_MIN;
 const Command_Cmd Command::Cmd_MAX;
 const int Command::Cmd_ARRAYSIZE;
@@ -126,7 +128,10 @@ const int Command::Cmd_ARRAYSIZE;
 #ifndef _MSC_VER
 const int Command::kCmdFieldNumber;
 const int Command::kIdentifierFieldNumber;
+const int Command::kGuidFromFieldNumber;
+const int Command::kGuidToFieldNumber;
 const int Command::kVersionFieldNumber;
+const int Command::kPayloadFieldNumber;
 #endif  // !_MSC_VER
 
 Command::Command()
@@ -147,7 +152,10 @@ void Command::SharedCtor() {
   _cached_size_ = 0;
   cmd_ = 1;
   identifier_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  guid_from_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  guid_to_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   version_ = 0;
+  payload_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -158,6 +166,15 @@ Command::~Command() {
 void Command::SharedDtor() {
   if (identifier_ != &::google::protobuf::internal::kEmptyString) {
     delete identifier_;
+  }
+  if (guid_from_ != &::google::protobuf::internal::kEmptyString) {
+    delete guid_from_;
+  }
+  if (guid_to_ != &::google::protobuf::internal::kEmptyString) {
+    delete guid_to_;
+  }
+  if (payload_ != &::google::protobuf::internal::kEmptyString) {
+    delete payload_;
   }
   if (this != default_instance_) {
   }
@@ -192,7 +209,22 @@ void Command::Clear() {
         identifier_->clear();
       }
     }
+    if (has_guid_from()) {
+      if (guid_from_ != &::google::protobuf::internal::kEmptyString) {
+        guid_from_->clear();
+      }
+    }
+    if (has_guid_to()) {
+      if (guid_to_ != &::google::protobuf::internal::kEmptyString) {
+        guid_to_->clear();
+      }
+    }
     version_ = 0;
+    if (has_payload()) {
+      if (payload_ != &::google::protobuf::internal::kEmptyString) {
+        payload_->clear();
+      }
+    }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -237,12 +269,46 @@ bool Command::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(24)) goto parse_version;
+        if (input->ExpectTag(26)) goto parse_guid_from;
         break;
       }
 
-      // required int32 version = 3;
+      // optional string guid_from = 3;
       case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_guid_from:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_guid_from()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->guid_from().data(), this->guid_from().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_guid_to;
+        break;
+      }
+
+      // optional string guid_to = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_guid_to:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_guid_to()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->guid_to().data(), this->guid_to().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(40)) goto parse_version;
+        break;
+      }
+
+      // optional int32 version = 5;
+      case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_version:
@@ -250,6 +316,23 @@ bool Command::MergePartialFromCodedStream(
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &version_)));
           set_has_version();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(50)) goto parse_payload;
+        break;
+      }
+
+      // required string payload = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_payload:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_payload()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->payload().data(), this->payload().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
@@ -290,9 +373,36 @@ void Command::SerializeWithCachedSizes(
       2, this->identifier(), output);
   }
 
-  // required int32 version = 3;
+  // optional string guid_from = 3;
+  if (has_guid_from()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->guid_from().data(), this->guid_from().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      3, this->guid_from(), output);
+  }
+
+  // optional string guid_to = 4;
+  if (has_guid_to()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->guid_to().data(), this->guid_to().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      4, this->guid_to(), output);
+  }
+
+  // optional int32 version = 5;
   if (has_version()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->version(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(5, this->version(), output);
+  }
+
+  // required string payload = 6;
+  if (has_payload()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->payload().data(), this->payload().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      6, this->payload(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -319,9 +429,39 @@ void Command::SerializeWithCachedSizes(
         2, this->identifier(), target);
   }
 
-  // required int32 version = 3;
+  // optional string guid_from = 3;
+  if (has_guid_from()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->guid_from().data(), this->guid_from().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->guid_from(), target);
+  }
+
+  // optional string guid_to = 4;
+  if (has_guid_to()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->guid_to().data(), this->guid_to().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        4, this->guid_to(), target);
+  }
+
+  // optional int32 version = 5;
   if (has_version()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->version(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(5, this->version(), target);
+  }
+
+  // required string payload = 6;
+  if (has_payload()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->payload().data(), this->payload().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        6, this->payload(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -348,11 +488,32 @@ int Command::ByteSize() const {
           this->identifier());
     }
 
-    // required int32 version = 3;
+    // optional string guid_from = 3;
+    if (has_guid_from()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->guid_from());
+    }
+
+    // optional string guid_to = 4;
+    if (has_guid_to()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->guid_to());
+    }
+
+    // optional int32 version = 5;
     if (has_version()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->version());
+    }
+
+    // required string payload = 6;
+    if (has_payload()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->payload());
     }
 
   }
@@ -388,8 +549,17 @@ void Command::MergeFrom(const Command& from) {
     if (from.has_identifier()) {
       set_identifier(from.identifier());
     }
+    if (from.has_guid_from()) {
+      set_guid_from(from.guid_from());
+    }
+    if (from.has_guid_to()) {
+      set_guid_to(from.guid_to());
+    }
     if (from.has_version()) {
       set_version(from.version());
+    }
+    if (from.has_payload()) {
+      set_payload(from.payload());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -408,7 +578,7 @@ void Command::CopyFrom(const Command& from) {
 }
 
 bool Command::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000005) != 0x00000005) return false;
+  if ((_has_bits_[0] & 0x00000021) != 0x00000021) return false;
 
   return true;
 }
@@ -417,7 +587,10 @@ void Command::Swap(Command* other) {
   if (other != this) {
     std::swap(cmd_, other->cmd_);
     std::swap(identifier_, other->identifier_);
+    std::swap(guid_from_, other->guid_from_);
+    std::swap(guid_to_, other->guid_to_);
     std::swap(version_, other->version_);
+    std::swap(payload_, other->payload_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

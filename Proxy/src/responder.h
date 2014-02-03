@@ -1,26 +1,27 @@
 //
-//  commander.h
+//  responder.h
 //  ESB
 //
-//  Created by Arseniy Pavlenko on 2/2/14.
+//  Created by Arseniy Pavlenko on 2/3/14.
 //  Copyright (c) 2014 Arseniy Pavlenko. All rights reserved.
 //
 
-#ifndef __ESB__commander__
-#define __ESB__commander__
+#ifndef __ESB__responder__
+#define __ESB__responder__
 
-#include <node.h>
-#include <v8.h>
+#include <iostream>
 #include <zmq.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include "command.pb.h"
 
-class Commander
+class Responder
 {
 public:
-	Commander(char *connectionString);
-	~Commander();
+	Responder(int port);
+	~Responder();
+	int port;
+
 private:
 	void *zContext;
 	void *zResponder;
@@ -29,4 +30,4 @@ private:
 	pthread_t thread;
 };
 
-#endif /* defined(__ESB__commander__) */
+#endif /* defined(__ESB__responder__) */

@@ -57,10 +57,23 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 	
 	dbg("payload: %s", payload);
 	auto tmp = split(payload, '#');
-	nodesGuids.push_back(tmp[0]);
 	
-	cmdResp.set_cmd(ESB::Command::RESPONSE);
-	cmdResp.set_payload(response);
+	char *connectionString = (char*)tmp[1].c_str();
+	Subscriber subscriber(connectionString);
+	if(subscriber.Connect()) {
+		dbg("connected successfull");
+		subscribers.insert(std::pair<std::string,Subscriber> {tmp[0], subscriber});
+		nodesGuids.push_back(tmp[0]);
+		
+		cmdResp.set_cmd(ESB::Command::RESPONSE);
+		cmdResp.set_payload(response);
+	} else {
+		dbg("can not connect");
+		cmdResp.set_cmd(ESB::Command::ERROR);
+		char errBuf[512];
+		sprintf(errBuf, "ESB Proxy can not connect to your Node, check the firewall, connectionString: `%s`", connectionString);
+		cmdResp.set_payload(errBuf);
+	}
 }
 
 Proxy::~Proxy()

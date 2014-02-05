@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <sstream>
+#include <unordered_map>
 
 #include "globals.h"
 #include "deps/hiredis/hiredis.h"
@@ -40,6 +41,7 @@ private:
 	bool isWork;
 	pthread_t thread;
 	std::vector<std::string> nodesGuids;
+	std::unordered_map<std::string,Subscriber> subscribers;
 };
 
 

@@ -8,7 +8,9 @@ var pb = new proto(fs.readFileSync(__dirname+"/../../Proxy/src/command.desc"));
 
 var _config = {
 	host: 'localhost',
-	port: 7770
+	port: 7770,
+	publisherHost: 'localhost',
+	publisherPort: 7780
 };
 
 function ESB(config) {
@@ -20,7 +22,7 @@ function ESB(config) {
 	this.requestSocket = socket;
 	this.subscribeSocket = zmq.socket('sub');
 	this.publisherSocket = zmq.socket('pub');
-	this.publisherSocket.bind('tcp://*:'+this.config.port);
+	this.publisherSocket.bind('tcp://*:'+this.config.publisherPort);
 	
 	this.connect();
 }
@@ -38,7 +40,7 @@ ESB.prototype = {
 		
 		var obj = {
 			cmd: 'NODE_HELLO',
-			payload: this.guid+'#tcp://127.0.0.1:7780',
+			payload: this.guid+'#tcp://'+this.config.publisherHost+':'+this.config.publisherPort,
 			guid_from: cmdGuid
 		}
 		var buf = pb.Serialize(obj, "ESB.Command") // you get Buffer here, send it via socket.write, etc.
@@ -68,8 +70,17 @@ ESB.prototype = {
 			data = data.slice(38); //38 sizeof guid in bytes
 			var respObj = pb.Parse(data, "ESB.Command");
 			console.log('suscriber got message: ', respObj);
+			switch(respObj.cmd)
+			{
+			case 'PING':
+				console.log('got PING request');
+				//this.publisherSocket.send('hello');
+				break;
+			default:
+				console.log("unknown operation", respObj.cmd);
+			}
 		} catch(e){
-			console.log('ERROR while decoding message', e);
+			console.log('ERROR while processing message', e);
 		}
 	}
 };

@@ -46,6 +46,8 @@ ESB.prototype = {
 			if(respObj.cmd === 'ERROR') {
 				throw new Error(respObj.payload);
 			}
+			var t = respObj.payload.split('#');
+			console.log(t);
 		});
 		this.requestSocket.send(buf);
 	}

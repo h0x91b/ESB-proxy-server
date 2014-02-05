@@ -8,11 +8,12 @@
 
 #include "responder.h"
 
-Responder::Responder(int _port, char *_guid)
+Responder::Responder(int _port, char *_guid, std::function<char*(ESB::Command cmd)> cb)
 {
 	port = _port;
 	guid = _guid;
 	dbg("port=%i", port);
+	callback = cb;
 	
 	zContext = zmq_ctx_new();
 	zResponder = zmq_socket (zContext, ZMQ_REP);
@@ -51,14 +52,18 @@ void *Responder::Thread(void* d)
 		
 		dbg ("received: %zu bytes", len);
 		
+		char *tmp = NULL;
 		
 		ESB::Command cmdReq, cmdResp;
 		cmdReq.ParseFromArray(buffer, len);
 		switch (cmdReq.cmd()) {
 			case ESB::Command::NODE_HELLO:
-				dbg("get request for INFO");
-				cmdResp.set_cmd(ESB::Command::ERROR);
-				cmdResp.set_payload("Not implemented");
+				dbg("get request for NODE_HELLO");
+				
+				tmp = self->callback(cmdReq);
+				
+				cmdResp.set_cmd(ESB::Command::RESPONSE);
+				cmdResp.set_payload(tmp);
 				break;
 			default:
 				dbg("Error, received unknown cmd: %i", cmdReq.cmd());
@@ -79,6 +84,8 @@ void *Responder::Thread(void* d)
 		//zmq_send(self->zResponder, buffer, strlen(buffer), 0);
         zmq_send(self->zResponder, bb, size, 0);
         free(bb);
+		
+		if(tmp) free(tmp);
 		
 		zmq_msg_close (&msg);
 	}

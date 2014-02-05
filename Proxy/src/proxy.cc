@@ -15,7 +15,13 @@ Proxy::Proxy()
 	dbg("guid: %s", guid);
 	responderPort = 7770;
 	strcpy(host, "localhost");
-	responder = new Responder(responderPort, guid);
+	std::function<char*(ESB::Command cmd)> callback = [this] (ESB::Command cmd) -> char* {
+		dbg("callback happen on guid %s, payload: %s", guid, cmd.payload().c_str());
+		char *response = (char*)malloc(256);
+		sprintf(response, "%s#%i", host, 7771);
+		return response;
+	};
+	responder = new Responder(responderPort, guid, callback);
 	
 	redisCtx = redisConnect("127.0.0.1", 6379);
 	if (redisCtx != NULL && redisCtx->err) {

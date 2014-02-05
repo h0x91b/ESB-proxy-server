@@ -59,7 +59,12 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 	auto tmp = split(payload, '#');
 	
 	char *connectionString = (char*)tmp[1].c_str();
-	Subscriber subscriber(connectionString);
+	
+	std::function<void(ESB::Command)> cb = std::move([this] (ESB::Command cmdReq) -> void {
+		dbg("subscriber callback from %s", "aaa");
+	});
+	
+	Subscriber subscriber(connectionString, (char*)tmp[0].c_str(), cb);
 	if(subscriber.Connect()) {
 		dbg("connected successfull");
 		subscribers.insert(std::pair<std::string,Subscriber> {tmp[0], subscriber});

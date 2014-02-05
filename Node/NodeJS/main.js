@@ -43,7 +43,7 @@ ESB.prototype = {
 			payload: this.guid+'#tcp://'+this.config.publisherHost+':'+this.config.publisherPort,
 			guid_from: cmdGuid
 		}
-		var buf = pb.Serialize(obj, "ESB.Command") // you get Buffer here, send it via socket.write, etc.
+		var buf = pb.Serialize(obj, "ESB.Command");
 		var self = this;
 		this.requestSocket.once('message', function(data){
 			self.requestSocket.close();
@@ -74,7 +74,15 @@ ESB.prototype = {
 			{
 			case 'PING':
 				console.log('got PING request');
-				//this.publisherSocket.send('hello');
+				//
+				var obj = {
+					cmd: 'RESPONSE',
+					payload: 'PONG',
+					guid_to: respObj.guid_from,
+					guid_from: this.guid
+				}
+				var buf = pb.Serialize(obj, "ESB.Command");
+				this.publisherSocket.send(this.guid+buf);
 				break;
 			default:
 				console.log("unknown operation", respObj.cmd);

@@ -20,13 +20,19 @@
 class Subscriber
 {
 public:
-	Subscriber(char *);
+	Subscriber(char *, char*, std::function<void(ESB::Command cmd)>);
 	bool Connect();
 	~Subscriber();
 private:
 	void *zContext;
 	void *zResponder;
 	char *connectString;
+	static void *Thread(void* d);
+	
+	bool isWork;
+	char *targetGuid;
+	pthread_t thread;
+	std::function<void(ESB::Command cmd)> callback;
 };
 
 #endif /* defined(__ESB__subscriber__) */

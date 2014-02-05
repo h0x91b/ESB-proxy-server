@@ -29,13 +29,17 @@ Publisher::~Publisher()
 	dbg("the end");
 }
 
-void Publisher::Publish(ESB::Command cmd)
+void Publisher::Publish(const char* targetGuid, ESB::Command cmd)
 {
+	size_t guidSize = 38;
 	size_t size = cmd.ByteSize();
-	void *bb = malloc(size);
+	char *bb = (char*)malloc(size+sizeof(char)*guidSize);
+	memcpy(bb, targetGuid, 38);
+	bb+=guidSize;
 	
 	cmd.SerializeToArray(bb, size);
-	dbg("Publish len: %zu bytes", size);
+	bb-=guidSize;
+	dbg("Publish len: %zu bytes", size+sizeof(char)*guidSize);
 
-	zmq_send(zResponder, bb, size, ZMQ_DONTWAIT);
+	zmq_send(zResponder, bb, size+sizeof(char)*guidSize, ZMQ_DONTWAIT);
 }

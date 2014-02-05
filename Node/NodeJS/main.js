@@ -13,12 +13,14 @@ var _config = {
 
 function ESB(config) {
 	this.config = extend(true, {}, _config, config);
-	this.guid = uuid.v4();
+	this.guid = ('{'+uuid.v4()+'}').toUpperCase();
 	console.log('new ESB %s', this.guid);
 	this.responseCallbacks = [];
 	var socket = zmq.socket('req');
 	this.requestSocket = socket;
 	this.subscribeSocket = zmq.socket('sub');
+	this.publisherSocket = zmq.socket('pub');
+	this.publisherSocket.bind('tcp://*:'+this.config.port);
 	
 	this.connect();
 }
@@ -36,7 +38,7 @@ ESB.prototype = {
 		
 		var obj = {
 			cmd: 'NODE_HELLO',
-			payload: 'tcp://127.0.0.1:7780',
+			payload: this.guid+'#tcp://127.0.0.1:7780',
 			guid_from: cmdGuid
 		}
 		var buf = pb.Serialize(obj, "ESB.Command") // you get Buffer here, send it via socket.write, etc.
@@ -56,12 +58,14 @@ ESB.prototype = {
 			});
 			self.subscribeSocket.connect(t);
 			console.log('connected');
-			self.subscribeSocket.subscribe('');
+			self.subscribeSocket.subscribe(self.guid);
 		});
 		this.requestSocket.send(buf);
 	},
 	onMessage: function(data) {
 		try {
+			console.log('data', data);
+			data = data.slice(38); //38 sizeof guid in bytes
 			var respObj = pb.Parse(data, "ESB.Command");
 			console.log('suscriber got message: ', respObj);
 		} catch(e){

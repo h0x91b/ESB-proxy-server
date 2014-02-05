@@ -20,15 +20,10 @@ Proxy::Proxy()
 		ESB::Command cmdResp;
 		
 		dbg("callback happen on guid %s", guid);
-		char response[256];
-		
 		switch (cmdReq.cmd()) {
 			case ESB::Command::NODE_HELLO:
 				dbg("get request for NODE_HELLO");
-				sprintf(response, "%s#%i", host, publisherPort);
-								
-				cmdResp.set_cmd(ESB::Command::RESPONSE);
-				cmdResp.set_payload(response);
+				NodeHello(cmdReq, cmdResp);
 				break;
 			default:
 				dbg("Error, received unknown cmd: %i", cmdReq.cmd());
@@ -54,6 +49,20 @@ Proxy::Proxy()
 	pthread_create(&thread, NULL, &Thread, this);
 }
 
+void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
+{
+	auto payload = cmdReq.payload().c_str();
+	char response[256];
+	sprintf(response, "%s#%i", host, publisherPort);
+	
+	dbg("payload: %s", payload);
+	auto tmp = split(payload, '#');
+	nodesGuids.push_back(tmp[0]);
+	
+	cmdResp.set_cmd(ESB::Command::RESPONSE);
+	cmdResp.set_payload(response);
+}
+
 Proxy::~Proxy()
 {
 	dbg("Destructor");
@@ -68,15 +77,18 @@ void *Proxy::Thread(void* d)
 	{
 		dbg("ping redis");
 		
-		ESB::Command ping;
-		char _guid[38] = {0};
-		GenerateGuid(_guid);
-		ping.set_identifier("/ping");
-		ping.set_guid_from(_guid);
-		ping.set_guid_to("hz");
-		ping.set_cmd(ESB::Command::PING);
-		ping.set_payload("ping");
-		self->publisher->Publish(ping);
+		for(size_t n=0; n < self->nodesGuids.size(); n++)
+		{
+			ESB::Command ping;
+			char _guid[38] = {0};
+			GenerateGuid(_guid);
+			ping.set_identifier("/ping");
+			ping.set_guid_from(_guid);
+			ping.set_guid_to(self->nodesGuids[n].c_str());
+			ping.set_cmd(ESB::Command::PING);
+			ping.set_payload("ping");
+			self->publisher->Publish(self->nodesGuids[n].c_str(), ping);
+		}
 		
 		auto reply = (redisReply*)redisCommand(
 											   self->redisCtx,

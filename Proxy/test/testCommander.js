@@ -27,7 +27,7 @@ setInterval(function() {
 	var guid = ('{'+uuid.v4()+'}').toUpperCase();
 	
 	var obj = {
-		cmd: 'INFO',
+		cmd: 'NODE_HELLO',
 		payload: 'hello world',
 		guid_from: guid
 	}

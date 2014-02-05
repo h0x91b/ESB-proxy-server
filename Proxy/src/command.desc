@@ -1,6 +1,6 @@
 
-Ò
-src/command.protoESB"·
+Ø
+src/command.protoESB"½
 Command
 cmd (2.ESB.Command.Cmd
 
@@ -8,9 +8,10 @@ identifier (	
 	guid_from (	
 guid_to (	
 version (
-payload (	"3
+payload (	"9
 Cmd	
 ERROR
-RESPONSE
-INFO	
+RESPONSE
+
+NODE_HELLO	
 STATS

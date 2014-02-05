@@ -50,8 +50,8 @@ void *Proxy::Thread(void* d)
 		freeReplyObject(reply);
 		reply = (redisReply*)redisCommand(self->redisCtx, "ZREVRANGEBYSCORE ZSET:PROXIES +inf %i", time(NULL)-5);
 		if(reply->type == REDIS_REPLY_ARRAY) {
-			dbg("Proxy::Thread get %i proxies from redis", reply->elements);
-			for(int n=0;n<reply->elements;n++) {
+			dbg("get %zu proxies from redis", reply->elements);
+			for(size_t n=0;n<reply->elements;n++) {
 				auto proxy = (redisReply*)reply->element[n];
 				auto vector = split(proxy->str, '#');
 				auto guid = vector[0].c_str();

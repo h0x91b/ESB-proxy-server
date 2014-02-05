@@ -39,7 +39,7 @@ class Command;
 enum Command_Cmd {
   Command_Cmd_ERROR = 1,
   Command_Cmd_RESPONSE = 2,
-  Command_Cmd_INFO = 3,
+  Command_Cmd_NODE_HELLO = 3,
   Command_Cmd_STATS = 4
 };
 bool Command_Cmd_IsValid(int value);
@@ -114,7 +114,7 @@ class Command : public ::google::protobuf::Message {
   typedef Command_Cmd Cmd;
   static const Cmd ERROR = Command_Cmd_ERROR;
   static const Cmd RESPONSE = Command_Cmd_RESPONSE;
-  static const Cmd INFO = Command_Cmd_INFO;
+  static const Cmd NODE_HELLO = Command_Cmd_NODE_HELLO;
   static const Cmd STATS = Command_Cmd_STATS;
   static inline bool Cmd_IsValid(int value) {
     return Command_Cmd_IsValid(value);

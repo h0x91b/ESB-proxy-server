@@ -4,7 +4,7 @@ message Command {
 	enum Cmd {
 		ERROR = 1;
 		RESPONSE = 2;
-		INFO = 3;
+		NODE_HELLO = 3;
 		STATS = 4;
 	};
 	required Cmd cmd = 1;

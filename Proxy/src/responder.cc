@@ -45,17 +45,17 @@ void *Responder::Thread(void* d)
 		zmq_msg_t msg;
 		int msgInitRC = zmq_msg_init (&msg);
 		assert (msgInitRC == 0);
-		int len = zmq_recvmsg(self->zResponder, &msg, 0);
-		assert (len != -1);
+		size_t len = zmq_recvmsg(self->zResponder, &msg, 0);
+		assert (len != (size_t)-1);
 		char *buffer = (char*)zmq_msg_data(&msg);
 		
-		dbg ("received: %i bytes", len);
+		dbg ("received: %zu bytes", len);
 		
 		
 		ESB::Command cmdReq, cmdResp;
 		cmdReq.ParseFromArray(buffer, len);
 		switch (cmdReq.cmd()) {
-			case ESB::Command::INFO:
+			case ESB::Command::NODE_HELLO:
 				dbg("get request for INFO");
 				cmdResp.set_cmd(ESB::Command::ERROR);
 				cmdResp.set_payload("Not implemented");
@@ -70,11 +70,11 @@ void *Responder::Thread(void* d)
 		cmdResp.set_guid_from(self->guid);
 		cmdResp.set_guid_to(cmdReq.guid_from());
 		
-		int size = cmdResp.ByteSize();
+		size_t size = cmdResp.ByteSize();
 		void *bb = malloc(size);
 		
 		cmdResp.SerializeToArray(bb, size);
-		dbg("Send response len: %i bytes", size);
+		dbg("Send response len: %zu bytes", size);
 		
 		//zmq_send(self->zResponder, buffer, strlen(buffer), 0);
         zmq_send(self->zResponder, bb, size, 0);

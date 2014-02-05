@@ -76,10 +76,10 @@ ESB.prototype = {
 				console.log('got PING request');
 				//
 				var obj = {
-					cmd: 'RESPONSE',
-					payload: 'PONG',
+					cmd: 'PONG',
+					payload: ~~(+new Date/1000),
 					guid_to: respObj.guid_from,
-					guid_from: this.guid
+					guid_from: this.guid,
 				}
 				var buf = pb.Serialize(obj, "ESB.Command");
 				this.publisherSocket.send(this.guid+buf);

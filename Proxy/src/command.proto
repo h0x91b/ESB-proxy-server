@@ -6,6 +6,7 @@ message Command {
 		RESPONSE = 2;
 		NODE_HELLO = 3;
 		PING = 4;
+		PONG = 5;
 	};
 	required Cmd cmd = 1;
 	optional string identifier = 2;

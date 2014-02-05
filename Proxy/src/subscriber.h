@@ -23,7 +23,7 @@ class Proxy;
 class Subscriber
 {
 public:
-	Subscriber(char *, char*, Proxy*);
+	Subscriber(char *, const char*, Proxy*);
 	bool Connect();
 	~Subscriber();
 private:
@@ -33,7 +33,7 @@ private:
 	static void *Thread(void* d);
 	
 	bool isWork;
-	char *targetGuid;
+	char targetGuid[39];
 	pthread_t thread;
 	Proxy *proxy;
 };

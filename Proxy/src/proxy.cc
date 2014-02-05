@@ -39,10 +39,10 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 	
 	char *connectionString = (char*)tmp[1].c_str();
 		
-	Subscriber subscriber(connectionString, (char*)tmp[0].c_str(), this);
-	if(subscriber.Connect()) {
+	auto subscriber = new Subscriber(connectionString, tmp[0].c_str(), this);
+	if(subscriber->Connect()) {
 		dbg("connected successfull");
-		subscribers.insert(std::pair<std::string,Subscriber> {tmp[0], subscriber});
+		subscribers.insert(std::pair<std::string,Subscriber*> {tmp[0], subscriber});
 		nodesGuids.push_back(tmp[0]);
 		
 		cmdResp.set_cmd(ESB::Command::RESPONSE);
@@ -79,9 +79,9 @@ ESB::Command Proxy::ResponderCallback(ESB::Command cmdReq)
 	return cmdResp;
 }
 
-void Proxy::SubscriberCallback(ESB::Command cmdReq)
+void Proxy::SubscriberCallback(ESB::Command cmdReq, char *guid)
 {
-	dbg("subscriber callback from %s", cmdReq.payload().c_str());
+	dbg("subscriber callback from %s", guid);
 }
 
 Proxy::~Proxy()
@@ -101,7 +101,7 @@ void *Proxy::Thread(void* d)
 		for(size_t n=0; n < self->nodesGuids.size(); n++)
 		{
 			ESB::Command ping;
-			char _guid[38] = {0};
+			char _guid[39] = {0};
 			GenerateGuid(_guid);
 			ping.set_identifier("/ping");
 			ping.set_guid_from(_guid);

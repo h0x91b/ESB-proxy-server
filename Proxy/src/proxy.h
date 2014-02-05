@@ -28,10 +28,10 @@ class Responder;
 class Proxy : public node::ObjectWrap {
 public:
 	static void Init(v8::Handle<v8::Object> exports);
-	void SubscriberCallback(ESB::Command cmdReq);
+	void SubscriberCallback(ESB::Command cmdReq, char *guid);
 	ESB::Command ResponderCallback(ESB::Command cmdReq);
 	
-	char guid[38];
+	char guid[39];
 	Responder *responder;
 	Publisher *publisher;
 	redisContext *redisCtx;
@@ -51,8 +51,7 @@ private:
 	bool isWork;
 	pthread_t thread;
 	std::vector<std::string> nodesGuids;
-	std::unordered_map<std::string,Subscriber> subscribers;
-	std::vector<std::reference_wrapper<void(ESB::Command cmd)>> subscriberLambdas;
+	std::unordered_map<std::string,Subscriber*> subscribers;
 };
 
 

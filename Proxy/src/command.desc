@@ -1,6 +1,6 @@
 
-×
-src/command.protoESB"¼
+á
+src/command.protoESB"Æ
 Command
 cmd (2.ESB.Command.Cmd
 
@@ -8,10 +8,11 @@ identifier (	
 	guid_from (	
 guid_to (	
 version (
-payload (	"8
+payload (	"B
 Cmd	
 ERROR
 RESPONSE
 
 NODE_HELLO
-PING
+PING
+PONG

@@ -8,7 +8,7 @@
 
 #include "responder.h"
 
-Responder::Responder(int _port, char *_guid, std::function<char*(ESB::Command cmd)> cb)
+Responder::Responder(int _port, char *_guid, std::function<ESB::Command(ESB::Command cmd)> cb)
 {
 	port = _port;
 	guid = _guid;
@@ -49,31 +49,11 @@ void *Responder::Thread(void* d)
 		size_t len = zmq_recvmsg(self->zResponder, &msg, 0);
 		assert (len != (size_t)-1);
 		char *buffer = (char*)zmq_msg_data(&msg);
-		
 		dbg ("received: %zu bytes", len);
 		
-		char *tmp = NULL;
-		
-		ESB::Command cmdReq, cmdResp;
+		ESB::Command cmdReq;
 		cmdReq.ParseFromArray(buffer, len);
-		switch (cmdReq.cmd()) {
-			case ESB::Command::NODE_HELLO:
-				dbg("get request for NODE_HELLO");
-				
-				tmp = self->callback(cmdReq);
-				
-				cmdResp.set_cmd(ESB::Command::RESPONSE);
-				cmdResp.set_payload(tmp);
-				break;
-			default:
-				dbg("Error, received unknown cmd: %i", cmdReq.cmd());
-				cmdResp.set_cmd(ESB::Command::ERROR);
-				cmdResp.set_payload("Unknown command");
-				break;
-		}
-		
-		cmdResp.set_guid_from(self->guid);
-		cmdResp.set_guid_to(cmdReq.guid_from());
+		auto cmdResp = self->callback(cmdReq);
 		
 		size_t size = cmdResp.ByteSize();
 		void *bb = malloc(size);
@@ -81,12 +61,8 @@ void *Responder::Thread(void* d)
 		cmdResp.SerializeToArray(bb, size);
 		dbg("Send response len: %zu bytes", size);
 		
-		//zmq_send(self->zResponder, buffer, strlen(buffer), 0);
         zmq_send(self->zResponder, bb, size, 0);
         free(bb);
-		
-		if(tmp) free(tmp);
-		
 		zmq_msg_close (&msg);
 	}
 	dbg("finished");

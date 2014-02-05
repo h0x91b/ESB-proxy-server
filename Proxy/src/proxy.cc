@@ -15,11 +15,31 @@ Proxy::Proxy()
 	dbg("guid: %s", guid);
 	responderPort = 7770;
 	strcpy(host, "localhost");
-	std::function<char*(ESB::Command cmd)> callback = [this] (ESB::Command cmd) -> char* {
-		dbg("callback happen on guid %s, payload: %s", guid, cmd.payload().c_str());
-		char *response = (char*)malloc(256);
-		sprintf(response, "%s#%i", host, 7771);
-		return response;
+	auto callback = [this] (ESB::Command cmdReq) -> ESB::Command {
+		ESB::Command cmdResp;
+		
+		dbg("callback happen on guid %s", guid);
+		char response[256];
+		
+		switch (cmdReq.cmd()) {
+			case ESB::Command::NODE_HELLO:
+				dbg("get request for NODE_HELLO");
+				sprintf(response, "%s#%i", host, 7771);
+								
+				cmdResp.set_cmd(ESB::Command::RESPONSE);
+				cmdResp.set_payload(response);
+				break;
+			default:
+				dbg("Error, received unknown cmd: %i", cmdReq.cmd());
+				cmdResp.set_cmd(ESB::Command::ERROR);
+				cmdResp.set_payload("Unknown command");
+				break;
+		}
+		
+		cmdResp.set_guid_from(guid);
+		cmdResp.set_guid_to(cmdReq.guid_from());
+		
+		return cmdResp;
 	};
 	responder = new Responder(responderPort, guid, callback);
 	

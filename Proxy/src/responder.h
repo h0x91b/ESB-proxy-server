@@ -20,7 +20,7 @@
 class Responder
 {
 public:
-	Responder(int, char*, std::function<char*(ESB::Command cmd)>);
+	Responder(int, char*, std::function<ESB::Command(ESB::Command cmd)>);
 	~Responder();
 	int port;
 	char *guid;
@@ -31,7 +31,7 @@ private:
 	static void* Thread(void*);
 	bool isWork;
 	pthread_t thread;
-	std::function<char*(ESB::Command cmd)> callback;
+	std::function<ESB::Command(ESB::Command cmd)> callback;
 };
 
 #endif /* defined(__ESB__responder__) */

@@ -10,15 +10,12 @@
 #include <time.h>
 #include <sstream>
 
+#include "globals.h"
 #include "deps/hiredis/hiredis.h"
 #include "requester.h"
 #include "responder.h"
 #include "publisher.h"
 #include "subscriber.h"
-
-void GenerateGuid(char *guidStr);
-std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
-std::vector<std::string> split(const std::string &s, char delim);
 
 class Proxy : public node::ObjectWrap {
 public:

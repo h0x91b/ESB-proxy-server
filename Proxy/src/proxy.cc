@@ -1,3 +1,4 @@
+#include "globals.h"
 #include "proxy.h"
 
 using namespace v8;
@@ -11,14 +12,14 @@ Persistent<Function> Proxy::constructor;
 Proxy::Proxy()
 {
 	GenerateGuid(guid);
-	printf("Proxy::Proxy() guid: %s\n", guid);
+	dbg("guid: %s", guid);
 	responderPort = 7770;
 	strcpy(host, "localhost");
 	responder = new Responder(responderPort, guid);
 	
 	redisCtx = redisConnect("127.0.0.1", 6379);
 	if (redisCtx != NULL && redisCtx->err) {
-		printf("Redis connection error: %s\n", redisCtx->errstr);
+		dbg("Redis connection error: %s", redisCtx->errstr);
 		redisCtx = NULL;
 	}
 	isWork = TRUE;
@@ -27,17 +28,17 @@ Proxy::Proxy()
 
 Proxy::~Proxy()
 {
-	printf("Proxy::~Proxy()\n");
+	dbg("Destructor");
 	isWork = FALSE;
 }
 
 void *Proxy::Thread(void* d)
 {
-	printf("Proxy::Thread start\n");
+	dbg("start");
 	auto self = (Proxy*)d;
 	while (self->isWork)
 	{
-		printf("Proxy::Thread ping redis\n");
+		dbg("ping redis");
 		auto reply = (redisReply*)redisCommand(
 											   self->redisCtx,
 											   "ZADD ZSET:PROXIES %i %s#tcp://%s:%i",
@@ -49,22 +50,22 @@ void *Proxy::Thread(void* d)
 		freeReplyObject(reply);
 		reply = (redisReply*)redisCommand(self->redisCtx, "ZREVRANGEBYSCORE ZSET:PROXIES +inf %i", time(NULL)-5);
 		if(reply->type == REDIS_REPLY_ARRAY) {
-			printf("Proxy::Thread get %i proxies from redis\n", reply->elements);
+			dbg("Proxy::Thread get %i proxies from redis", reply->elements);
 			for(int n=0;n<reply->elements;n++) {
 				auto proxy = (redisReply*)reply->element[n];
 				auto vector = split(proxy->str, '#');
 				auto guid = vector[0].c_str();
 				auto connectionString = vector[1].c_str();
-				printf("guid: %s\nconnect string: %s\n", guid, connectionString);
+				dbg("guid: %s\nconnect string: %s", guid, connectionString);
 				if(strcmp(guid, self->guid) == 0) {
-					printf("found me in proxies, skip\n");
+					dbg("found me in proxies, skip");
 					continue;
 				}
 				
 				//check if connected here...
 			}
 		} else {
-			printf("Redis return weird answer...\n");
+			dbg("Redis return weird answer...");
 		}
 		freeReplyObject(reply);
 		sleep(5);

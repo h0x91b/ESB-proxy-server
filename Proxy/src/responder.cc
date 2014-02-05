@@ -12,7 +12,7 @@ Responder::Responder(int _port, char *_guid)
 {
 	port = _port;
 	guid = _guid;
-	printf("Responder::Responder(int port=%i)", port);
+	dbg("port=%i", port);
 	
 	zContext = zmq_ctx_new();
 	zResponder = zmq_socket (zContext, ZMQ_REP);
@@ -23,25 +23,25 @@ Responder::Responder(int _port, char *_guid)
 
 Responder::~Responder()
 {
-	printf("Responder::~Responder()\n");
+	dbg("Destructor");
 	isWork = false;
 	pthread_cancel(thread);
 }
 
 void *Responder::Thread(void* d)
 {
-	printf("Responder::Thread start\n");
+	dbg("start");
 	auto self = (Responder*)d;
 	
 	char bindstr[256] = {0};
 	sprintf(bindstr, "tcp://*:%i", self->port);
-	printf("Responder::Thread try to bind: %s\n", bindstr);
+	dbg("try to bind: %s", bindstr);
 	int rc = zmq_bind (self->zResponder, bindstr);
 	assert (rc == 0);
-	printf("Responder::Thread bind success\n");
+	dbg("bind success");
 	
 	while(self->isWork) {
-		printf("Responder::Thread wait for REQ\n");
+		dbg("wait for REQ");
 		zmq_msg_t msg;
 		int msgInitRC = zmq_msg_init (&msg);
 		assert (msgInitRC == 0);
@@ -49,18 +49,19 @@ void *Responder::Thread(void* d)
 		assert (len != -1);
 		char *buffer = (char*)zmq_msg_data(&msg);
 		
-		printf ("Responder::Thread received: %i bytes\n", len);
+		dbg ("received: %i bytes", len);
+		
 		
 		ESB::Command cmdReq, cmdResp;
 		cmdReq.ParseFromArray(buffer, len);
 		switch (cmdReq.cmd()) {
 			case ESB::Command::INFO:
-				printf("Responder::Thread get request for INFO\n");
+				dbg("get request for INFO");
 				cmdResp.set_cmd(ESB::Command::ERROR);
 				cmdResp.set_payload("Not implemented");
 				break;
 			default:
-				printf("Responder::Thread Error, received unknown cmd: %i\n", cmdReq.cmd());
+				dbg("Error, received unknown cmd: %i", cmdReq.cmd());
 				cmdResp.set_cmd(ESB::Command::ERROR);
 				cmdResp.set_payload("Unknown command");
 				break;
@@ -73,7 +74,7 @@ void *Responder::Thread(void* d)
 		void *bb = malloc(size);
 		
 		cmdResp.SerializeToArray(bb, size);
-		printf("Send response len: %i bytes\n", size);
+		dbg("Send response len: %i bytes", size);
 		
 		//zmq_send(self->zResponder, buffer, strlen(buffer), 0);
         zmq_send(self->zResponder, bb, size, 0);
@@ -81,6 +82,6 @@ void *Responder::Thread(void* d)
 		
 		zmq_msg_close (&msg);
 	}
-	printf("Responder::Thread finished\n");
+	dbg("finished");
 	return 0;
 }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		A41A91F518A13ADD00C64A9C /* globals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
 		A4C44A13189E6B8100788D1E /* command.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = command.pb.cc; sourceTree = "<group>"; };
 		A4C44A14189E6B8100788D1E /* command.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = command.pb.h; sourceTree = "<group>"; };
 		A4C44A15189E6B8100788D1E /* command.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = command.proto; sourceTree = "<group>"; };
@@ -51,6 +52,7 @@
 				A4C44A3F189FB21F00788D1E /* publisher.h */,
 				A4C44A40189FB22900788D1E /* subscriber.cc */,
 				A4C44A41189FB22900788D1E /* subscriber.h */,
+				A41A91F518A13ADD00C64A9C /* globals.h */,
 			);
 			name = src;
 			path = ../src;
@@ -236,6 +238,7 @@
 				A4C44A11189E699F00788D1E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

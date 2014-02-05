@@ -15,6 +15,7 @@
 #include <stdlib.h>
 
 #include "command.pb.h"
+#include "globals.h"
 
 class Responder
 {

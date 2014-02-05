@@ -36,7 +36,7 @@ setInterval(function() {
 		var buf = pb.Serialize(obj, "ESB.Command") // you get Buffer here, send it via socket.write, etc.
 		console.log('buf length: %s', buf.length);
 		responseCallbacks[guid] = function(err, data, rawObj){
-			console.log('received response from Proxy', err, data, rawObj);
+			console.log('received response from Proxy', err, data, rawObj );
 		}
 		socket.send(buf);
 		

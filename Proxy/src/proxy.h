@@ -22,8 +22,10 @@ public:
 	static void Init(v8::Handle<v8::Object> exports);
 	char guid[38];
 	Responder *responder;
+	Publisher *publisher;
 	redisContext *redisCtx;
 	int responderPort;
+	int publisherPort;
 	char host[128];
 
 private:

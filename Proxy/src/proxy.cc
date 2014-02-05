@@ -14,6 +14,7 @@ Proxy::Proxy()
 	GenerateGuid(guid);
 	dbg("guid: %s", guid);
 	responderPort = 7770;
+	publisherPort = 7771;
 	strcpy(host, "localhost");
 	auto callback = [this] (ESB::Command cmdReq) -> ESB::Command {
 		ESB::Command cmdResp;
@@ -24,7 +25,7 @@ Proxy::Proxy()
 		switch (cmdReq.cmd()) {
 			case ESB::Command::NODE_HELLO:
 				dbg("get request for NODE_HELLO");
-				sprintf(response, "%s#%i", host, 7771);
+				sprintf(response, "%s#%i", host, publisherPort);
 								
 				cmdResp.set_cmd(ESB::Command::RESPONSE);
 				cmdResp.set_payload(response);
@@ -42,6 +43,7 @@ Proxy::Proxy()
 		return cmdResp;
 	};
 	responder = new Responder(responderPort, guid, callback);
+	publisher = new Publisher(publisherPort);
 	
 	redisCtx = redisConnect("127.0.0.1", 6379);
 	if (redisCtx != NULL && redisCtx->err) {
@@ -65,6 +67,17 @@ void *Proxy::Thread(void* d)
 	while (self->isWork)
 	{
 		dbg("ping redis");
+		
+		ESB::Command ping;
+		char _guid[38] = {0};
+		GenerateGuid(_guid);
+		ping.set_identifier("/ping");
+		ping.set_guid_from(_guid);
+		ping.set_guid_to("hz");
+		ping.set_cmd(ESB::Command::PING);
+		ping.set_payload("ping");
+		self->publisher->Publish(ping);
+		
 		auto reply = (redisReply*)redisCommand(
 											   self->redisCtx,
 											   "ZADD ZSET:PROXIES %i %s#tcp://%s:%i",

@@ -5,7 +5,7 @@ message Command {
 		ERROR = 1;
 		RESPONSE = 2;
 		NODE_HELLO = 3;
-		STATS = 4;
+		PING = 4;
 	};
 	required Cmd cmd = 1;
 	optional string identifier = 2;

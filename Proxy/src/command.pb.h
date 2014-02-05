@@ -40,11 +40,11 @@ enum Command_Cmd {
   Command_Cmd_ERROR = 1,
   Command_Cmd_RESPONSE = 2,
   Command_Cmd_NODE_HELLO = 3,
-  Command_Cmd_STATS = 4
+  Command_Cmd_PING = 4
 };
 bool Command_Cmd_IsValid(int value);
 const Command_Cmd Command_Cmd_Cmd_MIN = Command_Cmd_ERROR;
-const Command_Cmd Command_Cmd_Cmd_MAX = Command_Cmd_STATS;
+const Command_Cmd Command_Cmd_Cmd_MAX = Command_Cmd_PING;
 const int Command_Cmd_Cmd_ARRAYSIZE = Command_Cmd_Cmd_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* Command_Cmd_descriptor();
@@ -115,7 +115,7 @@ class Command : public ::google::protobuf::Message {
   static const Cmd ERROR = Command_Cmd_ERROR;
   static const Cmd RESPONSE = Command_Cmd_RESPONSE;
   static const Cmd NODE_HELLO = Command_Cmd_NODE_HELLO;
-  static const Cmd STATS = Command_Cmd_STATS;
+  static const Cmd PING = Command_Cmd_PING;
   static inline bool Cmd_IsValid(int value) {
     return Command_Cmd_IsValid(value);
   }

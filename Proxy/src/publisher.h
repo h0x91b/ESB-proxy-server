@@ -10,5 +10,23 @@
 #define __ESB__publisher__
 
 #include <iostream>
+#include <zmq.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+#include "command.pb.h"
+#include "globals.h"
+
+class Publisher
+{
+public:
+	Publisher(int port);
+	~Publisher();
+	void Publish(ESB::Command cmd);
+private:
+	int port;
+	void *zContext;
+	void *zResponder;
+};
 
 #endif /* defined(__ESB__publisher__) */

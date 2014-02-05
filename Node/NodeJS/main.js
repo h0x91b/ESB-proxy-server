@@ -1,6 +1,10 @@
 var extend = require('extend');
 var zmq = require('zmq');
 var uuid = require('uuid');
+var fs = require("fs")
+var proto = require("node-protobuf").Protobuf;
+var pb = new proto(fs.readFileSync(__dirname+"/../../Proxy/src/command.desc"));
+
 
 var _config = {
 	host: 'localhost',
@@ -14,6 +18,7 @@ function ESB(config) {
 	this.responseCallbacks = [];
 	var socket = zmq.socket('req');
 	this.requestSocket = socket;
+	this.subscribeSocket = zmq.socket('sub');
 	
 	this.connect();
 }
@@ -27,9 +32,6 @@ ESB.prototype = {
 		this.sendHello();
 	},
 	sendHello: function() {
-		var fs = require("fs")
-		var proto = require("node-protobuf").Protobuf;
-		var pb = new proto(fs.readFileSync(__dirname+"/../../Proxy/src/command.desc"));
 		var cmdGuid = ('{'+uuid.v4()+'}').toUpperCase();
 		
 		var obj = {
@@ -47,9 +49,24 @@ ESB.prototype = {
 				throw new Error(respObj.payload);
 			}
 			var t = respObj.payload.split('#');
-			console.log(t);
+			t = 'tcp://'+t[0]+':'+t[1];
+			console.log('connecting to: '+t);
+			self.subscribeSocket.on('message', function(data){
+				self.onMessage.call(self, data);
+			});
+			self.subscribeSocket.connect(t);
+			console.log('connected');
+			self.subscribeSocket.subscribe('');
 		});
 		this.requestSocket.send(buf);
+	},
+	onMessage: function(data) {
+		try {
+			var respObj = pb.Parse(data, "ESB.Command");
+			console.log('suscriber got message: ', respObj);
+		} catch(e){
+			console.log('ERROR while decoding message', e);
+		}
 	}
 };
 

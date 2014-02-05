@@ -11,6 +11,10 @@
 #include <sstream>
 #include <unordered_map>
 
+class Subscriber;
+class Publisher;
+class Responder;
+
 #include "globals.h"
 #include "deps/hiredis/hiredis.h"
 #include "requester.h"
@@ -18,9 +22,15 @@
 #include "publisher.h"
 #include "subscriber.h"
 
+//typedef void subCbPtr(ESB::Command);
+
+
 class Proxy : public node::ObjectWrap {
 public:
 	static void Init(v8::Handle<v8::Object> exports);
+	void SubscriberCallback(ESB::Command cmdReq);
+	ESB::Command ResponderCallback(ESB::Command cmdReq);
+	
 	char guid[38];
 	Responder *responder;
 	Publisher *publisher;
@@ -42,6 +52,7 @@ private:
 	pthread_t thread;
 	std::vector<std::string> nodesGuids;
 	std::unordered_map<std::string,Subscriber> subscribers;
+	std::vector<std::reference_wrapper<void(ESB::Command cmd)>> subscriberLambdas;
 };
 
 

@@ -14,13 +14,16 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+class Proxy;
+
 #include "command.pb.h"
 #include "globals.h"
+#include "proxy.h"
 
 class Responder
 {
 public:
-	Responder(int, char*, std::function<ESB::Command(ESB::Command cmd)>);
+	Responder(int, char*, Proxy*);
 	~Responder();
 	int port;
 	char *guid;
@@ -31,7 +34,7 @@ private:
 	static void* Thread(void*);
 	bool isWork;
 	pthread_t thread;
-	std::function<ESB::Command(ESB::Command cmd)> callback;
+	Proxy *proxy;
 };
 
 #endif /* defined(__ESB__responder__) */

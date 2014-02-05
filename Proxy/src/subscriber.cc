@@ -8,13 +8,13 @@
 
 #include "subscriber.h"
 
-Subscriber::Subscriber(char *_connectString, char *_targetGuid, std::function<void(ESB::Command cmd)> cb)
+Subscriber::Subscriber(char *_connectString, char *_targetGuid, Proxy* _proxy)
 {
 	connectString = _connectString;
 	targetGuid = _targetGuid;
+	proxy = _proxy;
 	zContext = zmq_ctx_new();
 	zResponder = zmq_socket (zContext, ZMQ_SUB);
-	callback = cb;
 }
 
 bool Subscriber::Connect()
@@ -59,7 +59,8 @@ void *Subscriber::Thread(void* d)
 		
 		ESB::Command cmdReq;
 		cmdReq.ParseFromArray(buffer, len);
-		self->callback(cmdReq);
+		//(*self->callback)(cmdReq);
+		self->proxy->SubscriberCallback(cmdReq);
 
 		zmq_msg_close (&msg);
 	}

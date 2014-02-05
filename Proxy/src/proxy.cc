@@ -16,28 +16,7 @@ Proxy::Proxy()
 	responderPort = 7770;
 	publisherPort = 7771;
 	strcpy(host, "localhost");
-	auto callback = [this] (ESB::Command cmdReq) -> ESB::Command {
-		ESB::Command cmdResp;
-		
-		dbg("callback happen on guid %s", guid);
-		switch (cmdReq.cmd()) {
-			case ESB::Command::NODE_HELLO:
-				dbg("get request for NODE_HELLO");
-				NodeHello(cmdReq, cmdResp);
-				break;
-			default:
-				dbg("Error, received unknown cmd: %i", cmdReq.cmd());
-				cmdResp.set_cmd(ESB::Command::ERROR);
-				cmdResp.set_payload("Unknown command");
-				break;
-		}
-		
-		cmdResp.set_guid_from(guid);
-		cmdResp.set_guid_to(cmdReq.guid_from());
-		
-		return cmdResp;
-	};
-	responder = new Responder(responderPort, guid, callback);
+	responder = new Responder(responderPort, guid, this);
 	publisher = new Publisher(publisherPort);
 	
 	redisCtx = redisConnect("127.0.0.1", 6379);
@@ -59,12 +38,8 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 	auto tmp = split(payload, '#');
 	
 	char *connectionString = (char*)tmp[1].c_str();
-	
-	std::function<void(ESB::Command)> cb = std::move([this] (ESB::Command cmdReq) -> void {
-		dbg("subscriber callback from %s", "aaa");
-	});
-	
-	Subscriber subscriber(connectionString, (char*)tmp[0].c_str(), cb);
+		
+	Subscriber subscriber(connectionString, (char*)tmp[0].c_str(), this);
 	if(subscriber.Connect()) {
 		dbg("connected successfull");
 		subscribers.insert(std::pair<std::string,Subscriber> {tmp[0], subscriber});
@@ -79,6 +54,34 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 		sprintf(errBuf, "ESB Proxy can not connect to your Node, check the firewall, connectionString: `%s`", connectionString);
 		cmdResp.set_payload(errBuf);
 	}
+}
+
+ESB::Command Proxy::ResponderCallback(ESB::Command cmdReq)
+{
+	ESB::Command cmdResp;
+	
+	dbg("callback happen on guid %s", guid);
+	switch (cmdReq.cmd()) {
+		case ESB::Command::NODE_HELLO:
+			dbg("get request for NODE_HELLO");
+			NodeHello(cmdReq, cmdResp);
+			break;
+		default:
+			dbg("Error, received unknown cmd: %i", cmdReq.cmd());
+			cmdResp.set_cmd(ESB::Command::ERROR);
+			cmdResp.set_payload("Unknown command");
+			break;
+	}
+	
+	cmdResp.set_guid_from(guid);
+	cmdResp.set_guid_to(cmdReq.guid_from());
+	
+	return cmdResp;
+}
+
+void Proxy::SubscriberCallback(ESB::Command cmdReq)
+{
+	dbg("subscriber callback from %s", cmdReq.payload().c_str());
 }
 
 Proxy::~Proxy()

@@ -8,12 +8,12 @@
 
 #include "responder.h"
 
-Responder::Responder(int _port, char *_guid, std::function<ESB::Command(ESB::Command cmd)> cb)
+Responder::Responder(int _port, char *_guid, Proxy* _proxy)
 {
 	port = _port;
 	guid = _guid;
+	proxy = _proxy;
 	dbg("port=%i", port);
-	callback = cb;
 	
 	zContext = zmq_ctx_new();
 	zResponder = zmq_socket (zContext, ZMQ_REP);
@@ -53,7 +53,7 @@ void *Responder::Thread(void* d)
 		
 		ESB::Command cmdReq;
 		cmdReq.ParseFromArray(buffer, len);
-		auto cmdResp = self->callback(cmdReq);
+		auto cmdResp = self->proxy->ResponderCallback(cmdReq);
 		
 		size_t size = cmdResp.ByteSize();
 		void *bb = malloc(size);

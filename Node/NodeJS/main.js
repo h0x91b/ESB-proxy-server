@@ -56,7 +56,7 @@ ESB.prototype.sendHello= function() {
 	this.requestSocket.once('message', function(data){
 		self.requestSocket.close();
 		var respObj = pb.Parse(data, "ESB.Command");
-		console.log('got response from Proxy', respObj);
+		//console.log('got response from Proxy', respObj);
 		if(respObj.cmd === 'ERROR') {
 			throw new Error(respObj.payload);
 		}
@@ -78,10 +78,10 @@ ESB.prototype.sendHello= function() {
 
 ESB.prototype.onMessage= function(data) {
 	try {
-		console.log('ESB.prototype.onMessage', data);
+		//console.log('ESB.prototype.onMessage', data);
 		data = data.slice(38); //38 sizeof guid in bytes
 		var respObj = pb.Parse(data, "ESB.Command");
-		console.log('suscriber got message: ', respObj);
+		//console.log('suscriber got message: ', respObj);
 		switch(respObj.cmd)
 		{
 		case 'PING':
@@ -107,7 +107,7 @@ ESB.prototype.onMessage= function(data) {
 			console.log("REGISTER_INVOKE_OK for %s", respObj.payload);
 			break;
 		case 'INVOKE':
-			console.log('got INVOKE request');
+			//console.log('got INVOKE request');
 			var fn = this.invokeMethods[respObj.guid_to];
 			if(!fn) {
 				console.log('can not find such invoke method', respObj, Object.keys(this.invokeMethods));
@@ -116,7 +116,7 @@ ESB.prototype.onMessage= function(data) {
 			fn(respObj);
 			break;
 		case 'RESPONSE':
-			console.log('got RESPONSE');
+			//console.log('got RESPONSE');
 			var fn = this.responseCallbacks[respObj.guid_to];
 			if(fn){
 				fn(null, JSON.parse(respObj.payload), null);
@@ -126,7 +126,7 @@ ESB.prototype.onMessage= function(data) {
 			}
 			break;
 		default:
-			console.log("unknown operation", respObj.cmd);
+			console.log("unknown operation", respObj);
 		}
 	} catch(e){
 		console.log('ERROR while processing message', e);
@@ -139,7 +139,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 		timeout: 3000
 	}, options);
 	identifier = identifier+'/v'+options.version;
-	console.log('invoke()', identifier, options, data);
+	//console.log('invoke()', identifier, options, data);
 	var isCalled = false;
 	var id = null;
 	var self = this;
@@ -155,7 +155,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 		options.timeout = 0;
 	
 	var cmdGuid = ('{'+uuid.v4()+'}').toUpperCase();
-	console.log('invoke temp guid', cmdGuid);
+	//console.log('invoke temp guid', cmdGuid);
 	
 	this.responseCallbacks[cmdGuid] = function(err, data, errString){
 		if(isCalled){
@@ -165,7 +165,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 		isCalled = true;
 		if(id) clearTimeout(id);
 		delete self.responseCallbacks[cmdGuid];
-		console.log('call response callback');
+		//console.log('call response callback');
 		cb(err, data, errString);
 	}
 	
@@ -180,9 +180,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 			start_time: +new Date,
 			timeout_ms: options.timeout
 		}
-		console.log('Serialize', obj);
 		var buf = pb.Serialize(obj, "ESB.Command");
-		console.log('Serialize ok');
 		this.publisherSocket.send(this.guid+buf)
 	} catch(e){
 		isCalled = true;
@@ -206,10 +204,9 @@ ESB.prototype.register = function(identifier, version, cb, options) {
 	console.log('registerInvoke guid:',cmdGuid);
 	var self = this;
 	this.invokeMethods[cmdGuid] = function(data){
-		console.log('invoke method ', cmdGuid, data);
+		//console.log('invoke method ', cmdGuid, data);
 		cb(JSON.parse(data.payload), function(err, resp){
-			//here response
-			console.log('got response from method...', err, resp);
+			//console.log('got response from method...', err, resp);
 			var obj = {
 				cmd: 'RESPONSE',
 				payload: JSON.stringify(resp, null, '\t'),
@@ -225,11 +222,11 @@ ESB.prototype.register = function(identifier, version, cb, options) {
 					obj.cmd = 'ERROR';
 					obj.payload = err;
 				}
-				console.log('invoke response',obj);
+				//console.log('invoke response',obj);
 				var buf = pb.Serialize(obj, "ESB.Command");
 				self.publisherSocket.send(self.guid+buf);
 			} catch(e){
-				cb('Exception', null, 'Exception while encoding/sending message: '+e.toString());
+				cb('Exception', null, 'Exception while encoding/sending message: '+e.toString(), resp);
 			}
 			
 		});

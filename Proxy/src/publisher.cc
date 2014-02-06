@@ -42,4 +42,5 @@ void Publisher::Publish(const char* targetGuid, ESB::Command &cmd)
 	dbg("Publish len: %zu bytes", size+sizeof(char)*guidSize);
 
 	zmq_send(zResponder, bb, size+sizeof(char)*guidSize, ZMQ_DONTWAIT);
+	free(bb);
 }

@@ -22,14 +22,23 @@ class Responder;
 #include "publisher.h"
 #include "subscriber.h"
 
-//typedef void subCbPtr(ESB::Command);
+struct LocalInvokeMethod
+{
+	char nodeGuid[39];
+	char methodGuid[39];
+};
 
+struct RemoteInvokeMethod
+{
+	char proxyGuid[39];
+};
 
 class Proxy : public node::ObjectWrap {
 public:
 	static void Init(v8::Handle<v8::Object> exports);
 	void SubscriberCallback(ESB::Command cmdReq, char *guid);
 	ESB::Command ResponderCallback(ESB::Command cmdReq);
+	void Invoke(ESB::Command cmdReq);
 	
 	char guid[39];
 	Responder *responder;
@@ -38,6 +47,9 @@ public:
 	int responderPort;
 	int publisherPort;
 	char host[128];
+	
+	int invokeCalls = 0;
+	int invokeErrors = 0;
 
 private:
 	Proxy();
@@ -52,6 +64,8 @@ private:
 	pthread_t thread;
 	std::vector<std::string> nodesGuids;
 	std::unordered_map<std::string,Subscriber*> subscribers;
+	std::unordered_map<std::string,LocalInvokeMethod*> localInvokeMethods; //identifier, struct
+	std::unordered_map<std::string,RemoteInvokeMethod*> remoteInvokeMethods; //identifier, struct
 };
 
 

@@ -89,14 +89,15 @@ void protobuf_AddDesc_command_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rcommand.proto\022\003ESB\"\244\002\n\007Command\022\035\n\003cmd\030"
+    "\n\rcommand.proto\022\003ESB\"\260\002\n\007Command\022\035\n\003cmd\030"
     "\001 \002(\0162\020.ESB.Command.Cmd\022\022\n\nidentifier\030\002 "
     "\001(\t\022\021\n\tguid_from\030\003 \001(\t\022\017\n\007guid_to\030\004 \001(\t\022"
     "\031\n\021source_proxy_guid\030\005 \001(\t\022\031\n\021target_pro"
     "xy_guid\030\006 \001(\t\022\017\n\007version\030\007 \001(\005\022\022\n\nstart_"
     "time\030\010 \001(\003\022\022\n\ntimeout_ms\030\t \001(\005\022\017\n\007payloa"
-    "d\030\n \002(\t\"B\n\003Cmd\022\t\n\005ERROR\020\001\022\014\n\010RESPONSE\020\002\022"
-    "\016\n\nNODE_HELLO\020\003\022\010\n\004PING\020\004\022\010\n\004PONG\020\005", 315);
+    "d\030\n \002(\t\"N\n\003Cmd\022\t\n\005ERROR\020\001\022\014\n\010RESPONSE\020\002\022"
+    "\016\n\nNODE_HELLO\020\003\022\010\n\004PING\020\004\022\010\n\004PONG\020\005\022\n\n\006I"
+    "NVOKE\020\006", 327);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "command.proto", &protobuf_RegisterTypes);
   Command::default_instance_ = new Command();
@@ -124,6 +125,7 @@ bool Command_Cmd_IsValid(int value) {
     case 3:
     case 4:
     case 5:
+    case 6:
       return true;
     default:
       return false;
@@ -136,6 +138,7 @@ const Command_Cmd Command::RESPONSE;
 const Command_Cmd Command::NODE_HELLO;
 const Command_Cmd Command::PING;
 const Command_Cmd Command::PONG;
+const Command_Cmd Command::INVOKE;
 const Command_Cmd Command::Cmd_MIN;
 const Command_Cmd Command::Cmd_MAX;
 const int Command::Cmd_ARRAYSIZE;

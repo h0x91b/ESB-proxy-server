@@ -57,6 +57,34 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 	}
 }
 
+void Proxy::Invoke(ESB::Command cmdReq)
+{
+	dbg("Invoke(%s) from node %s", cmdReq.identifier().c_str(), cmdReq.source_proxy_guid().c_str());
+	invokeCalls++;
+	ESB::Command cmdResp;
+	char buf[1024];
+	
+	auto entry = localInvokeMethods[cmdReq.identifier()];
+	if(entry){
+		dbg("found in local methods");
+		return;
+	}
+	auto remoteEntry = remoteInvokeMethods[cmdReq.identifier()];
+	if(!remoteEntry) {
+		dbg("identifier not found");
+		invokeErrors++;
+		cmdResp.set_cmd(ESB::Command::ERROR);
+		sprintf(buf, "Identifier '%s' not found in registry", cmdReq.identifier().c_str());
+		cmdResp.set_payload(buf);
+	}
+	
+	cmdResp.set_guid_to(cmdReq.guid_from());
+	cmdResp.set_source_proxy_guid(guid);
+	cmdResp.set_guid_from(guid);
+	
+	publisher->Publish(cmdReq.source_proxy_guid().c_str(), cmdResp);
+}
+
 ESB::Command Proxy::ResponderCallback(ESB::Command cmdReq)
 {
 	ESB::Command cmdResp;
@@ -76,13 +104,36 @@ ESB::Command Proxy::ResponderCallback(ESB::Command cmdReq)
 	
 	cmdResp.set_guid_from(guid);
 	cmdResp.set_guid_to(cmdReq.guid_from());
-	
+		
 	return cmdResp;
 }
 
-void Proxy::SubscriberCallback(ESB::Command cmdReq, char *guid)
+void Proxy::SubscriberCallback(ESB::Command cmdReq, char *nodeGuid)
 {
-	dbg("subscriber callback from %s", guid);
+	dbg("subscriber callback from node: %s", nodeGuid);
+	ESB::Command cmdResp;
+	switch (cmdReq.cmd()) {
+		case ESB::Command::RESPONSE:
+			dbg("get response for %s", cmdReq.guid_to().c_str());
+			return;
+		case ESB::Command::PONG:
+			dbg("get pong from %s", nodeGuid);
+			return;
+		case ESB::Command::INVOKE:
+			dbg("get invoke from node %s method %s to identifier: %s", nodeGuid, cmdReq.guid_from().c_str(), cmdReq.identifier().c_str());
+			Invoke(cmdReq);
+			return;
+		default:
+			dbg("Error, received unknown cmd: %i", cmdReq.cmd());
+			cmdResp.set_cmd(ESB::Command::ERROR);
+			cmdResp.set_payload("Unknown command");
+			break;
+	}
+	
+	cmdResp.set_guid_from(guid);
+	cmdResp.set_guid_to(cmdReq.guid_from());
+	
+	publisher->Publish(nodeGuid, cmdResp);
 }
 
 Proxy::~Proxy()
@@ -113,7 +164,7 @@ void *Proxy::Thread(void* d)
 			ping.set_timeout_ms(3000);
 			ping.set_cmd(ESB::Command::PING);
 			ping.set_payload("ping");
-			self->publisher->Publish(self->nodesGuids[n].c_str(), ping);
+			//self->publisher->Publish(self->nodesGuids[n].c_str(), ping);
 		}
 		
 		auto reply = (redisReply*)redisCommand(

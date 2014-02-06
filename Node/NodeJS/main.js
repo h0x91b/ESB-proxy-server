@@ -93,6 +93,13 @@ ESB.prototype.onMessage= function(data) {
 			var buf = pb.Serialize(obj, "ESB.Command");
 			this.publisherSocket.send(this.guid+buf);
 			break;
+		case 'ERROR':
+			console.log('got ERROR response');
+			if(this.responseCallbacks[respObj.guid_to]){
+				var fn = this.responseCallbacks[respObj.guid_to];
+				fn(respObj.cmd, null, respObj.payload);
+			}
+			break;
 		default:
 			console.log("unknown operation", respObj.cmd);
 		}
@@ -100,5 +107,62 @@ ESB.prototype.onMessage= function(data) {
 		console.log('ERROR while processing message', e);
 	}
 };
+
+ESB.prototype.invoke = function(identifier, data, cb, options){
+	options = extend(true, {
+		version: 1,
+		timeout: 3000
+	}, options);
+	identifier = identifier+'/v'+options.version;
+	console.log('invoke()', identifier, options, data);
+	var isCalled = false;
+	var id = null;
+	var self = this;
+	if(options.timeout>0){
+		id = setTimeout(timeoutCb, options.timeout);
+		function timeoutCb(){
+			if(isCalled) return;
+			isCalled = true;
+			delete self.responseCallbacks[cmdGuid];
+			cb('Timeout', null, 'Timeout triggered by nodeConnector');
+		};
+	} else
+		options.timeout = 0;
+	
+	var cmdGuid = ('{'+uuid.v4()+'}').toUpperCase();
+	
+	this.responseCallbacks[cmdGuid] = function(err, data, errString){
+		if(isCalled){
+			console.log('got response from Proxy, but callback already was called');
+			return;
+		}
+		isCalled = true;
+		if(id) clearTimeout(id);
+		delete self.responseCallbacks[cmdGuid];
+		cb(err, data, errString);
+	}
+	
+	try {
+		var obj = {
+			cmd: 'INVOKE',
+			identifier: identifier,
+			payload: data,
+			guid_from: cmdGuid,
+			target_proxy_guid: '',
+			source_proxy_guid: this.guid,
+			start_time: ~~(+new Date/1000),
+			timeout_ms: options.timeout
+		}
+		var buf = pb.Serialize(obj, "ESB.Command");
+		this.publisherSocket.send(this.guid+buf)
+	} catch(e){
+		isCalled = true;
+		if(id) clearTimeout(id);
+		delete self.responseCallbacks[cmdGuid];
+		cb('Exception', null, 'Exception while encoding/sending message: '+e.toString());
+	}
+	
+	return cmdGuid;
+}
 
 module.exports = ESB;

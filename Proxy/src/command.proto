@@ -18,7 +18,7 @@ message Command {
 	optional string source_proxy_guid = 5;
 	optional string target_proxy_guid = 6;
 	optional int32 version = 7;
-	optional double start_time = 8;
+	optional uint32 start_time = 8;
 	optional int32 timeout_ms = 9;
 	required string payload = 10;
 }

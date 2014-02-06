@@ -78,7 +78,7 @@ ESB.prototype.sendHello= function() {
 
 ESB.prototype.onMessage= function(data) {
 	try {
-		console.log('data', data);
+		console.log('ESB.prototype.onMessage', data);
 		data = data.slice(38); //38 sizeof guid in bytes
 		var respObj = pb.Parse(data, "ESB.Command");
 		console.log('suscriber got message: ', respObj);
@@ -89,7 +89,7 @@ ESB.prototype.onMessage= function(data) {
 			//
 			var obj = {
 				cmd: 'PONG',
-				payload: ~~(+new Date/1000),
+				payload: +new Date,
 				guid_to: respObj.guid_from,
 				guid_from: this.guid,
 			}
@@ -105,6 +105,25 @@ ESB.prototype.onMessage= function(data) {
 			break;
 		case 'REGISTER_INVOKE_OK':
 			console.log("REGISTER_INVOKE_OK for %s", respObj.payload);
+			break;
+		case 'INVOKE':
+			console.log('got INVOKE request');
+			var fn = this.invokeMethods[respObj.guid_to];
+			if(!fn) {
+				console.log('can not find such invoke method', respObj, Object.keys(this.invokeMethods));
+				break;
+			}
+			fn(respObj);
+			break;
+		case 'RESPONSE':
+			console.log('got RESPONSE');
+			var fn = this.responseCallbacks[respObj.guid_to];
+			if(fn){
+				fn(null, JSON.parse(respObj.payload), null);
+				delete this.responseCallbacks[respObj.guid_to];
+			} else {
+				console.log('callback %s for response not found', respObj.guid_to);
+			}
 			break;
 		default:
 			console.log("unknown operation", respObj.cmd);
@@ -136,6 +155,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 		options.timeout = 0;
 	
 	var cmdGuid = ('{'+uuid.v4()+'}').toUpperCase();
+	console.log('invoke temp guid', cmdGuid);
 	
 	this.responseCallbacks[cmdGuid] = function(err, data, errString){
 		if(isCalled){
@@ -145,6 +165,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 		isCalled = true;
 		if(id) clearTimeout(id);
 		delete self.responseCallbacks[cmdGuid];
+		console.log('call response callback');
 		cb(err, data, errString);
 	}
 	
@@ -159,7 +180,9 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 			start_time: +new Date,
 			timeout_ms: options.timeout
 		}
+		console.log('Serialize', obj);
 		var buf = pb.Serialize(obj, "ESB.Command");
+		console.log('Serialize ok');
 		this.publisherSocket.send(this.guid+buf)
 	} catch(e){
 		isCalled = true;
@@ -180,11 +203,35 @@ ESB.prototype.register = function(identifier, version, cb, options) {
 	identifier = identifier+'/v'+options.version;
 	
 	var cmdGuid = ('{'+uuid.v4()+'}').toUpperCase();
+	console.log('registerInvoke guid:',cmdGuid);
+	var self = this;
 	this.invokeMethods[cmdGuid] = function(data){
-		console.log('invoke method'+cmdGuid, data);
-		cb(data, function(err, data){
+		console.log('invoke method ', cmdGuid, data);
+		cb(JSON.parse(data.payload), function(err, resp){
 			//here response
-			console.log('got response from method...', err, data);
+			console.log('got response from method...', err, resp);
+			var obj = {
+				cmd: 'RESPONSE',
+				payload: JSON.stringify(resp, null, '\t'),
+				guid_from: cmdGuid,
+				guid_to: data.guid_from,
+				target_proxy_guid: data.source_proxy_guid,
+				source_proxy_guid: self.guid,
+				start_time: +new Date,
+			}
+			
+			try {
+				if(err) {
+					obj.cmd = 'ERROR';
+					obj.payload = err;
+				}
+				console.log('invoke response',obj);
+				var buf = pb.Serialize(obj, "ESB.Command");
+				self.publisherSocket.send(self.guid+buf);
+			} catch(e){
+				cb('Exception', null, 'Exception while encoding/sending message: '+e.toString());
+			}
+			
 		});
 	};
 	
@@ -198,6 +245,7 @@ ESB.prototype.register = function(identifier, version, cb, options) {
 			source_proxy_guid: this.guid,
 			start_time: +new Date,
 		}
+		console.log('register',obj);
 		var buf = pb.Serialize(obj, "ESB.Command");
 		this.publisherSocket.send(this.guid+buf);
 	} catch(e){

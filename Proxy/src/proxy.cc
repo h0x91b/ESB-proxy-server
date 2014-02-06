@@ -57,7 +57,7 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 	}
 }
 
-void Proxy::Invoke(ESB::Command cmdReq)
+void Proxy::Invoke(ESB::Command &cmdReq)
 {
 	dbg("Invoke(%s) from node %s", cmdReq.identifier().c_str(), cmdReq.source_proxy_guid().c_str());
 	invokeCalls++;
@@ -68,7 +68,18 @@ void Proxy::Invoke(ESB::Command cmdReq)
 	if(entry){
 		dbg("%s found in local methods", entry->identifier);
 		
+		cmdResp.set_cmd(ESB::Command::INVOKE);
 		
+		cmdResp.set_guid_to(entry->methodGuid);
+		cmdResp.set_source_proxy_guid(guid);
+		cmdResp.set_identifier(entry->identifier);
+		cmdResp.set_version(cmdReq.version());
+		cmdResp.set_payload(cmdReq.payload());
+		
+		invokeResponses.insert(std::pair<std::string,std::string*> {cmdReq.guid_from(), new std::string(cmdReq.source_proxy_guid())});
+		cmdResp.set_guid_from(cmdReq.guid_from());
+		
+		publisher->Publish(entry->nodeGuid, cmdResp);
 		
 		return;
 	}
@@ -88,7 +99,7 @@ void Proxy::Invoke(ESB::Command cmdReq)
 	publisher->Publish(cmdReq.source_proxy_guid().c_str(), cmdResp);
 }
 
-void Proxy::RegisterInvoke(ESB::Command cmdReq)
+void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 {
 	dbg(
 		"RegisterInvoke(%s) from node %s method guid %s",
@@ -98,13 +109,16 @@ void Proxy::RegisterInvoke(ESB::Command cmdReq)
 	);
 	registerInvoke++;
 	
-	auto entry = new LocalInvokeMethod;
-	entry->identifier = (char*)malloc((cmdReq.payload().length()+1)*sizeof(char));
-	strcpy(entry->identifier, cmdReq.identifier().c_str());
+	LocalInvokeMethod *entry = (LocalInvokeMethod*)calloc(sizeof(LocalInvokeMethod), sizeof(LocalInvokeMethod));
 	strcpy(entry->nodeGuid, cmdReq.source_proxy_guid().c_str());
 	strcpy(entry->methodGuid, cmdReq.payload().c_str());
 	
+	entry->identifier = (char*)malloc((cmdReq.payload().length()+1)*sizeof(char));
+	strcpy(entry->identifier, cmdReq.identifier().c_str());
+
+	
 	localInvokeMethods.insert(std::pair<std::string,LocalInvokeMethod*> {entry->identifier, entry});
+	
 	
 	ESB::Command cmdResp;
 	
@@ -120,7 +134,7 @@ void Proxy::RegisterInvoke(ESB::Command cmdReq)
 }
 
 
-ESB::Command Proxy::ResponderCallback(ESB::Command cmdReq)
+ESB::Command Proxy::ResponderCallback(ESB::Command &cmdReq)
 {
 	ESB::Command cmdResp;
 	
@@ -144,24 +158,55 @@ ESB::Command Proxy::ResponderCallback(ESB::Command cmdReq)
 	return cmdResp;
 }
 
-void Proxy::SubscriberCallback(ESB::Command cmdReq, char *nodeGuid)
+void Proxy::InvokeResponse(ESB::Command &cmdReq, char *sourceNodeGuid)
+{
+	ESB::Command cmdResp;
+	auto targetNode = invokeResponses[cmdReq.guid_to()];
+	if(targetNode == NULL)
+	{
+		cmdResp.set_cmd(ESB::Command::ERROR);
+		cmdResp.set_payload("Response callback not found");
+		cmdResp.set_guid_from(guid);
+		cmdResp.set_guid_to(cmdReq.guid_from());
+		publisher->Publish(sourceNodeGuid, cmdResp);
+		return;
+	}
+	
+	cmdResp.set_cmd(ESB::Command::RESPONSE);
+	cmdResp.set_payload(cmdReq.payload());
+	
+	cmdResp.set_guid_from(cmdReq.guid_from());
+	cmdResp.set_guid_to(cmdReq.guid_to());
+	
+	publisher->Publish(targetNode->c_str(), cmdResp);
+	delete targetNode;
+	invokeResponses.erase(cmdReq.guid_to());
+
+}
+
+void Proxy::SubscriberCallback(ESB::Command &cmdReq, char *nodeGuid, unsigned char *buffer)
 {
 	dbg("subscriber callback from node: %s", nodeGuid);
 	ESB::Command cmdResp;
 	switch (cmdReq.cmd()) {
 		case ESB::Command::RESPONSE:
 			dbg("get response for %s", cmdReq.guid_to().c_str());
+			InvokeResponse(cmdReq, nodeGuid);
+			free(buffer);
 			return;
 		case ESB::Command::PONG:
 			dbg("get pong from %s", nodeGuid);
+			free(buffer);
 			return;
 		case ESB::Command::REGISTER_INVOKE:
 			dbg("get RegisterInvoke from %s", nodeGuid);
 			RegisterInvoke(cmdReq);
+			free(buffer);
 			return;
 		case ESB::Command::INVOKE:
 			dbg("get invoke from node %s method %s to identifier: %s", nodeGuid, cmdReq.guid_from().c_str(), cmdReq.identifier().c_str());
 			Invoke(cmdReq);
+			free(buffer);
 			return;
 		default:
 			dbg("Error, received unknown cmd: %i", cmdReq.cmd());
@@ -174,6 +219,7 @@ void Proxy::SubscriberCallback(ESB::Command cmdReq, char *nodeGuid)
 	cmdResp.set_guid_to(cmdReq.guid_from());
 	
 	publisher->Publish(nodeGuid, cmdResp);
+	free(buffer);
 }
 
 Proxy::~Proxy()

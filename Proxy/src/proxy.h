@@ -38,10 +38,11 @@ struct RemoteInvokeMethod
 class Proxy : public node::ObjectWrap {
 public:
 	static void Init(v8::Handle<v8::Object> exports);
-	void SubscriberCallback(ESB::Command cmdReq, char *guid);
-	ESB::Command ResponderCallback(ESB::Command cmdReq);
-	void Invoke(ESB::Command cmdReq);
-	void RegisterInvoke(ESB::Command cmdReq);
+	void SubscriberCallback(ESB::Command &cmdReq, char *guid, unsigned char *buffer);
+	ESB::Command ResponderCallback(ESB::Command &cmdReq);
+	void Invoke(ESB::Command &cmdReq);
+	void RegisterInvoke(ESB::Command &cmdReq);
+	void InvokeResponse(ESB::Command &cmdReq, char *sourceNodeGuid);
 	
 	char guid[39];
 	Responder *responder;
@@ -71,6 +72,7 @@ private:
 	std::unordered_map<std::string,Subscriber*> subscribers;
 	std::unordered_map<std::string,LocalInvokeMethod*> localInvokeMethods; //identifier, struct
 	std::unordered_map<std::string,RemoteInvokeMethod*> remoteInvokeMethods; //identifier, struct
+	std::unordered_map<std::string,std::string*> invokeResponses; //identifier, struct
 };
 
 

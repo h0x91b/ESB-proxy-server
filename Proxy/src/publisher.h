@@ -22,7 +22,7 @@ class Publisher
 public:
 	Publisher(int port);
 	~Publisher();
-	void Publish(const char* targetGuid, ESB::Command cmd);
+	void Publish(const char* targetGuid, ESB::Command &cmd);
 private:
 	int port;
 	void *zContext;

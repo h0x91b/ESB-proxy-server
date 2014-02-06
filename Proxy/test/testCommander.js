@@ -15,5 +15,6 @@ esb.on('ready', function(){
 		if(err){
 			console.log('Error on invoke (%s): %s', err, errStr);
 		}
+		console.log('2+2=%s', resp);
 	});
 });

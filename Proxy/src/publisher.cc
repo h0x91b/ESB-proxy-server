@@ -29,7 +29,7 @@ Publisher::~Publisher()
 	dbg("the end");
 }
 
-void Publisher::Publish(const char* targetGuid, ESB::Command cmd)
+void Publisher::Publish(const char* targetGuid, ESB::Command &cmd)
 {
 	size_t guidSize = 38;
 	size_t size = cmd.ByteSize();

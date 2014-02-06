@@ -24,12 +24,14 @@ class Responder;
 
 struct LocalInvokeMethod
 {
+	char *identifier;
 	char nodeGuid[39];
 	char methodGuid[39];
 };
 
 struct RemoteInvokeMethod
 {
+	char *identifier;
 	char proxyGuid[39];
 };
 
@@ -39,6 +41,7 @@ public:
 	void SubscriberCallback(ESB::Command cmdReq, char *guid);
 	ESB::Command ResponderCallback(ESB::Command cmdReq);
 	void Invoke(ESB::Command cmdReq);
+	void RegisterInvoke(ESB::Command cmdReq);
 	
 	char guid[39];
 	Responder *responder;
@@ -50,6 +53,8 @@ public:
 	
 	int invokeCalls = 0;
 	int invokeErrors = 0;
+	
+	int registerInvoke = 0;
 
 private:
 	Proxy();

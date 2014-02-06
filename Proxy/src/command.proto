@@ -8,6 +8,8 @@ message Command {
 		PING = 4;
 		PONG = 5;
 		INVOKE = 6;
+		REGISTER_INVOKE = 7;
+		REGISTER_INVOKE_OK = 8;
 	};
 	required Cmd cmd = 1;
 	optional string identifier = 2;

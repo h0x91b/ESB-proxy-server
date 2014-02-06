@@ -19,8 +19,10 @@ function ESB(config) {
 	events.EventEmitter.call(this);
 	this.config = extend(true, {}, _config, config);
 	this.guid = ('{'+uuid.v4()+'}').toUpperCase();
+	this.proxyGuid = '';
 	console.log('new ESB %s', this.guid);
 	this.responseCallbacks = [];
+	this.invokeMethods = [];
 	var socket = zmq.socket('req');
 	this.requestSocket = socket;
 	this.subscribeSocket = zmq.socket('sub');
@@ -67,6 +69,7 @@ ESB.prototype.sendHello= function() {
 		self.subscribeSocket.connect(t);
 		console.log('connected');
 		self.subscribeSocket.subscribe(self.guid);
+		self.proxyGuid = respObj.source_proxy_guid;
 		
 		self.emit('ready');
 	});
@@ -99,6 +102,9 @@ ESB.prototype.onMessage= function(data) {
 				var fn = this.responseCallbacks[respObj.guid_to];
 				fn(respObj.cmd, null, respObj.payload);
 			}
+			break;
+		case 'REGISTER_INVOKE_OK':
+			console.log("REGISTER_INVOKE_OK for %s", respObj.payload);
 			break;
 		default:
 			console.log("unknown operation", respObj.cmd);
@@ -146,7 +152,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 		var obj = {
 			cmd: 'INVOKE',
 			identifier: identifier,
-			payload: data,
+			payload: JSON.stringify(data, null, '\t'),
 			guid_from: cmdGuid,
 			target_proxy_guid: '',
 			source_proxy_guid: this.guid,
@@ -163,6 +169,42 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 	}
 	
 	return cmdGuid;
-}
+};
+
+ESB.prototype.register = function(identifier, version, cb, options) {
+	console.log('register', identifier, version);
+	options = extend(true, {
+		version: 1,
+		timeout: 3000
+	}, options);
+	identifier = identifier+'/v'+options.version;
+	
+	var cmdGuid = ('{'+uuid.v4()+'}').toUpperCase();
+	this.invokeMethods[cmdGuid] = function(data){
+		console.log('invoke method'+cmdGuid, data);
+		cb(data, function(err, data){
+			//here response
+			console.log('got response from method...', err, data);
+		});
+	};
+	
+	try {
+		var obj = {
+			cmd: 'REGISTER_INVOKE',
+			identifier: identifier,
+			payload: cmdGuid,
+			guid_from: cmdGuid,
+			target_proxy_guid: '',
+			source_proxy_guid: this.guid,
+			start_time: ~~(+new Date/1000),
+		}
+		var buf = pb.Serialize(obj, "ESB.Command");
+		this.publisherSocket.send(this.guid+buf);
+	} catch(e){
+		cb('Exception', null, 'Exception while encoding/sending message: '+e.toString());
+	}
+	
+	return cmdGuid;
+};
 
 module.exports = ESB;

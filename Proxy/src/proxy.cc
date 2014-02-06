@@ -85,6 +85,38 @@ void Proxy::Invoke(ESB::Command cmdReq)
 	publisher->Publish(cmdReq.source_proxy_guid().c_str(), cmdResp);
 }
 
+void Proxy::RegisterInvoke(ESB::Command cmdReq)
+{
+	dbg(
+		"RegisterInvoke(%s) from node %s method guid %s",
+			cmdReq.identifier().c_str(),
+			cmdReq.source_proxy_guid().c_str(),
+			cmdReq.payload().c_str()
+	);
+	registerInvoke++;
+	
+	auto entry = new LocalInvokeMethod;
+	entry->identifier = (char*)malloc((cmdReq.payload().length()+1)*sizeof(char));
+	strcpy(entry->identifier, cmdReq.identifier().c_str());
+	strcpy(entry->nodeGuid, cmdReq.source_proxy_guid().c_str());
+	strcpy(entry->methodGuid, cmdReq.payload().c_str());
+	
+	localInvokeMethods.insert(std::pair<std::string,LocalInvokeMethod*> {entry->identifier, entry});
+	
+	ESB::Command cmdResp;
+	
+	cmdResp.set_cmd(ESB::Command::REGISTER_INVOKE_OK);
+	
+	cmdResp.set_guid_to(cmdReq.source_proxy_guid());
+	cmdResp.set_source_proxy_guid(guid);
+	cmdResp.set_guid_from(guid);
+	
+	cmdResp.set_payload(entry->identifier);
+	
+	publisher->Publish(cmdReq.source_proxy_guid().c_str(), cmdResp);
+}
+
+
 ESB::Command Proxy::ResponderCallback(ESB::Command cmdReq)
 {
 	ESB::Command cmdResp;
@@ -104,6 +136,7 @@ ESB::Command Proxy::ResponderCallback(ESB::Command cmdReq)
 	
 	cmdResp.set_guid_from(guid);
 	cmdResp.set_guid_to(cmdReq.guid_from());
+	cmdResp.set_source_proxy_guid(guid);
 		
 	return cmdResp;
 }
@@ -118,6 +151,10 @@ void Proxy::SubscriberCallback(ESB::Command cmdReq, char *nodeGuid)
 			return;
 		case ESB::Command::PONG:
 			dbg("get pong from %s", nodeGuid);
+			return;
+		case ESB::Command::REGISTER_INVOKE:
+			dbg("get RegisterInvoke from %s", nodeGuid);
+			RegisterInvoke(cmdReq);
 			return;
 		case ESB::Command::INVOKE:
 			dbg("get invoke from node %s method %s to identifier: %s", nodeGuid, cmdReq.guid_from().c_str(), cmdReq.identifier().c_str());

@@ -25,9 +25,18 @@ function ESB(config) {
 	this.invokeMethods = [];
 	var socket = zmq.socket('req');
 	this.requestSocket = socket;
+	this.requestSocket.on('error', function(err){
+		console.log('requestSocket error', err);
+	});
 	this.subscribeSocket = zmq.socket('sub');
+	this.subscribeSocket.on('error', function(err){
+		console.log('subscribeSocket error', err);
+	});
 	this.publisherSocket = zmq.socket('pub');
-	this.publisherSocket.bind('tcp://*:'+this.config.publisherPort);
+	this.publisherSocket.on('error', function(err){
+		console.log('publisherSocket error', err);
+	});
+	this.publisherSocket.bindSync('tcp://*:'+this.config.publisherPort);
 	
 	this.connect();
 }
@@ -56,7 +65,7 @@ ESB.prototype.sendHello= function() {
 	this.requestSocket.once('message', function(data){
 		self.requestSocket.close();
 		var respObj = pb.Parse(data, "ESB.Command");
-		//console.log('got response from Proxy', respObj);
+		console.log('got response from Proxy', respObj);
 		if(respObj.cmd === 'ERROR') {
 			throw new Error(respObj.payload);
 		}
@@ -74,6 +83,7 @@ ESB.prototype.sendHello= function() {
 		self.emit('ready');
 	});
 	this.requestSocket.send(buf);
+	console.log('NODE_HELLO sended');
 };
 
 ESB.prototype.onMessage= function(data) {

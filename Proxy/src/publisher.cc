@@ -33,14 +33,24 @@ void Publisher::Publish(const char* targetGuid, ESB::Command &cmd)
 {
 	size_t guidSize = 38;
 	size_t size = cmd.ByteSize();
-	char *bb = (char*)malloc(size+sizeof(char)*guidSize);
+	
+	zmq_msg_t msg;
+	int rc = zmq_msg_init_size (&msg, size+sizeof(char)*guidSize);
+	assert(rc == 0);
+	
+	char *bb = (char*)zmq_msg_data (&msg);
+	dbg("memcpy");
 	memcpy(bb, targetGuid, 38);
+	dbg("memcpy success");
 	bb+=guidSize;
 	
 	cmd.SerializeToArray(bb, size);
 	bb-=guidSize;
 	dbg("Publish len: %zu bytes", size+sizeof(char)*guidSize);
 
-	zmq_send(zResponder, bb, size+sizeof(char)*guidSize, ZMQ_DONTWAIT);
-	free(bb);
+	rc = zmq_msg_send (&msg, zResponder, 0);
+	assert(rc == size+sizeof(char)*guidSize);
+	
+	//zmq_send(zResponder, bb, size+sizeof(char)*guidSize, ZMQ_DONTWAIT);
+	//free(bb);
 }

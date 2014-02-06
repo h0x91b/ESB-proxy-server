@@ -19,7 +19,7 @@
 #include <sstream>
 #include <vector>
 
-#ifdef _DEBUG5
+#ifdef _DEBUG
 #  define dbg(format, ...) fprintf(stderr, "%s:%i %s()\n" format "\n\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #else
 #  define dbg(...)

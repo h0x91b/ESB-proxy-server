@@ -55,12 +55,13 @@ void *Subscriber::Thread(void* d)
 		size_t len = zmq_recvmsg(self->zResponder, &msg, 0);
 		assert (len != (size_t)-1);
 		//char *buffer = (char*)zmq_msg_data(&msg);
+		dbg("copy buffer");
 		unsigned char *buffer = (unsigned char *)malloc(len);
 		memcpy(buffer, zmq_msg_data(&msg), len);
 		dbg ("received: %zu bytes", len);
 		
 		ESB::Command cmdReq;
-		cmdReq.ParseFromArray(buffer+38, len-38);
+		cmdReq.ParseFromArray(buffer+38*sizeof(char), len-38*sizeof(char));
 		//(*self->callback)(cmdReq);
 		self->proxy->SubscriberCallback(cmdReq, self->targetGuid, buffer);
 

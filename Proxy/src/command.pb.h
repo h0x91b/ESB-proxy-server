@@ -221,12 +221,12 @@ class Command : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 version() const;
   inline void set_version(::google::protobuf::int32 value);
 
-  // optional int64 start_time = 8;
+  // optional double start_time = 8;
   inline bool has_start_time() const;
   inline void clear_start_time();
   static const int kStartTimeFieldNumber = 8;
-  inline ::google::protobuf::int64 start_time() const;
-  inline void set_start_time(::google::protobuf::int64 value);
+  inline double start_time() const;
+  inline void set_start_time(double value);
 
   // optional int32 timeout_ms = 9;
   inline bool has_timeout_ms() const;
@@ -279,7 +279,7 @@ class Command : public ::google::protobuf::Message {
   ::google::protobuf::int32 version_;
   ::std::string* source_proxy_guid_;
   ::std::string* target_proxy_guid_;
-  ::google::protobuf::int64 start_time_;
+  double start_time_;
   ::std::string* payload_;
   ::google::protobuf::int32 timeout_ms_;
 
@@ -695,7 +695,7 @@ inline void Command::set_version(::google::protobuf::int32 value) {
   version_ = value;
 }
 
-// optional int64 start_time = 8;
+// optional double start_time = 8;
 inline bool Command::has_start_time() const {
   return (_has_bits_[0] & 0x00000080u) != 0;
 }
@@ -706,13 +706,13 @@ inline void Command::clear_has_start_time() {
   _has_bits_[0] &= ~0x00000080u;
 }
 inline void Command::clear_start_time() {
-  start_time_ = GOOGLE_LONGLONG(0);
+  start_time_ = 0;
   clear_has_start_time();
 }
-inline ::google::protobuf::int64 Command::start_time() const {
+inline double Command::start_time() const {
   return start_time_;
 }
-inline void Command::set_start_time(::google::protobuf::int64 value) {
+inline void Command::set_start_time(double value) {
   set_has_start_time();
   start_time_ = value;
 }

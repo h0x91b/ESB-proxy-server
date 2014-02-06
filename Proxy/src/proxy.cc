@@ -66,7 +66,10 @@ void Proxy::Invoke(ESB::Command cmdReq)
 	
 	auto entry = localInvokeMethods[cmdReq.identifier()];
 	if(entry){
-		dbg("found in local methods");
+		dbg("%s found in local methods", entry->identifier);
+		
+		
+		
 		return;
 	}
 	auto remoteEntry = remoteInvokeMethods[cmdReq.identifier()];
@@ -319,13 +322,13 @@ std::vector<std::string> split(const std::string &s, char delim) {
     return elems;
 }
 
-inline unsigned long long timestamp()
+inline double timestamp()
 {
 	struct timeval tv;   // see gettimeofday(2)
 	gettimeofday(&tv, NULL);
 	double t = (double) tv.tv_sec + (double) 1e-6 * tv.tv_usec;
 	// return seconds.microseconds since epoch
-	return (unsigned long long)(t*1000);
+	return (double)(t*1000);
 }
 
 NODE_MODULE(proxy, InitAll)

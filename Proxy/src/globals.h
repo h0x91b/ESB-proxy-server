@@ -29,6 +29,6 @@ void GenerateGuid(char *guidStr);
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
 std::vector<std::string> split(const std::string &s, char delim);
 
-inline unsigned long long timestamp();
+inline double timestamp();
 
 #endif

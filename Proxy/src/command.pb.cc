@@ -94,7 +94,7 @@ void protobuf_AddDesc_command_2eproto() {
     "\001(\t\022\021\n\tguid_from\030\003 \001(\t\022\017\n\007guid_to\030\004 \001(\t\022"
     "\031\n\021source_proxy_guid\030\005 \001(\t\022\031\n\021target_pro"
     "xy_guid\030\006 \001(\t\022\017\n\007version\030\007 \001(\005\022\022\n\nstart_"
-    "time\030\010 \001(\003\022\022\n\ntimeout_ms\030\t \001(\005\022\017\n\007payloa"
+    "time\030\010 \001(\001\022\022\n\ntimeout_ms\030\t \001(\005\022\017\n\007payloa"
     "d\030\n \002(\t\"{\n\003Cmd\022\t\n\005ERROR\020\001\022\014\n\010RESPONSE\020\002\022"
     "\016\n\nNODE_HELLO\020\003\022\010\n\004PING\020\004\022\010\n\004PONG\020\005\022\n\n\006I"
     "NVOKE\020\006\022\023\n\017REGISTER_INVOKE\020\007\022\026\n\022REGISTER"
@@ -184,7 +184,7 @@ void Command::SharedCtor() {
   source_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   target_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   version_ = 0;
-  start_time_ = GOOGLE_LONGLONG(0);
+  start_time_ = 0;
   timeout_ms_ = 0;
   payload_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -267,7 +267,7 @@ void Command::Clear() {
       }
     }
     version_ = 0;
-    start_time_ = GOOGLE_LONGLONG(0);
+    start_time_ = 0;
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     timeout_ms_ = 0;
@@ -404,17 +404,17 @@ bool Command::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(64)) goto parse_start_time;
+        if (input->ExpectTag(65)) goto parse_start_time;
         break;
       }
 
-      // optional int64 start_time = 8;
+      // optional double start_time = 8;
       case 8: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
          parse_start_time:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &start_time_)));
           set_has_start_time();
         } else {
@@ -531,9 +531,9 @@ void Command::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(7, this->version(), output);
   }
 
-  // optional int64 start_time = 8;
+  // optional double start_time = 8;
   if (has_start_time()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt64(8, this->start_time(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(8, this->start_time(), output);
   }
 
   // optional int32 timeout_ms = 9;
@@ -619,9 +619,9 @@ void Command::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(7, this->version(), target);
   }
 
-  // optional int64 start_time = 8;
+  // optional double start_time = 8;
   if (has_start_time()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(8, this->start_time(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(8, this->start_time(), target);
   }
 
   // optional int32 timeout_ms = 9;
@@ -698,11 +698,9 @@ int Command::ByteSize() const {
           this->version());
     }
 
-    // optional int64 start_time = 8;
+    // optional double start_time = 8;
     if (has_start_time()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int64Size(
-          this->start_time());
+      total_size += 1 + 8;
     }
 
   }

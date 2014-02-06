@@ -156,7 +156,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 			guid_from: cmdGuid,
 			target_proxy_guid: '',
 			source_proxy_guid: this.guid,
-			start_time: ~~(+new Date/1000),
+			start_time: +new Date,
 			timeout_ms: options.timeout
 		}
 		var buf = pb.Serialize(obj, "ESB.Command");
@@ -196,7 +196,7 @@ ESB.prototype.register = function(identifier, version, cb, options) {
 			guid_from: cmdGuid,
 			target_proxy_guid: '',
 			source_proxy_guid: this.guid,
-			start_time: ~~(+new Date/1000),
+			start_time: +new Date,
 		}
 		var buf = pb.Serialize(obj, "ESB.Command");
 		this.publisherSocket.send(this.guid+buf);

@@ -184,17 +184,55 @@ class Command : public ::google::protobuf::Message {
   inline ::std::string* release_guid_to();
   inline void set_allocated_guid_to(::std::string* guid_to);
 
-  // optional int32 version = 5;
+  // optional string source_proxy_guid = 5;
+  inline bool has_source_proxy_guid() const;
+  inline void clear_source_proxy_guid();
+  static const int kSourceProxyGuidFieldNumber = 5;
+  inline const ::std::string& source_proxy_guid() const;
+  inline void set_source_proxy_guid(const ::std::string& value);
+  inline void set_source_proxy_guid(const char* value);
+  inline void set_source_proxy_guid(const char* value, size_t size);
+  inline ::std::string* mutable_source_proxy_guid();
+  inline ::std::string* release_source_proxy_guid();
+  inline void set_allocated_source_proxy_guid(::std::string* source_proxy_guid);
+
+  // optional string target_proxy_guid = 6;
+  inline bool has_target_proxy_guid() const;
+  inline void clear_target_proxy_guid();
+  static const int kTargetProxyGuidFieldNumber = 6;
+  inline const ::std::string& target_proxy_guid() const;
+  inline void set_target_proxy_guid(const ::std::string& value);
+  inline void set_target_proxy_guid(const char* value);
+  inline void set_target_proxy_guid(const char* value, size_t size);
+  inline ::std::string* mutable_target_proxy_guid();
+  inline ::std::string* release_target_proxy_guid();
+  inline void set_allocated_target_proxy_guid(::std::string* target_proxy_guid);
+
+  // optional int32 version = 7;
   inline bool has_version() const;
   inline void clear_version();
-  static const int kVersionFieldNumber = 5;
+  static const int kVersionFieldNumber = 7;
   inline ::google::protobuf::int32 version() const;
   inline void set_version(::google::protobuf::int32 value);
 
-  // required string payload = 6;
+  // optional int64 start_time = 8;
+  inline bool has_start_time() const;
+  inline void clear_start_time();
+  static const int kStartTimeFieldNumber = 8;
+  inline ::google::protobuf::int64 start_time() const;
+  inline void set_start_time(::google::protobuf::int64 value);
+
+  // optional int32 timeout_ms = 9;
+  inline bool has_timeout_ms() const;
+  inline void clear_timeout_ms();
+  static const int kTimeoutMsFieldNumber = 9;
+  inline ::google::protobuf::int32 timeout_ms() const;
+  inline void set_timeout_ms(::google::protobuf::int32 value);
+
+  // required string payload = 10;
   inline bool has_payload() const;
   inline void clear_payload();
-  static const int kPayloadFieldNumber = 6;
+  static const int kPayloadFieldNumber = 10;
   inline const ::std::string& payload() const;
   inline void set_payload(const ::std::string& value);
   inline void set_payload(const char* value);
@@ -213,8 +251,16 @@ class Command : public ::google::protobuf::Message {
   inline void clear_has_guid_from();
   inline void set_has_guid_to();
   inline void clear_has_guid_to();
+  inline void set_has_source_proxy_guid();
+  inline void clear_has_source_proxy_guid();
+  inline void set_has_target_proxy_guid();
+  inline void clear_has_target_proxy_guid();
   inline void set_has_version();
   inline void clear_has_version();
+  inline void set_has_start_time();
+  inline void clear_has_start_time();
+  inline void set_has_timeout_ms();
+  inline void clear_has_timeout_ms();
   inline void set_has_payload();
   inline void clear_has_payload();
 
@@ -222,13 +268,17 @@ class Command : public ::google::protobuf::Message {
 
   ::std::string* identifier_;
   ::std::string* guid_from_;
+  ::std::string* guid_to_;
   int cmd_;
   ::google::protobuf::int32 version_;
-  ::std::string* guid_to_;
+  ::std::string* source_proxy_guid_;
+  ::std::string* target_proxy_guid_;
+  ::google::protobuf::int64 start_time_;
   ::std::string* payload_;
+  ::google::protobuf::int32 timeout_ms_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(10 + 31) / 32];
 
   friend void  protobuf_AddDesc_command_2eproto();
   friend void protobuf_AssignDesc_command_2eproto();
@@ -477,15 +527,155 @@ inline void Command::set_allocated_guid_to(::std::string* guid_to) {
   }
 }
 
-// optional int32 version = 5;
-inline bool Command::has_version() const {
+// optional string source_proxy_guid = 5;
+inline bool Command::has_source_proxy_guid() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
-inline void Command::set_has_version() {
+inline void Command::set_has_source_proxy_guid() {
   _has_bits_[0] |= 0x00000010u;
 }
-inline void Command::clear_has_version() {
+inline void Command::clear_has_source_proxy_guid() {
   _has_bits_[0] &= ~0x00000010u;
+}
+inline void Command::clear_source_proxy_guid() {
+  if (source_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+    source_proxy_guid_->clear();
+  }
+  clear_has_source_proxy_guid();
+}
+inline const ::std::string& Command::source_proxy_guid() const {
+  return *source_proxy_guid_;
+}
+inline void Command::set_source_proxy_guid(const ::std::string& value) {
+  set_has_source_proxy_guid();
+  if (source_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    source_proxy_guid_ = new ::std::string;
+  }
+  source_proxy_guid_->assign(value);
+}
+inline void Command::set_source_proxy_guid(const char* value) {
+  set_has_source_proxy_guid();
+  if (source_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    source_proxy_guid_ = new ::std::string;
+  }
+  source_proxy_guid_->assign(value);
+}
+inline void Command::set_source_proxy_guid(const char* value, size_t size) {
+  set_has_source_proxy_guid();
+  if (source_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    source_proxy_guid_ = new ::std::string;
+  }
+  source_proxy_guid_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Command::mutable_source_proxy_guid() {
+  set_has_source_proxy_guid();
+  if (source_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    source_proxy_guid_ = new ::std::string;
+  }
+  return source_proxy_guid_;
+}
+inline ::std::string* Command::release_source_proxy_guid() {
+  clear_has_source_proxy_guid();
+  if (source_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = source_proxy_guid_;
+    source_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Command::set_allocated_source_proxy_guid(::std::string* source_proxy_guid) {
+  if (source_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+    delete source_proxy_guid_;
+  }
+  if (source_proxy_guid) {
+    set_has_source_proxy_guid();
+    source_proxy_guid_ = source_proxy_guid;
+  } else {
+    clear_has_source_proxy_guid();
+    source_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// optional string target_proxy_guid = 6;
+inline bool Command::has_target_proxy_guid() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void Command::set_has_target_proxy_guid() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void Command::clear_has_target_proxy_guid() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void Command::clear_target_proxy_guid() {
+  if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+    target_proxy_guid_->clear();
+  }
+  clear_has_target_proxy_guid();
+}
+inline const ::std::string& Command::target_proxy_guid() const {
+  return *target_proxy_guid_;
+}
+inline void Command::set_target_proxy_guid(const ::std::string& value) {
+  set_has_target_proxy_guid();
+  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    target_proxy_guid_ = new ::std::string;
+  }
+  target_proxy_guid_->assign(value);
+}
+inline void Command::set_target_proxy_guid(const char* value) {
+  set_has_target_proxy_guid();
+  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    target_proxy_guid_ = new ::std::string;
+  }
+  target_proxy_guid_->assign(value);
+}
+inline void Command::set_target_proxy_guid(const char* value, size_t size) {
+  set_has_target_proxy_guid();
+  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    target_proxy_guid_ = new ::std::string;
+  }
+  target_proxy_guid_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Command::mutable_target_proxy_guid() {
+  set_has_target_proxy_guid();
+  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    target_proxy_guid_ = new ::std::string;
+  }
+  return target_proxy_guid_;
+}
+inline ::std::string* Command::release_target_proxy_guid() {
+  clear_has_target_proxy_guid();
+  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = target_proxy_guid_;
+    target_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Command::set_allocated_target_proxy_guid(::std::string* target_proxy_guid) {
+  if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+    delete target_proxy_guid_;
+  }
+  if (target_proxy_guid) {
+    set_has_target_proxy_guid();
+    target_proxy_guid_ = target_proxy_guid;
+  } else {
+    clear_has_target_proxy_guid();
+    target_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// optional int32 version = 7;
+inline bool Command::has_version() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void Command::set_has_version() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void Command::clear_has_version() {
+  _has_bits_[0] &= ~0x00000040u;
 }
 inline void Command::clear_version() {
   version_ = 0;
@@ -499,15 +689,59 @@ inline void Command::set_version(::google::protobuf::int32 value) {
   version_ = value;
 }
 
-// required string payload = 6;
+// optional int64 start_time = 8;
+inline bool Command::has_start_time() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void Command::set_has_start_time() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void Command::clear_has_start_time() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void Command::clear_start_time() {
+  start_time_ = GOOGLE_LONGLONG(0);
+  clear_has_start_time();
+}
+inline ::google::protobuf::int64 Command::start_time() const {
+  return start_time_;
+}
+inline void Command::set_start_time(::google::protobuf::int64 value) {
+  set_has_start_time();
+  start_time_ = value;
+}
+
+// optional int32 timeout_ms = 9;
+inline bool Command::has_timeout_ms() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void Command::set_has_timeout_ms() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void Command::clear_has_timeout_ms() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void Command::clear_timeout_ms() {
+  timeout_ms_ = 0;
+  clear_has_timeout_ms();
+}
+inline ::google::protobuf::int32 Command::timeout_ms() const {
+  return timeout_ms_;
+}
+inline void Command::set_timeout_ms(::google::protobuf::int32 value) {
+  set_has_timeout_ms();
+  timeout_ms_ = value;
+}
+
+// required string payload = 10;
 inline bool Command::has_payload() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000200u) != 0;
 }
 inline void Command::set_has_payload() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000200u;
 }
 inline void Command::clear_has_payload() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000200u;
 }
 inline void Command::clear_payload() {
   if (payload_ != &::google::protobuf::internal::kEmptyString) {

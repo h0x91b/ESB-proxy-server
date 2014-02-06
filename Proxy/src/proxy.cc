@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "proxy.h"
+#include <ctime>
 
 using namespace v8;
 
@@ -106,6 +107,10 @@ void *Proxy::Thread(void* d)
 			ping.set_identifier("/ping");
 			ping.set_guid_from(_guid);
 			ping.set_guid_to(self->nodesGuids[n].c_str());
+			ping.set_source_proxy_guid(self->guid);
+			ping.set_version(1);
+			ping.set_start_time(timestamp());
+			ping.set_timeout_ms(3000);
 			ping.set_cmd(ESB::Command::PING);
 			ping.set_payload("ping");
 			self->publisher->Publish(self->nodesGuids[n].c_str(), ping);
@@ -226,5 +231,13 @@ std::vector<std::string> split(const std::string &s, char delim) {
     return elems;
 }
 
+inline unsigned long long timestamp()
+{
+	struct timeval tv;   // see gettimeofday(2)
+	gettimeofday(&tv, NULL);
+	double t = (double) tv.tv_sec + (double) 1e-6 * tv.tv_usec;
+	// return seconds.microseconds since epoch
+	return (unsigned long long)(t*1000);
+}
 
 NODE_MODULE(proxy, InitAll)

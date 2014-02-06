@@ -12,6 +12,10 @@ message Command {
 	optional string identifier = 2;
 	optional string guid_from = 3;
 	optional string guid_to = 4;
-	optional int32 version = 5;
-	required string payload = 6;
+	optional string source_proxy_guid = 5;
+	optional string target_proxy_guid = 6;
+	optional int32 version = 7;
+	optional int64 start_time = 8;
+	optional int32 timeout_ms = 9;
+	required string payload = 10;
 }

@@ -71,7 +71,7 @@ private:
 	pthread_t thread;
 	std::vector<std::string> nodesGuids;
 	std::unordered_map<std::string,Subscriber*> subscribers;
-	std::unordered_map<std::string,LocalInvokeMethod*> localInvokeMethods; //identifier, struct
+	std::unordered_map<std::string,std::vector<LocalInvokeMethod*>> localInvokeMethods; //identifier, struct
 	std::unordered_map<std::string,RemoteInvokeMethod*> remoteInvokeMethods; //identifier, struct
 	std::unordered_map<std::string,std::string*> invokeResponses; //identifier, struct
 };

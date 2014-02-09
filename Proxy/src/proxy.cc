@@ -65,8 +65,12 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 	ESB::Command cmdResp;
 	char buf[1024];
 	
-	auto entry = localInvokeMethods[cmdReq.identifier()];
-	if(entry){
+	auto vec = localInvokeMethods[cmdReq.identifier()];
+	if(vec.size() > 0){
+		int rand = 0;
+		if(vec.size()>0)
+			rand = std::rand() % vec.size();
+		auto entry = vec.at(rand);
 		dbg("%s found in local methods", entry->identifier);
 		
 		cmdResp.set_cmd(ESB::Command::INVOKE);
@@ -117,8 +121,15 @@ void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 	entry->identifier = (char*)malloc((cmdReq.payload().length()+1)*sizeof(char));
 	strcpy(entry->identifier, cmdReq.identifier().c_str());
 
-	
-	localInvokeMethods.insert(std::pair<std::string,LocalInvokeMethod*> {entry->identifier, entry});
+//	auto vec = localInvokeMethods[entry->identifier];
+//	if(vec==NULL){
+//		vec = new std::vector<LocalInvokeMethod*>;
+//		localInvokeMethods.insert(std::pair<std::string,std::vector<LocalInvokeMethod*>*> {entry->identifier, vec});
+//	}
+//	vec->push_back(entry);
+//	localInvokeMethods.at(entry->identifier).push_back(entry);
+	localInvokeMethods.emplace(entry->identifier, std::vector<LocalInvokeMethod*>());
+	localInvokeMethods.at(entry->identifier).push_back(entry);
 	
 	
 	ESB::Command cmdResp;

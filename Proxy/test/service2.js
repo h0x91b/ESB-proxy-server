@@ -1,10 +1,10 @@
 var ESB = require('../../Node/NodeJS/main.js');
 var esb = new ESB({
-	publisherPort: 7781
+	publisherPort: 7782
 });
 
 esb.on('ready', function(){
-	console.log('ESB service is ready');
+	console.log('ESB service 2 is ready');
 	esb.register('/math/plus', 1, function(data, cb){
 		//console.log(process.pid+' 1')
 		cb(null, data.a + data.b);
@@ -26,6 +26,6 @@ esb.on('ready', function(){
 setInterval(function(){},1000)
 
 process.on('exit quit', function(){
-	console.log('exit event in service, quit');
+	console.log('exit event in service2, quit');
 	process.exit();
 });

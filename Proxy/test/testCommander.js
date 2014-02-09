@@ -3,6 +3,7 @@ var ESB = require('../../Node/NodeJS/main.js');
 var fork = require('child_process').fork;
 
 var ch = fork('service.js');
+fork('service2.js');
 
 ch.on('message', function(m) {
 	console.log('service ready');
@@ -11,13 +12,17 @@ ch.on('message', function(m) {
 	esb.on('ready', function(){
 		console.log('ESB ready for use');
 		
+		esb.invoke('/dfsdfdsfdsf', {a: 1}, function(err, resp, errStr){
+			console.log(errStr);
+		});
+		
 		var start = +new Date;
 		var cnt = 50000;
 		var total = cnt;
 		var errors = 0;
 		function doit(){
 			process.nextTick(function(){
-				for(var i=0;i<1000;i++){
+				for(var i=0;i<250;i++){
 					(function(){
 						var a = ~~(Math.random()*50);
 						var b = ~~(Math.random()*50);

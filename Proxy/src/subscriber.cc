@@ -58,17 +58,15 @@ SUBSCRIBER_POLL_MSG *Subscriber::Poll()
 	auto *cmdReq = new ESB::Command;
 	dbg ("received: %i bytes", len);
 	assert (len != -1);
-	unsigned char *buffer = (unsigned char *)malloc(len+1);
-	memcpy(buffer, zmq_msg_data(&msg), len);
+	auto buffer = (unsigned char *)zmq_msg_data(&msg);
 	
 	const int guidSize = 38*sizeof(char);
 	buffer+=guidSize;
 	cmdReq->ParseFromArray(buffer, len-guidSize);
 	buffer-=guidSize;
-	zmq_msg_close (&msg);
 	
 	auto ret = (SUBSCRIBER_POLL_MSG*)calloc(sizeof(SUBSCRIBER_POLL_MSG),sizeof(SUBSCRIBER_POLL_MSG));
-	ret->buffer = buffer;
 	ret->cmdReq = cmdReq;
+	ret->msg = msg;
 	return ret;
 }

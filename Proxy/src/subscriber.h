@@ -23,7 +23,7 @@ class Proxy;
 struct SUBSCRIBER_POLL_MSG
 {
 	ESB::Command *cmdReq;
-	unsigned char *buffer;
+	zmq_msg_t msg;
 };
 
 class Subscriber

@@ -243,7 +243,7 @@ void *Proxy::MainLoop(void *p)
 			auto nodeGuid = local_it->first;
 			self->SubscriberCallback(*msg->cmdReq, nodeGuid.c_str());
 			
-			free(msg->buffer);
+			zmq_msg_close(&msg->msg);
 			delete msg->cmdReq;
 			free(msg);
 		}

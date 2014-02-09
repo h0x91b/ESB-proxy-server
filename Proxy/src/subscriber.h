@@ -20,21 +20,26 @@
 
 class Proxy;
 
+struct SUBSCRIBER_POLL_MSG
+{
+	ESB::Command *cmdReq;
+	unsigned char *buffer;
+};
+
 class Subscriber
 {
 public:
 	Subscriber(char *, const char*, Proxy*);
 	bool Connect();
 	~Subscriber();
+	SUBSCRIBER_POLL_MSG *Poll();
 private:
 	void *zContext;
 	void *zResponder;
 	char *connectString;
-	static void *Thread(void* d);
 	
 	bool isWork;
 	char targetGuid[39];
-	pthread_t thread;
 	Proxy *proxy;
 };
 

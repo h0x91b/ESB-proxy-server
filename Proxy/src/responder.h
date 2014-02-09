@@ -27,13 +27,11 @@ public:
 	~Responder();
 	int port;
 	char *guid;
+	bool Poll();
 
 private:
 	void *zContext;
 	void *zResponder;
-	static void* Thread(void*);
-	bool isWork;
-	pthread_t thread;
 	Proxy *proxy;
 };
 

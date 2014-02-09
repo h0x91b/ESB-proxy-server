@@ -26,7 +26,7 @@ Proxy::Proxy()
 		redisCtx = NULL;
 	}
 	isWork = TRUE;
-	pthread_create(&thread, NULL, &Thread, this);
+	pthread_create(&thread, NULL, &MainLoop, this);
 }
 
 void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
@@ -54,6 +54,7 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 		char errBuf[512];
 		sprintf(errBuf, "ESB Proxy can not connect to your Node, check the firewall, connectionString: `%s`", connectionString);
 		cmdResp.set_payload(errBuf);
+		delete subscriber;
 	}
 }
 
@@ -158,7 +159,7 @@ ESB::Command Proxy::ResponderCallback(ESB::Command &cmdReq)
 	return cmdResp;
 }
 
-void Proxy::InvokeResponse(ESB::Command &cmdReq, char *sourceNodeGuid)
+void Proxy::InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid)
 {
 	ESB::Command cmdResp;
 	auto targetNode = invokeResponses[cmdReq.guid_to()];
@@ -184,7 +185,7 @@ void Proxy::InvokeResponse(ESB::Command &cmdReq, char *sourceNodeGuid)
 
 }
 
-void Proxy::SubscriberCallback(ESB::Command &cmdReq, char *nodeGuid, unsigned char *buffer)
+void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 {
 	dbg("subscriber callback from node: %s", nodeGuid);
 	ESB::Command cmdResp;
@@ -192,33 +193,17 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReq, char *nodeGuid, unsigned ch
 		case ESB::Command::RESPONSE:
 			dbg("get response for %s", cmdReq.guid_to().c_str());
 			InvokeResponse(cmdReq, nodeGuid);
-			if(buffer) {
-				free(buffer);
-				buffer = NULL;
-			}
 			return;
 		case ESB::Command::PONG:
 			dbg("get pong from %s", nodeGuid);
-			if(buffer) {
-				free(buffer);
-				buffer = NULL;
-			}
 			return;
 		case ESB::Command::REGISTER_INVOKE:
 			dbg("get RegisterInvoke from %s", nodeGuid);
 			RegisterInvoke(cmdReq);
-			if(buffer) {
-				free(buffer);
-				buffer = NULL;
-			}
 			return;
 		case ESB::Command::INVOKE:
 			dbg("get invoke from node %s method %s to identifier: %s", nodeGuid, cmdReq.guid_from().c_str(), cmdReq.identifier().c_str());
 			Invoke(cmdReq);
-			if(buffer) {
-				free(buffer);
-				buffer = NULL;
-			}
 			return;
 		default:
 			dbg("Error, received unknown cmd: %i", cmdReq.cmd());
@@ -231,16 +216,42 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReq, char *nodeGuid, unsigned ch
 	cmdResp.set_guid_to(cmdReq.guid_from());
 	
 	publisher->Publish(nodeGuid, cmdResp);
-	if(buffer) {
-		free(buffer);
-		buffer = NULL;
-	}
 }
 
 Proxy::~Proxy()
 {
 	dbg("Destructor");
 	isWork = FALSE;
+}
+
+void *Proxy::MainLoop(void *p)
+{
+	dbg("MainLoop started");
+	auto self = (Proxy*)p;
+	while (self->isWork) {
+		bool needToSleep = TRUE;
+		
+		self->responder->Poll();
+		
+		for ( auto local_it = self->subscribers.begin(); local_it!= self->subscribers.end(); ++local_it )
+		{
+			auto s = local_it->second;
+			auto msg = s->Poll();
+			if(msg==NULL) continue;
+			needToSleep = FALSE;
+			
+			auto nodeGuid = local_it->first;
+			self->SubscriberCallback(*msg->cmdReq, nodeGuid.c_str());
+			
+			free(msg->buffer);
+			delete msg->cmdReq;
+			free(msg);
+		}
+		
+		if(needToSleep) usleep(5000);
+	}
+	
+	return 0;
 }
 
 void *Proxy::Thread(void* d)

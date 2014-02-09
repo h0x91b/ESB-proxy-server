@@ -39,9 +39,7 @@ void Publisher::Publish(const char* targetGuid, ESB::Command &cmd)
 	assert(rc == 0);
 	
 	char *bb = (char*)zmq_msg_data (&msg);
-	dbg("memcpy");
 	memcpy(bb, targetGuid, guidSize);
-	dbg("memcpy success");
 	bb+=guidSize;
 	
 	if(!cmd.SerializeToArray(bb, size))
@@ -52,8 +50,5 @@ void Publisher::Publish(const char* targetGuid, ESB::Command &cmd)
 	dbg("Publish len: %zu bytes", size+guidSize);
 
 	rc = zmq_msg_send (&msg, zResponder, 0);
-	assert(rc == size+sizeof(char)*guidSize);
-	
-	//zmq_send(zResponder, bb, size+sizeof(char)*guidSize, ZMQ_DONTWAIT);
-	//free(bb);
+	assert(rc == (int)(size+sizeof(char)*guidSize));
 }

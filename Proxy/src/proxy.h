@@ -38,11 +38,11 @@ struct RemoteInvokeMethod
 class Proxy : public node::ObjectWrap {
 public:
 	static void Init(v8::Handle<v8::Object> exports);
-	void SubscriberCallback(ESB::Command &cmdReq, char *guid, unsigned char *buffer);
+	void SubscriberCallback(ESB::Command &cmdReq, const char *guid);
 	ESB::Command ResponderCallback(ESB::Command &cmdReq);
 	void Invoke(ESB::Command &cmdReq);
 	void RegisterInvoke(ESB::Command &cmdReq);
-	void InvokeResponse(ESB::Command &cmdReq, char *sourceNodeGuid);
+	void InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid);
 	
 	char guid[39];
 	Responder *responder;
@@ -66,6 +66,7 @@ private:
 	void NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp);
 	
 	static void* Thread(void*);
+	static void *MainLoop(void *p);
 	bool isWork;
 	pthread_t thread;
 	std::vector<std::string> nodesGuids;

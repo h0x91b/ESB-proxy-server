@@ -12,13 +12,13 @@ message Command {
 		REGISTER_INVOKE_OK = 8;
 	};
 	required Cmd cmd = 1;
-	optional string identifier = 2;
-	optional string guid_from = 3;
-	optional string guid_to = 4;
-	optional string source_proxy_guid = 5;
-	optional string target_proxy_guid = 6;
-	optional int32 version = 7;
-	optional uint32 start_time = 8;
-	optional int32 timeout_ms = 9;
-	required string payload = 10;
+	required string payload = 2;
+	optional string identifier = 3;
+	optional string guid_from = 4;
+	optional string guid_to = 5;
+	optional string source_proxy_guid = 6;
+	optional string target_proxy_guid = 7;
+	optional int32 version = 8;
+	optional uint32 start_time = 9;
+	optional int32 timeout_ms = 10;
 }

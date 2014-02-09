@@ -5,9 +5,14 @@ var esb = new ESB({
 
 esb.on('ready', function(){
 	console.log('ESB service is ready');
-	esb.register('/math/plus', 1, function(data, cb){
-		cb(null, data.a + data.b);
-	});
+	for(var i=0;i<10;i++){
+		(function(i){
+			esb.register('/math/plus', 1, function(data, cb){
+				console.log('/math/plus #'+i+' call');
+				cb(null, data.a + data.b);
+			});
+		})(i);
+	}
 	
 	setTimeout(function(){
 		process.send({});
@@ -15,3 +20,8 @@ esb.on('ready', function(){
 });
 
 setInterval(function(){},1000)
+
+process.on('exit quit', function(){
+	console.log('exit event in service, quit');
+	process.exit();
+});

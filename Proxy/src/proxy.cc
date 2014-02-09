@@ -59,7 +59,6 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 
 void Proxy::Invoke(ESB::Command &cmdReq)
 {
-	dbg("Invoke");
 	dbg("Invoke(%s) from node %s", cmdReq.identifier().c_str(), cmdReq.source_proxy_guid().c_str());
 	invokeCalls++;
 	ESB::Command cmdResp;
@@ -185,31 +184,41 @@ void Proxy::InvokeResponse(ESB::Command &cmdReq, char *sourceNodeGuid)
 
 }
 
-void Proxy::SubscriberCallback(ESB::Command &cmdReqorig, char *nodeGuid, unsigned char *buffer)
+void Proxy::SubscriberCallback(ESB::Command &cmdReq, char *nodeGuid, unsigned char *buffer)
 {
 	dbg("subscriber callback from node: %s", nodeGuid);
-	ESB::Command cmdReq;
-	cmdReq.CopyFrom(cmdReqorig);
 	ESB::Command cmdResp;
 	switch (cmdReq.cmd()) {
 		case ESB::Command::RESPONSE:
 			dbg("get response for %s", cmdReq.guid_to().c_str());
 			InvokeResponse(cmdReq, nodeGuid);
-			if(buffer) free(buffer);
+			if(buffer) {
+				free(buffer);
+				buffer = NULL;
+			}
 			return;
 		case ESB::Command::PONG:
 			dbg("get pong from %s", nodeGuid);
-			if(buffer) free(buffer);
+			if(buffer) {
+				free(buffer);
+				buffer = NULL;
+			}
 			return;
 		case ESB::Command::REGISTER_INVOKE:
 			dbg("get RegisterInvoke from %s", nodeGuid);
 			RegisterInvoke(cmdReq);
-			if(buffer) free(buffer);
+			if(buffer) {
+				free(buffer);
+				buffer = NULL;
+			}
 			return;
 		case ESB::Command::INVOKE:
 			dbg("get invoke from node %s method %s to identifier: %s", nodeGuid, cmdReq.guid_from().c_str(), cmdReq.identifier().c_str());
 			Invoke(cmdReq);
-			if(buffer) free(buffer);
+			if(buffer) {
+				free(buffer);
+				buffer = NULL;
+			}
 			return;
 		default:
 			dbg("Error, received unknown cmd: %i", cmdReq.cmd());
@@ -222,7 +231,10 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReqorig, char *nodeGuid, unsigne
 	cmdResp.set_guid_to(cmdReq.guid_from());
 	
 	publisher->Publish(nodeGuid, cmdResp);
-	if(buffer) free(buffer);
+	if(buffer) {
+		free(buffer);
+		buffer = NULL;
+	}
 }
 
 Proxy::~Proxy()

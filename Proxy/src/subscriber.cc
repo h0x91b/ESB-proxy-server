@@ -65,7 +65,7 @@ SUBSCRIBER_POLL_MSG *Subscriber::Poll()
 	cmdReq->ParseFromArray(buffer, len-guidSize);
 	buffer-=guidSize;
 	
-	auto ret = (SUBSCRIBER_POLL_MSG*)calloc(sizeof(SUBSCRIBER_POLL_MSG),sizeof(SUBSCRIBER_POLL_MSG));
+	auto ret = (SUBSCRIBER_POLL_MSG*)malloc(sizeof(SUBSCRIBER_POLL_MSG));
 	ret->cmdReq = cmdReq;
 	ret->msg = msg;
 	return ret;

@@ -238,6 +238,7 @@ Proxy::~Proxy()
 void *Proxy::MainLoop(void *p)
 {
 	dbg("MainLoop started");
+	pthread_setname_np("MainLoop of ESB");
 	auto self = (Proxy*)p;
 	while (self->isWork) {
 		bool needToSleep = TRUE;
@@ -259,7 +260,7 @@ void *Proxy::MainLoop(void *p)
 			free(msg);
 		}
 		
-		if(needToSleep) usleep(5000);
+		if(needToSleep) usleep(50000);
 	}
 	
 	return 0;

@@ -94,6 +94,25 @@ ESB.prototype.onMessage= function(data) {
 		//console.log('suscriber got message: ', respObj);
 		switch(respObj.cmd)
 		{
+		case 'INVOKE':
+			//console.log('got INVOKE request');
+			var fn = this.invokeMethods[respObj.guid_to];
+			if(!fn) {
+				console.log('can not find such invoke method', respObj, Object.keys(this.invokeMethods));
+				break;
+			}
+			fn(respObj);
+			break;
+		case 'RESPONSE':
+			//console.log('got RESPONSE');
+			var fn = this.responseCallbacks[respObj.guid_to];
+			if(fn){
+				delete this.responseCallbacks[respObj.guid_to];
+				fn(null, JSON.parse(respObj.payload), null);
+			} else {
+				console.log('callback %s for response not found', respObj.guid_to);
+			}
+			break;
 		case 'PING':
 			console.log('got PING request');
 			//
@@ -116,25 +135,6 @@ ESB.prototype.onMessage= function(data) {
 		case 'REGISTER_INVOKE_OK':
 			console.log("REGISTER_INVOKE_OK for %s", respObj.payload);
 			break;
-		case 'INVOKE':
-			//console.log('got INVOKE request');
-			var fn = this.invokeMethods[respObj.guid_to];
-			if(!fn) {
-				console.log('can not find such invoke method', respObj, Object.keys(this.invokeMethods));
-				break;
-			}
-			fn(respObj);
-			break;
-		case 'RESPONSE':
-			//console.log('got RESPONSE');
-			var fn = this.responseCallbacks[respObj.guid_to];
-			if(fn){
-				fn(null, JSON.parse(respObj.payload), null);
-				delete this.responseCallbacks[respObj.guid_to];
-			} else {
-				console.log('callback %s for response not found', respObj.guid_to);
-			}
-			break;
 		default:
 			console.log("unknown operation", respObj);
 		}
@@ -146,7 +146,7 @@ ESB.prototype.onMessage= function(data) {
 ESB.prototype.invoke = function(identifier, data, cb, options){
 	options = extend(true, {
 		version: 1,
-		timeout: 3000
+		timeout: 0
 	}, options);
 	identifier = identifier+'/v'+options.version;
 	//console.log('invoke()', identifier, options, data);
@@ -183,7 +183,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 		var obj = {
 			cmd: 'INVOKE',
 			identifier: identifier,
-			payload: JSON.stringify(data, null, '\t'),
+			payload: JSON.stringify(data),
 			guid_from: cmdGuid,
 			target_proxy_guid: '',
 			source_proxy_guid: this.guid,
@@ -191,7 +191,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 			timeout_ms: options.timeout
 		}
 		var buf = pb.Serialize(obj, "ESB.Command");
-		this.publisherSocket.send(this.guid+buf)
+		this.publisherSocket.send(new Buffer(this.guid+buf));
 	} catch(e){
 		isCalled = true;
 		if(id) clearTimeout(id);

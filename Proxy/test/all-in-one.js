@@ -22,7 +22,7 @@ esb2.on('ready', function(){
 		cb(null, data.a + data.b);
 	});
 	setInterval(function(){
-	for(var i=0;i<100;i++)
+	for(var i=0;i<250;i++)
 		esb2.invoke('/math/plus', {a: 2, b: 2}, function(err, resp, errStr){
 			if(err){
 				console.log(err, errStr);

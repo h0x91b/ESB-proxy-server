@@ -47,7 +47,7 @@ bool Responder::Poll()
 	}
 	assert (len != -1);
 	char *buffer = (char*)zmq_msg_data(&msg);
-	dbg ("received: %i bytes", len);
+	info ("received: %i bytes", len);
 	
 	ESB::Command cmdReq;
 	cmdReq.ParseFromArray(buffer, len);
@@ -57,7 +57,7 @@ bool Responder::Poll()
 	void *bb = malloc(size);
 	
 	cmdResp.SerializeToArray(bb, size);
-	dbg("Send response len: %zu bytes", size);
+	info("Send response len: %zu bytes", size);
 	
 	zmq_send(zResponder, bb, size, 0);
 	free(bb);

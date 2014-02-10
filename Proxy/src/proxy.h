@@ -43,6 +43,7 @@ public:
 	void Invoke(ESB::Command &cmdReq);
 	void RegisterInvoke(ESB::Command &cmdReq);
 	void InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid);
+	void PingRedis();
 	
 	char guid[39];
 	Responder *responder;
@@ -54,8 +55,8 @@ public:
 	
 	int invokeCalls = 0;
 	int invokeErrors = 0;
-	
 	int registerInvoke = 0;
+	int lastRedisPing = 0;
 
 private:
 	Proxy();
@@ -65,7 +66,6 @@ private:
 	static v8::Persistent<v8::Function> constructor;
 	void NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp);
 	
-	static void* Thread(void*);
 	static void *MainLoop(void *p);
 	bool isWork;
 	pthread_t thread;

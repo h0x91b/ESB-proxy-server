@@ -19,11 +19,36 @@
 #include <sstream>
 #include <vector>
 
-#ifdef _DEBUG5
-#  define dbg(format, ...) fprintf(stderr, "%s:%i %s()\n" format "\n\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+#define LOG_LEVEL 2
+
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
+#if LOG_LEVEL >= 3
+#  define dbg(format, ...) fprintf(stdout, ANSI_COLOR_YELLOW "DEBUG: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #else
 #  define dbg(...)
 #endif
+
+#if LOG_LEVEL >= 2
+#  define info(format, ...) fprintf(stdout, ANSI_COLOR_CYAN "INFO: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+#else
+#  define info(...)
+#endif
+
+#if LOG_LEVEL >= 1
+#  define warn(format, ...) fprintf(stderr, ANSI_COLOR_GREEN "WARN: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+#else
+#  define warn(...)
+#endif
+
+#define err(format, ...) fprintf(stderr, ANSI_COLOR_RED "ERROR: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+
 
 void GenerateGuid(char *guidStr);
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);

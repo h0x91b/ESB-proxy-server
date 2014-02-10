@@ -13,7 +13,7 @@ Persistent<Function> Proxy::constructor;
 Proxy::Proxy()
 {
 	GenerateGuid(guid);
-	dbg("guid: %s", guid);
+	info("guid: %s", guid);
 	responderPort = 7770;
 	publisherPort = 7771;
 	strcpy(host, "localhost");
@@ -22,7 +22,7 @@ Proxy::Proxy()
 	
 	redisCtx = redisConnect("127.0.0.1", 6379);
 	if (redisCtx != NULL && redisCtx->err) {
-		dbg("Redis connection error: %s", redisCtx->errstr);
+		err("Redis connection error: %s", redisCtx->errstr);
 		redisCtx = NULL;
 	}
 	isWork = TRUE;
@@ -42,14 +42,14 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 		
 	auto subscriber = new Subscriber(connectionString, tmp[0].c_str(), this);
 	if(subscriber->Connect()) {
-		dbg("connected successfull");
+		info("connected successfull");
 		subscribers.insert(std::pair<std::string,Subscriber*> {tmp[0], subscriber});
 		nodesGuids.push_back(tmp[0]);
 		
 		cmdResp.set_cmd(ESB::Command::RESPONSE);
 		cmdResp.set_payload(response);
 	} else {
-		dbg("can not connect");
+		err("can not connect");
 		cmdResp.set_cmd(ESB::Command::ERROR);
 		char errBuf[512];
 		sprintf(errBuf, "ESB Proxy can not connect to your Node, check the firewall, connectionString: `%s`", connectionString);
@@ -90,7 +90,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 	}
 	auto remoteEntry = remoteInvokeMethods[cmdReq.identifier()];
 	if(!remoteEntry) {
-		dbg("identifier not found");
+		warn("identifier '%s' not found",cmdReq.identifier().c_str());
 		invokeErrors++;
 		cmdResp.set_cmd(ESB::Command::ERROR);
 		sprintf(buf, "Identifier '%s' not found in registry", cmdReq.identifier().c_str());
@@ -106,7 +106,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 
 void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 {
-	dbg(
+	info(
 		"RegisterInvoke(%s) from node %s method guid %s",
 			cmdReq.identifier().c_str(),
 			cmdReq.source_proxy_guid().c_str(),
@@ -157,7 +157,7 @@ ESB::Command Proxy::ResponderCallback(ESB::Command &cmdReq)
 			NodeHello(cmdReq, cmdResp);
 			break;
 		default:
-			dbg("Error, received unknown cmd: %i", cmdReq.cmd());
+			err("Error, received unknown cmd: %i", cmdReq.cmd());
 			cmdResp.set_cmd(ESB::Command::ERROR);
 			cmdResp.set_payload("Unknown command");
 			break;
@@ -217,7 +217,7 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 			Invoke(cmdReq);
 			return;
 		default:
-			dbg("Error, received unknown cmd: %i", cmdReq.cmd());
+			err("Error, received unknown cmd: %i", cmdReq.cmd());
 			cmdResp.set_cmd(ESB::Command::ERROR);
 			cmdResp.set_payload("Unknown command");
 			break;
@@ -237,11 +237,12 @@ Proxy::~Proxy()
 
 void *Proxy::MainLoop(void *p)
 {
-	dbg("MainLoop started");
+	info("MainLoop started");
 	pthread_setname_np("MainLoop of ESB");
 	auto self = (Proxy*)p;
 	while (self->isWork) {
 		bool needToSleep = TRUE;
+		self->PingRedis();
 		
 		self->responder->Poll();
 		
@@ -266,65 +267,41 @@ void *Proxy::MainLoop(void *p)
 	return 0;
 }
 
-void *Proxy::Thread(void* d)
+void Proxy::PingRedis()
 {
-	dbg("start");
-	auto self = (Proxy*)d;
-	while (self->isWork)
-	{
-		dbg("ping redis");
-		
-		for(size_t n=0; n < self->nodesGuids.size(); n++)
-		{
-			ESB::Command ping;
-			char _guid[39] = {0};
-			GenerateGuid(_guid);
-			ping.set_identifier("/ping");
-			ping.set_guid_from(_guid);
-			ping.set_guid_to(self->nodesGuids[n].c_str());
-			ping.set_source_proxy_guid(self->guid);
-			ping.set_version(1);
-			ping.set_start_time(timestamp());
-			ping.set_timeout_ms(3000);
-			ping.set_cmd(ESB::Command::PING);
-			ping.set_payload("ping");
-			//self->publisher->Publish(self->nodesGuids[n].c_str(), ping);
-		}
-		
-		auto reply = (redisReply*)redisCommand(
-											   self->redisCtx,
-											   "ZADD ZSET:PROXIES %i %s#tcp://%s:%i",
-											   time(NULL),
-											   self->guid,
-											   self->host,
-											   self->responderPort
-		);
-		freeReplyObject(reply);
-		reply = (redisReply*)redisCommand(self->redisCtx, "ZREVRANGEBYSCORE ZSET:PROXIES +inf %i", time(NULL)-5);
-		if(reply->type == REDIS_REPLY_ARRAY) {
-			dbg("get %zu proxies from redis", reply->elements);
-			for(size_t n=0;n<reply->elements;n++) {
-				auto proxy = (redisReply*)reply->element[n];
-				auto vector = split(proxy->str, '#');
-				auto guid = vector[0].c_str();
-				auto connectionString = vector[1].c_str();
-				dbg("guid: %s\nconnect string: %s", guid, connectionString);
-				if(strcmp(guid, self->guid) == 0) {
-					dbg("found me in proxies, skip");
-					continue;
-				}
-				
-				//check if connected here...
+	if(time(NULL)-lastRedisPing<3) return;
+	info("ping redis");
+	auto reply = (redisReply*)redisCommand(
+										   redisCtx,
+										   "ZADD ZSET:PROXIES %i %s#tcp://%s:%i",
+										   time(NULL),
+										   guid,
+										   host,
+										   responderPort
+										   );
+	freeReplyObject(reply);
+	reply = (redisReply*)redisCommand(redisCtx, "ZREVRANGEBYSCORE ZSET:PROXIES +inf %i", time(NULL)-5);
+	if(reply->type == REDIS_REPLY_ARRAY) {
+		dbg("get %zu proxies from redis", reply->elements);
+		for(size_t n=0;n<reply->elements;n++) {
+			auto proxy = (redisReply*)reply->element[n];
+			auto vector = split(proxy->str, '#');
+			auto guid2 = vector[0].c_str();
+			auto connectionString = vector[1].c_str();
+			dbg("guid2: %s\nconnect string: %s", guid2, connectionString);
+			if(strcmp(guid2, guid) == 0) {
+				dbg("found me in proxies, skip");
+				continue;
 			}
-		} else {
-			dbg("Redis return weird answer...");
+			
+			//check if connected here...
 		}
-		freeReplyObject(reply);
-		sleep(5);
+	} else {
+		err("Redis return weird answer...");
 	}
-	return 0;
+	freeReplyObject(reply);
+	lastRedisPing = time(NULL);
 }
-
 
 void Proxy::Init(Handle<Object> exports) {
 	// Prepare constructor template

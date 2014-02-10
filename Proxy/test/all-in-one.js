@@ -4,7 +4,7 @@ var ESB = require('../../Node/NodeJS/main.js');
 var responses = 0;
 
 var esb1 = new ESB({
-	publisherPort: 7781
+	publisherPort: process.argv[2] || 7781
 });
 esb1.on('ready', function(){
 	console.log('esb1 is ready');
@@ -14,7 +14,7 @@ esb1.on('ready', function(){
 });
 
 var esb2 = new ESB({
-	publisherPort: 7782
+	publisherPort: process.argv[3] || 7782
 });
 esb2.on('ready', function(){
 	console.log('esb2 is ready');

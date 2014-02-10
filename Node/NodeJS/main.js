@@ -6,13 +6,14 @@ var proto = require("node-protobuf").Protobuf;
 var pb = new proto(fs.readFileSync(__dirname+"/../../Proxy/src/command.desc"));
 var util = require("util");
 var events = require("events");
+var Redis = require('redis');
 
 
 var _config = {
-	host: 'localhost',
-	port: 7770,
 	publisherHost: 'localhost',
-	publisherPort: 7780
+	publisherPort: 7780,
+	redisHost: 'localhost',
+	redisPort: 6379
 };
 
 function ESB(config) {
@@ -24,32 +25,51 @@ function ESB(config) {
 	this.responseCallbacks = [];
 	this.invokeMethods = [];
 	var socket = zmq.socket('req');
+	var self = this;
 	this.requestSocket = socket;
 	this.requestSocket.on('error', function(err){
 		console.log('requestSocket error', err);
+		self.emit('error', err);
 	});
 	this.subscribeSocket = zmq.socket('sub');
 	this.subscribeSocket.on('error', function(err){
 		console.log('subscribeSocket error', err);
+		self.emit('error', err);
 	});
 	this.publisherSocket = zmq.socket('pub');
 	this.publisherSocket.on('error', function(err){
 		console.log('publisherSocket error', err);
+		self.emit('error', err);
 	});
 	this.publisherSocket.bindSync('tcp://*:'+this.config.publisherPort);
 	
+	this.redis = Redis.createClient(this.config.redisPort, this.config.redisHost);
+	this.redis.on('error', function(err){
+		console.log('redis error', err);
+		self.emit('error', err);
+	});
 	this.connect();
 }
 
 util.inherits(ESB, events.EventEmitter);
 
-
 ESB.prototype.connect= function(){
-	var connectStr = 'tcp://'+this.config.host+':'+this.config.port
-	console.log('ESB %s connecting to: %s', this.guid, connectStr);
-	this.requestSocket.connect(connectStr);
-	console.log('ESB %s connected', this.guid);
-	this.sendHello();
+	var self = this;
+	this.redis.zrevrangebyscore('ZSET:PROXIES','+inf', ~~(new Date/1000), function(err, resp){
+		if(err){
+			console.log('Cannot get data from registry', err);
+			self.emit('error', err);
+			return;
+		}
+		console.log('avaible proxies: %s',resp.length);
+		var d = resp.pop().split('#');
+		var connectStr = d[1];
+		self.proxyGuid = d[0];
+		console.log('ESB Node %s connecting to: %s', self.guid, connectStr);
+		self.requestSocket.connect(connectStr);
+		console.log('ESB Node %s connected', self.guid);
+		self.sendHello();
+	});
 };
 
 ESB.prototype.sendHello= function() {
@@ -65,7 +85,7 @@ ESB.prototype.sendHello= function() {
 	this.requestSocket.once('message', function(data){
 		self.requestSocket.close();
 		var respObj = pb.Parse(data, "ESB.Command");
-		console.log('got response from Proxy', respObj);
+		console.log('got response from Proxy', respObj.payload);
 		if(respObj.cmd === 'ERROR') {
 			throw new Error(respObj.payload);
 		}
@@ -76,10 +96,9 @@ ESB.prototype.sendHello= function() {
 			self.onMessage.call(self, data);
 		});
 		self.subscribeSocket.connect(t);
-		console.log('connected');
+		console.log('ESB Node %s connected to publisher of ESB Proxy', self.guid);
 		self.subscribeSocket.subscribe(self.guid);
 		self.proxyGuid = respObj.source_proxy_guid;
-		
 		self.emit('ready');
 	});
 	this.requestSocket.send(buf);
@@ -126,7 +145,7 @@ ESB.prototype.onMessage= function(data) {
 			this.publisherSocket.send(this.guid+buf);
 			break;
 		case 'ERROR':
-			console.log('got ERROR response');
+			console.log('got ERROR response: ', respObj.payload);
 			if(this.responseCallbacks[respObj.guid_to]){
 				var fn = this.responseCallbacks[respObj.guid_to];
 				fn(respObj.cmd, null, respObj.payload);
@@ -252,7 +271,7 @@ ESB.prototype.register = function(identifier, version, cb, options) {
 			source_proxy_guid: this.guid,
 			start_time: +new Date,
 		}
-		console.log('register',obj);
+		//console.log('register',obj);
 		var buf = pb.Serialize(obj, "ESB.Command");
 		this.publisherSocket.send(this.guid+buf);
 	} catch(e){

@@ -5,11 +5,12 @@ message Command {
 		ERROR = 1;
 		RESPONSE = 2;
 		NODE_HELLO = 3;
-		PING = 4;
-		PONG = 5;
-		INVOKE = 6;
-		REGISTER_INVOKE = 7;
-		REGISTER_INVOKE_OK = 8;
+		PROXY_HELLO = 4;
+		PING = 5;
+		PONG = 6;
+		INVOKE = 7;
+		REGISTER_INVOKE = 8;
+		REGISTER_INVOKE_OK = 9;
 	};
 	required Cmd cmd = 1;
 	required string payload = 2;

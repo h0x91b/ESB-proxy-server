@@ -23,8 +23,9 @@ public:
 	Publisher(int port);
 	~Publisher();
 	void Publish(const char* targetGuid, ESB::Command &cmd);
-private:
+	
 	int port;
+private:
 	void *zContext;
 	void *zResponder;
 };

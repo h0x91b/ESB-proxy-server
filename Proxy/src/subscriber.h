@@ -29,16 +29,15 @@ struct SUBSCRIBER_POLL_MSG
 class Subscriber
 {
 public:
-	Subscriber(char *, const char*, Proxy*);
+	Subscriber(const char *, const char*, Proxy*);
 	bool Connect();
 	~Subscriber();
 	SUBSCRIBER_POLL_MSG *Poll();
 private:
 	void *zContext;
 	void *zResponder;
-	char *connectString;
+	char connectString[512];
 	
-	bool isWork;
 	char targetGuid[39];
 	Proxy *proxy;
 };

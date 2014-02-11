@@ -8,9 +8,9 @@
 
 #include "subscriber.h"
 
-Subscriber::Subscriber(char *_connectString, const char *_targetGuid, Proxy* _proxy)
+Subscriber::Subscriber(const char *_connectString, const char *_targetGuid, Proxy* _proxy)
 {
-	connectString = _connectString;
+	strncpy(connectString, _connectString, 512);
 	strcpy(targetGuid, _targetGuid);
 	proxy = _proxy;
 	zContext = zmq_ctx_new();
@@ -24,13 +24,11 @@ bool Subscriber::Connect()
 	
 	if(rc==0)
 	{
-		isWork = true;
 		zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, "", 0);
 		return TRUE;
 	}
 	
-	int errCode = zmq_errno();
-	dbg("zmq failed to connect, errcode: %i, desc: %s",errCode, zmq_strerror(errCode));
+	dbg("zmq failed to connect, errcode: %i, desc: %s", zmq_errno(), zmq_strerror(zmq_errno()));
 	
 	return FALSE;
 }
@@ -38,7 +36,7 @@ bool Subscriber::Connect()
 Subscriber::~Subscriber()
 {
 	dbg("the end");
-	isWork = FALSE;
+	zmq_ctx_term(zContext);
 }
 
 SUBSCRIBER_POLL_MSG *Subscriber::Poll()

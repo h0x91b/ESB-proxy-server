@@ -44,6 +44,7 @@ public:
 	void RegisterInvoke(ESB::Command &cmdReq);
 	void InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid);
 	void PingRedis();
+	void ConnectToAnotherProxy(const char *proxyGuid, const char *connectionString);
 	
 	char guid[39];
 	Responder *responder;
@@ -65,6 +66,7 @@ private:
 	static v8::Handle<v8::Value> New(const v8::Arguments& args);
 	static v8::Persistent<v8::Function> constructor;
 	void NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp);
+	void ProxyHello(ESB::Command &cmdReq, ESB::Command &cmdResp);
 	
 	static void *MainLoop(void *p);
 	bool isWork;

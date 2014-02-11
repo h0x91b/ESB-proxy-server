@@ -31,7 +31,7 @@ esb2.on('ready', function(){
 			console.assert(resp == 4);
 			responses++;
 		});
-	},10);
+	},500);
 });
 
 setInterval(function(){

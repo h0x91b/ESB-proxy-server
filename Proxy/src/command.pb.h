@@ -40,11 +40,12 @@ enum Command_Cmd {
   Command_Cmd_ERROR = 1,
   Command_Cmd_RESPONSE = 2,
   Command_Cmd_NODE_HELLO = 3,
-  Command_Cmd_PING = 4,
-  Command_Cmd_PONG = 5,
-  Command_Cmd_INVOKE = 6,
-  Command_Cmd_REGISTER_INVOKE = 7,
-  Command_Cmd_REGISTER_INVOKE_OK = 8
+  Command_Cmd_PROXY_HELLO = 4,
+  Command_Cmd_PING = 5,
+  Command_Cmd_PONG = 6,
+  Command_Cmd_INVOKE = 7,
+  Command_Cmd_REGISTER_INVOKE = 8,
+  Command_Cmd_REGISTER_INVOKE_OK = 9
 };
 bool Command_Cmd_IsValid(int value);
 const Command_Cmd Command_Cmd_Cmd_MIN = Command_Cmd_ERROR;
@@ -119,6 +120,7 @@ class Command : public ::google::protobuf::Message {
   static const Cmd ERROR = Command_Cmd_ERROR;
   static const Cmd RESPONSE = Command_Cmd_RESPONSE;
   static const Cmd NODE_HELLO = Command_Cmd_NODE_HELLO;
+  static const Cmd PROXY_HELLO = Command_Cmd_PROXY_HELLO;
   static const Cmd PING = Command_Cmd_PING;
   static const Cmd PONG = Command_Cmd_PONG;
   static const Cmd INVOKE = Command_Cmd_INVOKE;

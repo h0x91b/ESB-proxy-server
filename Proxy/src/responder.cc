@@ -44,40 +44,42 @@ Responder::Responder(int _port, char *_guid, Proxy* _proxy)
 Responder::~Responder()
 {
 	dbg("Destructor");
+	zmq_ctx_term(zContext);
 }
 
 bool Responder::Poll()
 {	
-	zmq_msg_t msg;
-	int msgInitRC = zmq_msg_init (&msg);
+	zmq_msg_t msgReq;
+	int msgInitRC = zmq_msg_init (&msgReq);
 	assert (msgInitRC == 0);
-	int len = zmq_recvmsg(zResponder, &msg, ZMQ_DONTWAIT);
+	int len = zmq_recvmsg(zResponder, &msgReq, ZMQ_DONTWAIT);
 	if(len == -1 && zmq_errno() == EAGAIN){
-		zmq_msg_close (&msg);
+		zmq_msg_close (&msgReq);
 		return FALSE;
 	} else if(len<1){
 		dbg("Error %i, %s", zmq_errno(), zmq_strerror(zmq_errno()));
-		zmq_msg_close (&msg);
+		zmq_msg_close (&msgReq);
 		return FALSE;
 	}
 	assert (len != -1);
-	char *buffer = (char*)zmq_msg_data(&msg);
 	info ("received: %i bytes", len);
 	
 	ESB::Command cmdReq;
-	cmdReq.ParseFromArray(buffer, len);
+	cmdReq.ParseFromArray(zmq_msg_data(&msgReq), len);
 	auto cmdResp = proxy->ResponderCallback(cmdReq);
 	
 	size_t size = cmdResp.ByteSize();
-	void *bb = malloc(size);
-	
-	cmdResp.SerializeToArray(bb, size);
+	zmq_msg_t msgResp;
+	int rc = zmq_msg_init_size (&msgResp, size);
+	assert(rc == 0);
+
+	cmdResp.SerializeToArray(zmq_msg_data (&msgResp), size);
 	info("Send response len: %zu bytes", size);
 	
-	zmq_send(zResponder, bb, size, 0);
-	free(bb);
-	zmq_msg_close (&msg);
-
+	rc = zmq_msg_send (&msgResp, zResponder, 0);
+	assert(rc == (int)(size));
+	
+	zmq_msg_close (&msgReq);
 	return TRUE;
 }
 

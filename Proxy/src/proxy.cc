@@ -17,8 +17,12 @@ Proxy::Proxy()
 	responderPort = 7770;
 	publisherPort = 7771;
 	strcpy(host, "localhost");
+	
 	responder = new Responder(responderPort, guid, this);
+	responderPort = responder->port;
+	
 	publisher = new Publisher(publisherPort);
+	publisherPort = publisher->port;
 	
 	redisCtx = redisConnect("127.0.0.1", 6379);
 	if (redisCtx != NULL && redisCtx->err) {
@@ -27,6 +31,15 @@ Proxy::Proxy()
 	}
 	isWork = TRUE;
 	pthread_create(&thread, NULL, &MainLoop, this);
+}
+
+void Proxy::ProxyHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
+{
+	info("Received hello from another proxy");
+	char response[256];
+	sprintf(response, "tcp://%s:%i", host, publisherPort);
+	cmdResp.set_payload(response);
+	cmdResp.set_cmd(ESB::Command::RESPONSE);
 }
 
 void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
@@ -156,6 +169,13 @@ ESB::Command Proxy::ResponderCallback(ESB::Command &cmdReq)
 			dbg("get request for NODE_HELLO");
 			NodeHello(cmdReq, cmdResp);
 			break;
+		case ESB::Command::PROXY_HELLO:
+			dbg("get request for PROXY_HELLO");
+			ProxyHello(cmdReq, cmdResp);
+			break;
+		case ESB::Command::ERROR:
+			err("error: %s", cmdReq.payload().c_str());
+			break;
 		default:
 			err("Error, received unknown cmd: %i", cmdReq.cmd());
 			cmdResp.set_cmd(ESB::Command::ERROR);
@@ -267,6 +287,34 @@ void *Proxy::MainLoop(void *p)
 	return 0;
 }
 
+void Proxy::ConnectToAnotherProxy(const char *proxyGuid, const char *connectionString)
+{
+	info("connecting to '%s' '%s'", proxyGuid, connectionString);
+	
+	auto requester = new Requester(connectionString, proxyGuid, this);
+	if(requester->Connect()) {
+		info("connected successfull");
+		char connectionString[512];
+		if(!requester->SendProxyHello(connectionString)){
+			err("hello failed");
+		} else {
+			info("hello ok: '%s'", connectionString);
+		}
+//		subscribers.insert(std::pair<std::string,Subscriber*> {proxyGuid, subscriber});
+//		nodesGuids.push_back(tmp[0]);
+//		
+//		cmdResp.set_cmd(ESB::Command::RESPONSE);
+//		cmdResp.set_payload(response);
+	} else {
+		err("can not connect");
+//		cmdResp.set_cmd(ESB::Command::ERROR);
+//		char errBuf[512];
+//		sprintf(errBuf, "ESB Proxy can not connect to your Node, check the firewall, connectionString: `%s`", connectionString);
+//		cmdResp.set_payload(errBuf);
+	}
+	delete requester;
+}
+
 void Proxy::PingRedis()
 {
 	if(time(NULL)-lastRedisPing<3) return;
@@ -295,6 +343,7 @@ void Proxy::PingRedis()
 			}
 			
 			//check if connected here...
+			ConnectToAnotherProxy(guid2, connectionString);
 		}
 	} else {
 		err("Redis return weird answer...");

@@ -61,7 +61,14 @@ ESB.prototype.connect= function(){
 			self.emit('error', err);
 			return;
 		}
-		console.log('avaible proxies: %s',resp.length);
+		console.log('available proxies: %s',resp.length);
+		if(resp.length<1){
+			console.log('currently no proxies can be found, wait 5 sec');
+			setTimeout(function(){
+				self.connect();
+			}, 5000);
+			return;
+		}
 		var d = resp.pop().split('#');
 		var connectStr = d[1];
 		self.proxyGuid = d[0];

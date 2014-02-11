@@ -22,7 +22,7 @@ esb2.on('ready', function(){
 		cb(null, data.a + data.b);
 	});
 	setInterval(function(){
-	for(var i=0;i<250;i++)
+	for(var i=0;i<1;i++)
 		esb2.invoke('/math/plus', {a: 2, b: 2}, function(err, resp, errStr){
 			if(err){
 				console.log(err, errStr);
@@ -35,6 +35,6 @@ esb2.on('ready', function(){
 });
 
 setInterval(function(){
-	console.log('%s per second', responses);
+	console.log('%s invokes per second', responses);
 	responses=0;
 },1000);

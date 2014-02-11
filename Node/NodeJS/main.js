@@ -63,16 +63,16 @@ ESB.prototype.connect= function(){
 		}
 		console.log('available proxies: %s',resp.length);
 		if(resp.length<1){
-			console.log('currently no proxies can be found, wait 5 sec');
+			console.log('currently no proxies can be found, wait 1 sec');
 			setTimeout(function(){
 				self.connect();
-			}, 5000);
+			}, 1000);
 			return;
 		}
 		var d = resp.pop().split('#');
 		var connectStr = d[1];
 		self.proxyGuid = d[0];
-		console.log('ESB Node %s connecting to: %s', self.guid, connectStr);
+		console.log('ESB Node %s connecting to: %s (%s)', self.guid, connectStr, self.proxyGuid);
 		self.requestSocket.connect(connectStr);
 		console.log('ESB Node %s connected', self.guid);
 		self.sendHello();
@@ -103,9 +103,9 @@ ESB.prototype.sendHello= function() {
 			self.onMessage.call(self, data);
 		});
 		self.subscribeSocket.connect(t);
-		console.log('ESB Node %s connected to publisher of ESB Proxy', self.guid);
+		console.log('ESB Node %s connected to publisher of ESB Proxy %s', self.guid, self.proxyGuid);
 		self.subscribeSocket.subscribe(self.guid);
-		self.proxyGuid = respObj.source_proxy_guid;
+		//self.proxyGuid = respObj.source_proxy_guid;
 		self.emit('ready');
 	});
 	this.requestSocket.send(buf);
@@ -159,7 +159,7 @@ ESB.prototype.onMessage= function(data) {
 			}
 			break;
 		case 'REGISTER_INVOKE_OK':
-			console.log("REGISTER_INVOKE_OK for %s", respObj.payload);
+			console.log("REGISTER_INVOKE_OK for %s from Proxy %s", respObj.payload, respObj.source_proxy_guid);
 			break;
 		default:
 			console.log("unknown operation", respObj);
@@ -211,13 +211,13 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 			identifier: identifier,
 			payload: JSON.stringify(data),
 			guid_from: cmdGuid,
-			target_proxy_guid: '',
+			target_proxy_guid: this.proxyGuid,
 			source_proxy_guid: this.guid,
 			start_time: +new Date,
 			timeout_ms: options.timeout
 		}
 		var buf = pb.Serialize(obj, "ESB.Command");
-		this.publisherSocket.send(new Buffer(this.guid+buf));
+		this.publisherSocket.send(new Buffer(this.proxyGuid+buf));
 	} catch(e){
 		isCalled = true;
 		if(id) clearTimeout(id);
@@ -248,7 +248,7 @@ ESB.prototype.register = function(identifier, version, cb, options) {
 				payload: JSON.stringify(resp, null, '\t'),
 				guid_from: cmdGuid,
 				guid_to: data.guid_from,
-				target_proxy_guid: data.source_proxy_guid,
+				target_proxy_guid: self.proxyGuid,
 				source_proxy_guid: self.guid,
 				start_time: +new Date,
 			}
@@ -260,7 +260,7 @@ ESB.prototype.register = function(identifier, version, cb, options) {
 				}
 				//console.log('invoke response',obj);
 				var buf = pb.Serialize(obj, "ESB.Command");
-				self.publisherSocket.send(self.guid+buf);
+				self.publisherSocket.send(self.proxyGuid+buf);
 			} catch(e){
 				cb('Exception', null, 'Exception while encoding/sending message: '+e.toString(), resp);
 			}
@@ -274,13 +274,13 @@ ESB.prototype.register = function(identifier, version, cb, options) {
 			identifier: identifier,
 			payload: cmdGuid,
 			guid_from: cmdGuid,
-			target_proxy_guid: '',
+			target_proxy_guid: this.proxyGuid,
 			source_proxy_guid: this.guid,
 			start_time: +new Date,
 		}
 		//console.log('register',obj);
 		var buf = pb.Serialize(obj, "ESB.Command");
-		this.publisherSocket.send(this.guid+buf);
+		this.publisherSocket.send(this.proxyGuid+buf);
 	} catch(e){
 		cb('Exception', null, 'Exception while encoding/sending message: '+e.toString());
 	}

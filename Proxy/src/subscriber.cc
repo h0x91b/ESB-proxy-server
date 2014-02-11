@@ -24,7 +24,8 @@ bool Subscriber::Connect()
 	
 	if(rc==0)
 	{
-		zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, "", 0);
+		rc = zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, proxy->guid, 38);
+		assert(rc == 0);
 		return TRUE;
 	}
 	
@@ -62,6 +63,11 @@ SUBSCRIBER_POLL_MSG *Subscriber::Poll()
 	buffer+=guidSize;
 	cmdReq->ParseFromArray(buffer, len-guidSize);
 	buffer-=guidSize;
+	
+	if(strcmp(cmdReq->target_proxy_guid().c_str(), proxy->guid) != 0)
+	{
+		err("subscriber receive wrong target_proxy_guid call");
+	}
 	
 	auto ret = (SUBSCRIBER_POLL_MSG*)malloc(sizeof(SUBSCRIBER_POLL_MSG));
 	ret->cmdReq = cmdReq;

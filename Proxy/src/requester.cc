@@ -16,6 +16,12 @@ Requester::Requester(const char *_connectString, const char *_targetGuid, Proxy 
 	proxy = _proxy;
 	zContext = zmq_ctx_new();
 	zResponder = zmq_socket (zContext, ZMQ_REQ);
+	
+	const int timeout = 250;
+	zmq_setsockopt(zResponder, ZMQ_RCVTIMEO, &timeout, sizeof(int));
+	
+	const int lingerTimeout = 250;
+	zmq_setsockopt(zResponder, ZMQ_LINGER, &lingerTimeout, sizeof(int));
 }
 
 Requester::~Requester()
@@ -70,8 +76,6 @@ bool Requester::SendProxyHello(char *respConnectionString)
 	zmq_msg_t msgResp;
 	int msgInitRC = zmq_msg_init (&msgResp);
 	assert (msgInitRC == 0);
-	const int timeout = 250;
-	zmq_setsockopt(zResponder, ZMQ_RCVTIMEO, &timeout, sizeof(int));
 	int len = zmq_msg_recv(&msgResp, zResponder, 0);
 	if(len<1){
 		err("Error %i, %s", zmq_errno(), zmq_strerror(zmq_errno()));

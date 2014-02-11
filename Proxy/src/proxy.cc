@@ -57,7 +57,7 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 	if(subscriber->Connect()) {
 		info("connected successfull");
 		subscribers.insert(std::pair<std::string,Subscriber*> {tmp[0], subscriber});
-		nodesGuids.push_back(tmp[0]);
+		nodesGuids.emplace(tmp[0], tmp[0]);
 		
 		cmdResp.set_cmd(ESB::Command::RESPONSE);
 		cmdResp.set_payload(response);
@@ -222,10 +222,16 @@ void Proxy::InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid)
 
 }
 
+void Proxy::RegistryExchangeResponder(ESB::Command &cmdReq)
+{
+	dbg("send local registry");
+}
+
 void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 {
 	dbg("subscriber callback from node: %s", nodeGuid);
 	ESB::Command cmdResp;
+	char errBuf[512];
 	switch (cmdReq.cmd()) {
 		case ESB::Command::RESPONSE:
 			dbg("get response for %s", cmdReq.guid_to().c_str());
@@ -242,18 +248,24 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 			dbg("get invoke from node %s method %s to identifier: %s", nodeGuid, cmdReq.guid_from().c_str(), cmdReq.identifier().c_str());
 			Invoke(cmdReq);
 			return;
+		case ESB::Command::REGISTRY_EXCHANGE_REQUEST:
+			RegistryExchangeResponder(cmdReq);
+			return;
 		case ESB::Command::ERROR:
 			err("Subscriber %s got error '%s' from %s", guid, cmdReq.payload().c_str(), nodeGuid);
 			return;
 		default:
 			err("Error, received unknown cmd: %i, payload: %s", cmdReq.cmd(), cmdReq.payload().c_str());
 			cmdResp.set_cmd(ESB::Command::ERROR);
-			cmdResp.set_payload("Subscriber unknown command");
+			sprintf(errBuf,"Subscriber get unknown command: %i, payload: %s", cmdReq.cmd(), cmdReq.payload().c_str());
+			cmdResp.set_payload(errBuf);
 			break;
 	}
 	
 	cmdResp.set_guid_from(guid);
 	cmdResp.set_guid_to(cmdReq.guid_from());
+	cmdResp.set_source_proxy_guid(guid);
+	cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
 	
 	publisher->Publish(nodeGuid, cmdResp);
 }
@@ -264,6 +276,24 @@ Proxy::~Proxy()
 	isWork = FALSE;
 }
 
+void Proxy::RequestRegistryExchange()
+{
+	if(time(NULL)-lastRegistryExchange < 3) return;
+	dbg("here");
+	for ( auto local_it = proxiesGuids.begin(); local_it!= proxiesGuids.end(); ++local_it )
+	{
+		auto s = local_it->second;
+		dbg("request registry from %s", s);
+		ESB::Command cmdReq;
+		cmdReq.set_cmd(ESB::Command::REGISTRY_EXCHANGE_REQUEST);
+		cmdReq.set_source_proxy_guid(guid);
+		cmdReq.set_target_proxy_guid(s);
+		cmdReq.set_payload("REGISTRY_EXCHANGE_REQUEST please :)");
+		publisher->Publish(s.c_str(), cmdReq);
+	}
+	lastRegistryExchange = time(NULL);
+}
+
 void *Proxy::MainLoop(void *p)
 {
 	info("MainLoop started");
@@ -271,7 +301,6 @@ void *Proxy::MainLoop(void *p)
 	auto self = (Proxy*)p;
 	while (self->isWork) {
 		bool needToSleep = TRUE;
-		self->PingRedis();
 		
 		self->responder->Poll();
 		
@@ -289,6 +318,9 @@ void *Proxy::MainLoop(void *p)
 			delete msg->cmdReq;
 			free(msg);
 		}
+		
+		self->PingRedis();
+		self->RequestRegistryExchange();
 		
 		if(needToSleep) usleep(50000);
 	}
@@ -313,9 +345,11 @@ void Proxy::ConnectToAnotherProxy(const char *proxyGuid, const char *connectionS
 			if(subscriber->Connect()) {
 				info("connected successfull");
 				subscribers.insert(std::pair<std::string,Subscriber*> {proxyGuid, subscriber});
+				proxiesGuids.emplace(proxyGuid, proxyGuid);
 			} else {
 				err("can not connect to publisher");
 				delete subscriber;
+				proxiesGuids.erase(proxyGuid);
 			}
 		}
 	} else {

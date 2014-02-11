@@ -37,12 +37,12 @@ void protobuf_AssignDesc_command_2eproto() {
   Command_descriptor_ = file->message_type(0);
   static const int Command_offsets_[10] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, cmd_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, source_proxy_guid_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, target_proxy_guid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, payload_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, identifier_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, guid_from_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, guid_to_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, source_proxy_guid_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, target_proxy_guid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, version_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, start_time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, timeout_ms_),
@@ -89,16 +89,18 @@ void protobuf_AddDesc_command_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rcommand.proto\022\003ESB\"\357\002\n\007Command\022\035\n\003cmd\030"
-    "\001 \002(\0162\020.ESB.Command.Cmd\022\017\n\007payload\030\002 \002(\t"
-    "\022\022\n\nidentifier\030\003 \001(\t\022\021\n\tguid_from\030\004 \001(\t\022"
-    "\017\n\007guid_to\030\005 \001(\t\022\031\n\021source_proxy_guid\030\006 "
-    "\001(\t\022\031\n\021target_proxy_guid\030\007 \001(\t\022\017\n\007versio"
+    "\n\rcommand.proto\022\003ESB\"\256\003\n\007Command\022\035\n\003cmd\030"
+    "\001 \002(\0162\020.ESB.Command.Cmd\022\031\n\021source_proxy_"
+    "guid\030\002 \002(\t\022\031\n\021target_proxy_guid\030\003 \002(\t\022\017\n"
+    "\007payload\030\004 \002(\t\022\022\n\nidentifier\030\005 \001(\t\022\021\n\tgu"
+    "id_from\030\006 \001(\t\022\017\n\007guid_to\030\007 \001(\t\022\017\n\007versio"
     "n\030\010 \001(\005\022\022\n\nstart_time\030\t \001(\r\022\022\n\ntimeout_m"
-    "s\030\n \001(\005\"\214\001\n\003Cmd\022\t\n\005ERROR\020\001\022\014\n\010RESPONSE\020\002"
+    "s\030\n \001(\005\"\313\001\n\003Cmd\022\t\n\005ERROR\020\001\022\014\n\010RESPONSE\020\002"
     "\022\016\n\nNODE_HELLO\020\003\022\017\n\013PROXY_HELLO\020\004\022\010\n\004PIN"
     "G\020\005\022\010\n\004PONG\020\006\022\n\n\006INVOKE\020\007\022\023\n\017REGISTER_IN"
-    "VOKE\020\010\022\026\n\022REGISTER_INVOKE_OK\020\t", 390);
+    "VOKE\020\010\022\026\n\022REGISTER_INVOKE_OK\020\t\022\035\n\031REGIST"
+    "RY_EXCHANGE_REQUEST\020\n\022\036\n\032REGISTRY_EXCHAN"
+    "GE_RESPONSE\020\013", 453);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "command.proto", &protobuf_RegisterTypes);
   Command::default_instance_ = new Command();
@@ -130,6 +132,8 @@ bool Command_Cmd_IsValid(int value) {
     case 7:
     case 8:
     case 9:
+    case 10:
+    case 11:
       return true;
     default:
       return false;
@@ -146,18 +150,20 @@ const Command_Cmd Command::PONG;
 const Command_Cmd Command::INVOKE;
 const Command_Cmd Command::REGISTER_INVOKE;
 const Command_Cmd Command::REGISTER_INVOKE_OK;
+const Command_Cmd Command::REGISTRY_EXCHANGE_REQUEST;
+const Command_Cmd Command::REGISTRY_EXCHANGE_RESPONSE;
 const Command_Cmd Command::Cmd_MIN;
 const Command_Cmd Command::Cmd_MAX;
 const int Command::Cmd_ARRAYSIZE;
 #endif  // _MSC_VER
 #ifndef _MSC_VER
 const int Command::kCmdFieldNumber;
+const int Command::kSourceProxyGuidFieldNumber;
+const int Command::kTargetProxyGuidFieldNumber;
 const int Command::kPayloadFieldNumber;
 const int Command::kIdentifierFieldNumber;
 const int Command::kGuidFromFieldNumber;
 const int Command::kGuidToFieldNumber;
-const int Command::kSourceProxyGuidFieldNumber;
-const int Command::kTargetProxyGuidFieldNumber;
 const int Command::kVersionFieldNumber;
 const int Command::kStartTimeFieldNumber;
 const int Command::kTimeoutMsFieldNumber;
@@ -180,12 +186,12 @@ Command::Command(const Command& from)
 void Command::SharedCtor() {
   _cached_size_ = 0;
   cmd_ = 1;
+  source_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  target_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   payload_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   identifier_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   guid_from_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   guid_to_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  source_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  target_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   version_ = 0;
   start_time_ = 0u;
   timeout_ms_ = 0;
@@ -197,6 +203,12 @@ Command::~Command() {
 }
 
 void Command::SharedDtor() {
+  if (source_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+    delete source_proxy_guid_;
+  }
+  if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+    delete target_proxy_guid_;
+  }
   if (payload_ != &::google::protobuf::internal::kEmptyString) {
     delete payload_;
   }
@@ -208,12 +220,6 @@ void Command::SharedDtor() {
   }
   if (guid_to_ != &::google::protobuf::internal::kEmptyString) {
     delete guid_to_;
-  }
-  if (source_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
-    delete source_proxy_guid_;
-  }
-  if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
-    delete target_proxy_guid_;
   }
   if (this != default_instance_) {
   }
@@ -243,6 +249,16 @@ Command* Command::New() const {
 void Command::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     cmd_ = 1;
+    if (has_source_proxy_guid()) {
+      if (source_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+        source_proxy_guid_->clear();
+      }
+    }
+    if (has_target_proxy_guid()) {
+      if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+        target_proxy_guid_->clear();
+      }
+    }
     if (has_payload()) {
       if (payload_ != &::google::protobuf::internal::kEmptyString) {
         payload_->clear();
@@ -261,16 +277,6 @@ void Command::Clear() {
     if (has_guid_to()) {
       if (guid_to_ != &::google::protobuf::internal::kEmptyString) {
         guid_to_->clear();
-      }
-    }
-    if (has_source_proxy_guid()) {
-      if (source_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
-        source_proxy_guid_->clear();
-      }
-    }
-    if (has_target_proxy_guid()) {
-      if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
-        target_proxy_guid_->clear();
       }
     }
     version_ = 0;
@@ -305,80 +311,12 @@ bool Command::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(18)) goto parse_payload;
+        if (input->ExpectTag(18)) goto parse_source_proxy_guid;
         break;
       }
 
-      // required string payload = 2;
+      // required string source_proxy_guid = 2;
       case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_payload:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_payload()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->payload().data(), this->payload().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(26)) goto parse_identifier;
-        break;
-      }
-
-      // optional string identifier = 3;
-      case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_identifier:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_identifier()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->identifier().data(), this->identifier().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(34)) goto parse_guid_from;
-        break;
-      }
-
-      // optional string guid_from = 4;
-      case 4: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_guid_from:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_guid_from()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->guid_from().data(), this->guid_from().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(42)) goto parse_guid_to;
-        break;
-      }
-
-      // optional string guid_to = 5;
-      case 5: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_guid_to:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_guid_to()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->guid_to().data(), this->guid_to().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(50)) goto parse_source_proxy_guid;
-        break;
-      }
-
-      // optional string source_proxy_guid = 6;
-      case 6: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_source_proxy_guid:
@@ -390,12 +328,12 @@ bool Command::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(58)) goto parse_target_proxy_guid;
+        if (input->ExpectTag(26)) goto parse_target_proxy_guid;
         break;
       }
 
-      // optional string target_proxy_guid = 7;
-      case 7: {
+      // required string target_proxy_guid = 3;
+      case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_target_proxy_guid:
@@ -403,6 +341,74 @@ bool Command::MergePartialFromCodedStream(
                 input, this->mutable_target_proxy_guid()));
           ::google::protobuf::internal::WireFormat::VerifyUTF8String(
             this->target_proxy_guid().data(), this->target_proxy_guid().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_payload;
+        break;
+      }
+
+      // required string payload = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_payload:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_payload()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->payload().data(), this->payload().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(42)) goto parse_identifier;
+        break;
+      }
+
+      // optional string identifier = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_identifier:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_identifier()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->identifier().data(), this->identifier().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(50)) goto parse_guid_from;
+        break;
+      }
+
+      // optional string guid_from = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_guid_from:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_guid_from()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->guid_from().data(), this->guid_from().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(58)) goto parse_guid_to;
+        break;
+      }
+
+      // optional string guid_to = 7;
+      case 7: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_guid_to:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_guid_to()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->guid_to().data(), this->guid_to().length(),
             ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
@@ -483,58 +489,58 @@ void Command::SerializeWithCachedSizes(
       1, this->cmd(), output);
   }
 
-  // required string payload = 2;
-  if (has_payload()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->payload().data(), this->payload().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      2, this->payload(), output);
-  }
-
-  // optional string identifier = 3;
-  if (has_identifier()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->identifier().data(), this->identifier().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      3, this->identifier(), output);
-  }
-
-  // optional string guid_from = 4;
-  if (has_guid_from()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->guid_from().data(), this->guid_from().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      4, this->guid_from(), output);
-  }
-
-  // optional string guid_to = 5;
-  if (has_guid_to()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->guid_to().data(), this->guid_to().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      5, this->guid_to(), output);
-  }
-
-  // optional string source_proxy_guid = 6;
+  // required string source_proxy_guid = 2;
   if (has_source_proxy_guid()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->source_proxy_guid().data(), this->source_proxy_guid().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      6, this->source_proxy_guid(), output);
+      2, this->source_proxy_guid(), output);
   }
 
-  // optional string target_proxy_guid = 7;
+  // required string target_proxy_guid = 3;
   if (has_target_proxy_guid()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->target_proxy_guid().data(), this->target_proxy_guid().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      7, this->target_proxy_guid(), output);
+      3, this->target_proxy_guid(), output);
+  }
+
+  // required string payload = 4;
+  if (has_payload()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->payload().data(), this->payload().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      4, this->payload(), output);
+  }
+
+  // optional string identifier = 5;
+  if (has_identifier()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->identifier().data(), this->identifier().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      5, this->identifier(), output);
+  }
+
+  // optional string guid_from = 6;
+  if (has_guid_from()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->guid_from().data(), this->guid_from().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      6, this->guid_from(), output);
+  }
+
+  // optional string guid_to = 7;
+  if (has_guid_to()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->guid_to().data(), this->guid_to().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      7, this->guid_to(), output);
   }
 
   // optional int32 version = 8;
@@ -566,64 +572,64 @@ void Command::SerializeWithCachedSizes(
       1, this->cmd(), target);
   }
 
-  // required string payload = 2;
-  if (has_payload()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->payload().data(), this->payload().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->payload(), target);
-  }
-
-  // optional string identifier = 3;
-  if (has_identifier()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->identifier().data(), this->identifier().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->identifier(), target);
-  }
-
-  // optional string guid_from = 4;
-  if (has_guid_from()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->guid_from().data(), this->guid_from().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        4, this->guid_from(), target);
-  }
-
-  // optional string guid_to = 5;
-  if (has_guid_to()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->guid_to().data(), this->guid_to().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        5, this->guid_to(), target);
-  }
-
-  // optional string source_proxy_guid = 6;
+  // required string source_proxy_guid = 2;
   if (has_source_proxy_guid()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->source_proxy_guid().data(), this->source_proxy_guid().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        6, this->source_proxy_guid(), target);
+        2, this->source_proxy_guid(), target);
   }
 
-  // optional string target_proxy_guid = 7;
+  // required string target_proxy_guid = 3;
   if (has_target_proxy_guid()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->target_proxy_guid().data(), this->target_proxy_guid().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        7, this->target_proxy_guid(), target);
+        3, this->target_proxy_guid(), target);
+  }
+
+  // required string payload = 4;
+  if (has_payload()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->payload().data(), this->payload().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        4, this->payload(), target);
+  }
+
+  // optional string identifier = 5;
+  if (has_identifier()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->identifier().data(), this->identifier().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        5, this->identifier(), target);
+  }
+
+  // optional string guid_from = 6;
+  if (has_guid_from()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->guid_from().data(), this->guid_from().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        6, this->guid_from(), target);
+  }
+
+  // optional string guid_to = 7;
+  if (has_guid_to()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->guid_to().data(), this->guid_to().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        7, this->guid_to(), target);
   }
 
   // optional int32 version = 8;
@@ -658,46 +664,46 @@ int Command::ByteSize() const {
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->cmd());
     }
 
-    // required string payload = 2;
-    if (has_payload()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->payload());
-    }
-
-    // optional string identifier = 3;
-    if (has_identifier()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->identifier());
-    }
-
-    // optional string guid_from = 4;
-    if (has_guid_from()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->guid_from());
-    }
-
-    // optional string guid_to = 5;
-    if (has_guid_to()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->guid_to());
-    }
-
-    // optional string source_proxy_guid = 6;
+    // required string source_proxy_guid = 2;
     if (has_source_proxy_guid()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->source_proxy_guid());
     }
 
-    // optional string target_proxy_guid = 7;
+    // required string target_proxy_guid = 3;
     if (has_target_proxy_guid()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->target_proxy_guid());
+    }
+
+    // required string payload = 4;
+    if (has_payload()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->payload());
+    }
+
+    // optional string identifier = 5;
+    if (has_identifier()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->identifier());
+    }
+
+    // optional string guid_from = 6;
+    if (has_guid_from()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->guid_from());
+    }
+
+    // optional string guid_to = 7;
+    if (has_guid_to()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->guid_to());
     }
 
     // optional int32 version = 8;
@@ -753,6 +759,12 @@ void Command::MergeFrom(const Command& from) {
     if (from.has_cmd()) {
       set_cmd(from.cmd());
     }
+    if (from.has_source_proxy_guid()) {
+      set_source_proxy_guid(from.source_proxy_guid());
+    }
+    if (from.has_target_proxy_guid()) {
+      set_target_proxy_guid(from.target_proxy_guid());
+    }
     if (from.has_payload()) {
       set_payload(from.payload());
     }
@@ -764,12 +776,6 @@ void Command::MergeFrom(const Command& from) {
     }
     if (from.has_guid_to()) {
       set_guid_to(from.guid_to());
-    }
-    if (from.has_source_proxy_guid()) {
-      set_source_proxy_guid(from.source_proxy_guid());
-    }
-    if (from.has_target_proxy_guid()) {
-      set_target_proxy_guid(from.target_proxy_guid());
     }
     if (from.has_version()) {
       set_version(from.version());
@@ -799,7 +805,7 @@ void Command::CopyFrom(const Command& from) {
 }
 
 bool Command::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
 
   return true;
 }
@@ -807,12 +813,12 @@ bool Command::IsInitialized() const {
 void Command::Swap(Command* other) {
   if (other != this) {
     std::swap(cmd_, other->cmd_);
+    std::swap(source_proxy_guid_, other->source_proxy_guid_);
+    std::swap(target_proxy_guid_, other->target_proxy_guid_);
     std::swap(payload_, other->payload_);
     std::swap(identifier_, other->identifier_);
     std::swap(guid_from_, other->guid_from_);
     std::swap(guid_to_, other->guid_to_);
-    std::swap(source_proxy_guid_, other->source_proxy_guid_);
-    std::swap(target_proxy_guid_, other->target_proxy_guid_);
     std::swap(version_, other->version_);
     std::swap(start_time_, other->start_time_);
     std::swap(timeout_ms_, other->timeout_ms_);

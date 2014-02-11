@@ -45,6 +45,8 @@ public:
 	void InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid);
 	void PingRedis();
 	void ConnectToAnotherProxy(const char *proxyGuid, const char *connectionString);
+	void RequestRegistryExchange();
+	void RegistryExchangeResponder(ESB::Command &cmdReq)
 	
 	char guid[39];
 	Responder *responder;
@@ -58,6 +60,7 @@ public:
 	int invokeErrors = 0;
 	int registerInvoke = 0;
 	int lastRedisPing = 0;
+	int lastRegistryExchange = 0;
 
 private:
 	Proxy();
@@ -71,7 +74,8 @@ private:
 	static void *MainLoop(void *p);
 	bool isWork;
 	pthread_t thread;
-	std::vector<std::string> nodesGuids;
+	std::map<std::string, std::string> nodesGuids;
+	std::map<std::string, std::string> proxiesGuids;
 	std::unordered_map<std::string,Subscriber*> subscribers;
 	std::unordered_map<std::string,std::vector<LocalInvokeMethod*>> localInvokeMethods; //identifier, struct
 	std::unordered_map<std::string,RemoteInvokeMethod*> remoteInvokeMethods; //identifier, struct

@@ -35,6 +35,7 @@ void protobuf_AssignDesc_command_2eproto();
 void protobuf_ShutdownFile_command_2eproto();
 
 class Command;
+class Command_RegistryEntry;
 
 enum Command_Cmd {
   Command_Cmd_ERROR = 1,
@@ -64,7 +65,152 @@ inline bool Command_Cmd_Parse(
   return ::google::protobuf::internal::ParseNamedEnum<Command_Cmd>(
     Command_Cmd_descriptor(), name, value);
 }
+enum Command_RegistryEntryType {
+  Command_RegistryEntryType_INVOKE_METHOD = 1
+};
+bool Command_RegistryEntryType_IsValid(int value);
+const Command_RegistryEntryType Command_RegistryEntryType_RegistryEntryType_MIN = Command_RegistryEntryType_INVOKE_METHOD;
+const Command_RegistryEntryType Command_RegistryEntryType_RegistryEntryType_MAX = Command_RegistryEntryType_INVOKE_METHOD;
+const int Command_RegistryEntryType_RegistryEntryType_ARRAYSIZE = Command_RegistryEntryType_RegistryEntryType_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* Command_RegistryEntryType_descriptor();
+inline const ::std::string& Command_RegistryEntryType_Name(Command_RegistryEntryType value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    Command_RegistryEntryType_descriptor(), value);
+}
+inline bool Command_RegistryEntryType_Parse(
+    const ::std::string& name, Command_RegistryEntryType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<Command_RegistryEntryType>(
+    Command_RegistryEntryType_descriptor(), name, value);
+}
 // ===================================================================
+
+class Command_RegistryEntry : public ::google::protobuf::Message {
+ public:
+  Command_RegistryEntry();
+  virtual ~Command_RegistryEntry();
+
+  Command_RegistryEntry(const Command_RegistryEntry& from);
+
+  inline Command_RegistryEntry& operator=(const Command_RegistryEntry& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Command_RegistryEntry& default_instance();
+
+  void Swap(Command_RegistryEntry* other);
+
+  // implements Message ----------------------------------------------
+
+  Command_RegistryEntry* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Command_RegistryEntry& from);
+  void MergeFrom(const Command_RegistryEntry& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required .ESB.Command.RegistryEntryType type = 1 [default = INVOKE_METHOD];
+  inline bool has_type() const;
+  inline void clear_type();
+  static const int kTypeFieldNumber = 1;
+  inline ::ESB::Command_RegistryEntryType type() const;
+  inline void set_type(::ESB::Command_RegistryEntryType value);
+
+  // required string identifier = 2;
+  inline bool has_identifier() const;
+  inline void clear_identifier();
+  static const int kIdentifierFieldNumber = 2;
+  inline const ::std::string& identifier() const;
+  inline void set_identifier(const ::std::string& value);
+  inline void set_identifier(const char* value);
+  inline void set_identifier(const char* value, size_t size);
+  inline ::std::string* mutable_identifier();
+  inline ::std::string* release_identifier();
+  inline void set_allocated_identifier(::std::string* identifier);
+
+  // required string method_guid = 3;
+  inline bool has_method_guid() const;
+  inline void clear_method_guid();
+  static const int kMethodGuidFieldNumber = 3;
+  inline const ::std::string& method_guid() const;
+  inline void set_method_guid(const ::std::string& value);
+  inline void set_method_guid(const char* value);
+  inline void set_method_guid(const char* value, size_t size);
+  inline ::std::string* mutable_method_guid();
+  inline ::std::string* release_method_guid();
+  inline void set_allocated_method_guid(::std::string* method_guid);
+
+  // required string proxy_guid = 4;
+  inline bool has_proxy_guid() const;
+  inline void clear_proxy_guid();
+  static const int kProxyGuidFieldNumber = 4;
+  inline const ::std::string& proxy_guid() const;
+  inline void set_proxy_guid(const ::std::string& value);
+  inline void set_proxy_guid(const char* value);
+  inline void set_proxy_guid(const char* value, size_t size);
+  inline ::std::string* mutable_proxy_guid();
+  inline ::std::string* release_proxy_guid();
+  inline void set_allocated_proxy_guid(::std::string* proxy_guid);
+
+  // @@protoc_insertion_point(class_scope:ESB.Command.RegistryEntry)
+ private:
+  inline void set_has_type();
+  inline void clear_has_type();
+  inline void set_has_identifier();
+  inline void clear_has_identifier();
+  inline void set_has_method_guid();
+  inline void clear_has_method_guid();
+  inline void set_has_proxy_guid();
+  inline void clear_has_proxy_guid();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::std::string* identifier_;
+  ::std::string* method_guid_;
+  ::std::string* proxy_guid_;
+  int type_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+
+  friend void  protobuf_AddDesc_command_2eproto();
+  friend void protobuf_AssignDesc_command_2eproto();
+  friend void protobuf_ShutdownFile_command_2eproto();
+
+  void InitAsDefaultInstance();
+  static Command_RegistryEntry* default_instance_;
+};
+// -------------------------------------------------------------------
 
 class Command : public ::google::protobuf::Message {
  public:
@@ -118,6 +264,8 @@ class Command : public ::google::protobuf::Message {
 
   // nested types ----------------------------------------------------
 
+  typedef Command_RegistryEntry RegistryEntry;
+
   typedef Command_Cmd Cmd;
   static const Cmd ERROR = Command_Cmd_ERROR;
   static const Cmd RESPONSE = Command_Cmd_RESPONSE;
@@ -149,6 +297,29 @@ class Command : public ::google::protobuf::Message {
   static inline bool Cmd_Parse(const ::std::string& name,
       Cmd* value) {
     return Command_Cmd_Parse(name, value);
+  }
+
+  typedef Command_RegistryEntryType RegistryEntryType;
+  static const RegistryEntryType INVOKE_METHOD = Command_RegistryEntryType_INVOKE_METHOD;
+  static inline bool RegistryEntryType_IsValid(int value) {
+    return Command_RegistryEntryType_IsValid(value);
+  }
+  static const RegistryEntryType RegistryEntryType_MIN =
+    Command_RegistryEntryType_RegistryEntryType_MIN;
+  static const RegistryEntryType RegistryEntryType_MAX =
+    Command_RegistryEntryType_RegistryEntryType_MAX;
+  static const int RegistryEntryType_ARRAYSIZE =
+    Command_RegistryEntryType_RegistryEntryType_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  RegistryEntryType_descriptor() {
+    return Command_RegistryEntryType_descriptor();
+  }
+  static inline const ::std::string& RegistryEntryType_Name(RegistryEntryType value) {
+    return Command_RegistryEntryType_Name(value);
+  }
+  static inline bool RegistryEntryType_Parse(const ::std::string& name,
+      RegistryEntryType* value) {
+    return Command_RegistryEntryType_Parse(name, value);
   }
 
   // accessors -------------------------------------------------------
@@ -253,6 +424,18 @@ class Command : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 timeout_ms() const;
   inline void set_timeout_ms(::google::protobuf::int32 value);
 
+  // repeated .ESB.Command.RegistryEntry reg_entry = 11;
+  inline int reg_entry_size() const;
+  inline void clear_reg_entry();
+  static const int kRegEntryFieldNumber = 11;
+  inline const ::ESB::Command_RegistryEntry& reg_entry(int index) const;
+  inline ::ESB::Command_RegistryEntry* mutable_reg_entry(int index);
+  inline ::ESB::Command_RegistryEntry* add_reg_entry();
+  inline const ::google::protobuf::RepeatedPtrField< ::ESB::Command_RegistryEntry >&
+      reg_entry() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ESB::Command_RegistryEntry >*
+      mutable_reg_entry();
+
   // @@protoc_insertion_point(class_scope:ESB.Command)
  private:
   inline void set_has_cmd();
@@ -288,9 +471,10 @@ class Command : public ::google::protobuf::Message {
   ::std::string* guid_to_;
   ::google::protobuf::uint32 start_time_;
   ::google::protobuf::int32 timeout_ms_;
+  ::google::protobuf::RepeatedPtrField< ::ESB::Command_RegistryEntry > reg_entry_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(10 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(11 + 31) / 32];
 
   friend void  protobuf_AddDesc_command_2eproto();
   friend void protobuf_AssignDesc_command_2eproto();
@@ -303,6 +487,243 @@ class Command : public ::google::protobuf::Message {
 
 
 // ===================================================================
+
+// Command_RegistryEntry
+
+// required .ESB.Command.RegistryEntryType type = 1 [default = INVOKE_METHOD];
+inline bool Command_RegistryEntry::has_type() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Command_RegistryEntry::set_has_type() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Command_RegistryEntry::clear_has_type() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Command_RegistryEntry::clear_type() {
+  type_ = 1;
+  clear_has_type();
+}
+inline ::ESB::Command_RegistryEntryType Command_RegistryEntry::type() const {
+  return static_cast< ::ESB::Command_RegistryEntryType >(type_);
+}
+inline void Command_RegistryEntry::set_type(::ESB::Command_RegistryEntryType value) {
+  assert(::ESB::Command_RegistryEntryType_IsValid(value));
+  set_has_type();
+  type_ = value;
+}
+
+// required string identifier = 2;
+inline bool Command_RegistryEntry::has_identifier() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Command_RegistryEntry::set_has_identifier() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Command_RegistryEntry::clear_has_identifier() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Command_RegistryEntry::clear_identifier() {
+  if (identifier_ != &::google::protobuf::internal::kEmptyString) {
+    identifier_->clear();
+  }
+  clear_has_identifier();
+}
+inline const ::std::string& Command_RegistryEntry::identifier() const {
+  return *identifier_;
+}
+inline void Command_RegistryEntry::set_identifier(const ::std::string& value) {
+  set_has_identifier();
+  if (identifier_ == &::google::protobuf::internal::kEmptyString) {
+    identifier_ = new ::std::string;
+  }
+  identifier_->assign(value);
+}
+inline void Command_RegistryEntry::set_identifier(const char* value) {
+  set_has_identifier();
+  if (identifier_ == &::google::protobuf::internal::kEmptyString) {
+    identifier_ = new ::std::string;
+  }
+  identifier_->assign(value);
+}
+inline void Command_RegistryEntry::set_identifier(const char* value, size_t size) {
+  set_has_identifier();
+  if (identifier_ == &::google::protobuf::internal::kEmptyString) {
+    identifier_ = new ::std::string;
+  }
+  identifier_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Command_RegistryEntry::mutable_identifier() {
+  set_has_identifier();
+  if (identifier_ == &::google::protobuf::internal::kEmptyString) {
+    identifier_ = new ::std::string;
+  }
+  return identifier_;
+}
+inline ::std::string* Command_RegistryEntry::release_identifier() {
+  clear_has_identifier();
+  if (identifier_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = identifier_;
+    identifier_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Command_RegistryEntry::set_allocated_identifier(::std::string* identifier) {
+  if (identifier_ != &::google::protobuf::internal::kEmptyString) {
+    delete identifier_;
+  }
+  if (identifier) {
+    set_has_identifier();
+    identifier_ = identifier;
+  } else {
+    clear_has_identifier();
+    identifier_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// required string method_guid = 3;
+inline bool Command_RegistryEntry::has_method_guid() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Command_RegistryEntry::set_has_method_guid() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Command_RegistryEntry::clear_has_method_guid() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Command_RegistryEntry::clear_method_guid() {
+  if (method_guid_ != &::google::protobuf::internal::kEmptyString) {
+    method_guid_->clear();
+  }
+  clear_has_method_guid();
+}
+inline const ::std::string& Command_RegistryEntry::method_guid() const {
+  return *method_guid_;
+}
+inline void Command_RegistryEntry::set_method_guid(const ::std::string& value) {
+  set_has_method_guid();
+  if (method_guid_ == &::google::protobuf::internal::kEmptyString) {
+    method_guid_ = new ::std::string;
+  }
+  method_guid_->assign(value);
+}
+inline void Command_RegistryEntry::set_method_guid(const char* value) {
+  set_has_method_guid();
+  if (method_guid_ == &::google::protobuf::internal::kEmptyString) {
+    method_guid_ = new ::std::string;
+  }
+  method_guid_->assign(value);
+}
+inline void Command_RegistryEntry::set_method_guid(const char* value, size_t size) {
+  set_has_method_guid();
+  if (method_guid_ == &::google::protobuf::internal::kEmptyString) {
+    method_guid_ = new ::std::string;
+  }
+  method_guid_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Command_RegistryEntry::mutable_method_guid() {
+  set_has_method_guid();
+  if (method_guid_ == &::google::protobuf::internal::kEmptyString) {
+    method_guid_ = new ::std::string;
+  }
+  return method_guid_;
+}
+inline ::std::string* Command_RegistryEntry::release_method_guid() {
+  clear_has_method_guid();
+  if (method_guid_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = method_guid_;
+    method_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Command_RegistryEntry::set_allocated_method_guid(::std::string* method_guid) {
+  if (method_guid_ != &::google::protobuf::internal::kEmptyString) {
+    delete method_guid_;
+  }
+  if (method_guid) {
+    set_has_method_guid();
+    method_guid_ = method_guid;
+  } else {
+    clear_has_method_guid();
+    method_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// required string proxy_guid = 4;
+inline bool Command_RegistryEntry::has_proxy_guid() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void Command_RegistryEntry::set_has_proxy_guid() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void Command_RegistryEntry::clear_has_proxy_guid() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void Command_RegistryEntry::clear_proxy_guid() {
+  if (proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+    proxy_guid_->clear();
+  }
+  clear_has_proxy_guid();
+}
+inline const ::std::string& Command_RegistryEntry::proxy_guid() const {
+  return *proxy_guid_;
+}
+inline void Command_RegistryEntry::set_proxy_guid(const ::std::string& value) {
+  set_has_proxy_guid();
+  if (proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    proxy_guid_ = new ::std::string;
+  }
+  proxy_guid_->assign(value);
+}
+inline void Command_RegistryEntry::set_proxy_guid(const char* value) {
+  set_has_proxy_guid();
+  if (proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    proxy_guid_ = new ::std::string;
+  }
+  proxy_guid_->assign(value);
+}
+inline void Command_RegistryEntry::set_proxy_guid(const char* value, size_t size) {
+  set_has_proxy_guid();
+  if (proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    proxy_guid_ = new ::std::string;
+  }
+  proxy_guid_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Command_RegistryEntry::mutable_proxy_guid() {
+  set_has_proxy_guid();
+  if (proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    proxy_guid_ = new ::std::string;
+  }
+  return proxy_guid_;
+}
+inline ::std::string* Command_RegistryEntry::release_proxy_guid() {
+  clear_has_proxy_guid();
+  if (proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = proxy_guid_;
+    proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Command_RegistryEntry::set_allocated_proxy_guid(::std::string* proxy_guid) {
+  if (proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+    delete proxy_guid_;
+  }
+  if (proxy_guid) {
+    set_has_proxy_guid();
+    proxy_guid_ = proxy_guid;
+  } else {
+    clear_has_proxy_guid();
+    proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// -------------------------------------------------------------------
 
 // Command
 
@@ -815,6 +1236,31 @@ inline void Command::set_timeout_ms(::google::protobuf::int32 value) {
   timeout_ms_ = value;
 }
 
+// repeated .ESB.Command.RegistryEntry reg_entry = 11;
+inline int Command::reg_entry_size() const {
+  return reg_entry_.size();
+}
+inline void Command::clear_reg_entry() {
+  reg_entry_.Clear();
+}
+inline const ::ESB::Command_RegistryEntry& Command::reg_entry(int index) const {
+  return reg_entry_.Get(index);
+}
+inline ::ESB::Command_RegistryEntry* Command::mutable_reg_entry(int index) {
+  return reg_entry_.Mutable(index);
+}
+inline ::ESB::Command_RegistryEntry* Command::add_reg_entry() {
+  return reg_entry_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ESB::Command_RegistryEntry >&
+Command::reg_entry() const {
+  return reg_entry_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ESB::Command_RegistryEntry >*
+Command::mutable_reg_entry() {
+  return &reg_entry_;
+}
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -827,6 +1273,10 @@ namespace protobuf {
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::ESB::Command_Cmd>() {
   return ::ESB::Command_Cmd_descriptor();
+}
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::ESB::Command_RegistryEntryType>() {
+  return ::ESB::Command_RegistryEntryType_descriptor();
 }
 
 }  // namespace google

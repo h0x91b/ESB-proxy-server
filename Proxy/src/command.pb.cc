@@ -23,7 +23,11 @@ namespace {
 const ::google::protobuf::Descriptor* Command_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   Command_reflection_ = NULL;
+const ::google::protobuf::Descriptor* Command_RegistryEntry_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Command_RegistryEntry_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* Command_Cmd_descriptor_ = NULL;
+const ::google::protobuf::EnumDescriptor* Command_RegistryEntryType_descriptor_ = NULL;
 
 }  // namespace
 
@@ -35,7 +39,7 @@ void protobuf_AssignDesc_command_2eproto() {
       "command.proto");
   GOOGLE_CHECK(file != NULL);
   Command_descriptor_ = file->message_type(0);
-  static const int Command_offsets_[10] = {
+  static const int Command_offsets_[11] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, cmd_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, source_proxy_guid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, target_proxy_guid_),
@@ -46,6 +50,7 @@ void protobuf_AssignDesc_command_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, version_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, start_time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, timeout_ms_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, reg_entry_),
   };
   Command_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -58,7 +63,26 @@ void protobuf_AssignDesc_command_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Command));
+  Command_RegistryEntry_descriptor_ = Command_descriptor_->nested_type(0);
+  static const int Command_RegistryEntry_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command_RegistryEntry, type_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command_RegistryEntry, identifier_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command_RegistryEntry, method_guid_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command_RegistryEntry, proxy_guid_),
+  };
+  Command_RegistryEntry_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      Command_RegistryEntry_descriptor_,
+      Command_RegistryEntry::default_instance_,
+      Command_RegistryEntry_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command_RegistryEntry, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command_RegistryEntry, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(Command_RegistryEntry));
   Command_Cmd_descriptor_ = Command_descriptor_->enum_type(0);
+  Command_RegistryEntryType_descriptor_ = Command_descriptor_->enum_type(1);
 }
 
 namespace {
@@ -73,6 +97,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     Command_descriptor_, &Command::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    Command_RegistryEntry_descriptor_, &Command_RegistryEntry::default_instance());
 }
 
 }  // namespace
@@ -80,6 +106,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void protobuf_ShutdownFile_command_2eproto() {
   delete Command::default_instance_;
   delete Command_reflection_;
+  delete Command_RegistryEntry::default_instance_;
+  delete Command_RegistryEntry_reflection_;
 }
 
 void protobuf_AddDesc_command_2eproto() {
@@ -89,22 +117,29 @@ void protobuf_AddDesc_command_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rcommand.proto\022\003ESB\"\256\003\n\007Command\022\035\n\003cmd\030"
+    "\n\rcommand.proto\022\003ESB\"\221\005\n\007Command\022\035\n\003cmd\030"
     "\001 \002(\0162\020.ESB.Command.Cmd\022\031\n\021source_proxy_"
     "guid\030\002 \002(\t\022\031\n\021target_proxy_guid\030\003 \002(\t\022\017\n"
     "\007payload\030\004 \002(\t\022\022\n\nidentifier\030\005 \001(\t\022\021\n\tgu"
     "id_from\030\006 \001(\t\022\017\n\007guid_to\030\007 \001(\t\022\017\n\007versio"
     "n\030\010 \001(\005\022\022\n\nstart_time\030\t \001(\r\022\022\n\ntimeout_m"
-    "s\030\n \001(\005\"\313\001\n\003Cmd\022\t\n\005ERROR\020\001\022\014\n\010RESPONSE\020\002"
-    "\022\016\n\nNODE_HELLO\020\003\022\017\n\013PROXY_HELLO\020\004\022\010\n\004PIN"
-    "G\020\005\022\010\n\004PONG\020\006\022\n\n\006INVOKE\020\007\022\023\n\017REGISTER_IN"
-    "VOKE\020\010\022\026\n\022REGISTER_INVOKE_OK\020\t\022\035\n\031REGIST"
-    "RY_EXCHANGE_REQUEST\020\n\022\036\n\032REGISTRY_EXCHAN"
-    "GE_RESPONSE\020\013", 453);
+    "s\030\n \001(\005\022-\n\treg_entry\030\013 \003(\0132\032.ESB.Command"
+    ".RegistryEntry\032\211\001\n\rRegistryEntry\022;\n\004type"
+    "\030\001 \002(\0162\036.ESB.Command.RegistryEntryType:\r"
+    "INVOKE_METHOD\022\022\n\nidentifier\030\002 \002(\t\022\023\n\013met"
+    "hod_guid\030\003 \002(\t\022\022\n\nproxy_guid\030\004 \002(\t\"\313\001\n\003C"
+    "md\022\t\n\005ERROR\020\001\022\014\n\010RESPONSE\020\002\022\016\n\nNODE_HELL"
+    "O\020\003\022\017\n\013PROXY_HELLO\020\004\022\010\n\004PING\020\005\022\010\n\004PONG\020\006"
+    "\022\n\n\006INVOKE\020\007\022\023\n\017REGISTER_INVOKE\020\010\022\026\n\022REG"
+    "ISTER_INVOKE_OK\020\t\022\035\n\031REGISTRY_EXCHANGE_R"
+    "EQUEST\020\n\022\036\n\032REGISTRY_EXCHANGE_RESPONSE\020\013"
+    "\"&\n\021RegistryEntryType\022\021\n\rINVOKE_METHOD\020\001", 680);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "command.proto", &protobuf_RegisterTypes);
   Command::default_instance_ = new Command();
+  Command_RegistryEntry::default_instance_ = new Command_RegistryEntry();
   Command::default_instance_->InitAsDefaultInstance();
+  Command_RegistryEntry::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_command_2eproto);
 }
 
@@ -156,6 +191,411 @@ const Command_Cmd Command::Cmd_MIN;
 const Command_Cmd Command::Cmd_MAX;
 const int Command::Cmd_ARRAYSIZE;
 #endif  // _MSC_VER
+const ::google::protobuf::EnumDescriptor* Command_RegistryEntryType_descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Command_RegistryEntryType_descriptor_;
+}
+bool Command_RegistryEntryType_IsValid(int value) {
+  switch(value) {
+    case 1:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#ifndef _MSC_VER
+const Command_RegistryEntryType Command::INVOKE_METHOD;
+const Command_RegistryEntryType Command::RegistryEntryType_MIN;
+const Command_RegistryEntryType Command::RegistryEntryType_MAX;
+const int Command::RegistryEntryType_ARRAYSIZE;
+#endif  // _MSC_VER
+#ifndef _MSC_VER
+const int Command_RegistryEntry::kTypeFieldNumber;
+const int Command_RegistryEntry::kIdentifierFieldNumber;
+const int Command_RegistryEntry::kMethodGuidFieldNumber;
+const int Command_RegistryEntry::kProxyGuidFieldNumber;
+#endif  // !_MSC_VER
+
+Command_RegistryEntry::Command_RegistryEntry()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void Command_RegistryEntry::InitAsDefaultInstance() {
+}
+
+Command_RegistryEntry::Command_RegistryEntry(const Command_RegistryEntry& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void Command_RegistryEntry::SharedCtor() {
+  _cached_size_ = 0;
+  type_ = 1;
+  identifier_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  method_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Command_RegistryEntry::~Command_RegistryEntry() {
+  SharedDtor();
+}
+
+void Command_RegistryEntry::SharedDtor() {
+  if (identifier_ != &::google::protobuf::internal::kEmptyString) {
+    delete identifier_;
+  }
+  if (method_guid_ != &::google::protobuf::internal::kEmptyString) {
+    delete method_guid_;
+  }
+  if (proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+    delete proxy_guid_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void Command_RegistryEntry::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Command_RegistryEntry::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Command_RegistryEntry_descriptor_;
+}
+
+const Command_RegistryEntry& Command_RegistryEntry::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_command_2eproto();
+  return *default_instance_;
+}
+
+Command_RegistryEntry* Command_RegistryEntry::default_instance_ = NULL;
+
+Command_RegistryEntry* Command_RegistryEntry::New() const {
+  return new Command_RegistryEntry;
+}
+
+void Command_RegistryEntry::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    type_ = 1;
+    if (has_identifier()) {
+      if (identifier_ != &::google::protobuf::internal::kEmptyString) {
+        identifier_->clear();
+      }
+    }
+    if (has_method_guid()) {
+      if (method_guid_ != &::google::protobuf::internal::kEmptyString) {
+        method_guid_->clear();
+      }
+    }
+    if (has_proxy_guid()) {
+      if (proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+        proxy_guid_->clear();
+      }
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool Command_RegistryEntry::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required .ESB.Command.RegistryEntryType type = 1 [default = INVOKE_METHOD];
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::ESB::Command_RegistryEntryType_IsValid(value)) {
+            set_type(static_cast< ::ESB::Command_RegistryEntryType >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(1, value);
+          }
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_identifier;
+        break;
+      }
+
+      // required string identifier = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_identifier:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_identifier()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->identifier().data(), this->identifier().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_method_guid;
+        break;
+      }
+
+      // required string method_guid = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_method_guid:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_method_guid()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->method_guid().data(), this->method_guid().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_proxy_guid;
+        break;
+      }
+
+      // required string proxy_guid = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_proxy_guid:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_proxy_guid()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->proxy_guid().data(), this->proxy_guid().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void Command_RegistryEntry::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required .ESB.Command.RegistryEntryType type = 1 [default = INVOKE_METHOD];
+  if (has_type()) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      1, this->type(), output);
+  }
+
+  // required string identifier = 2;
+  if (has_identifier()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->identifier().data(), this->identifier().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->identifier(), output);
+  }
+
+  // required string method_guid = 3;
+  if (has_method_guid()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->method_guid().data(), this->method_guid().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      3, this->method_guid(), output);
+  }
+
+  // required string proxy_guid = 4;
+  if (has_proxy_guid()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->proxy_guid().data(), this->proxy_guid().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      4, this->proxy_guid(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* Command_RegistryEntry::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required .ESB.Command.RegistryEntryType type = 1 [default = INVOKE_METHOD];
+  if (has_type()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      1, this->type(), target);
+  }
+
+  // required string identifier = 2;
+  if (has_identifier()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->identifier().data(), this->identifier().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->identifier(), target);
+  }
+
+  // required string method_guid = 3;
+  if (has_method_guid()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->method_guid().data(), this->method_guid().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->method_guid(), target);
+  }
+
+  // required string proxy_guid = 4;
+  if (has_proxy_guid()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->proxy_guid().data(), this->proxy_guid().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        4, this->proxy_guid(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int Command_RegistryEntry::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required .ESB.Command.RegistryEntryType type = 1 [default = INVOKE_METHOD];
+    if (has_type()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
+    }
+
+    // required string identifier = 2;
+    if (has_identifier()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->identifier());
+    }
+
+    // required string method_guid = 3;
+    if (has_method_guid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->method_guid());
+    }
+
+    // required string proxy_guid = 4;
+    if (has_proxy_guid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->proxy_guid());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Command_RegistryEntry::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const Command_RegistryEntry* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const Command_RegistryEntry*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void Command_RegistryEntry::MergeFrom(const Command_RegistryEntry& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_type()) {
+      set_type(from.type());
+    }
+    if (from.has_identifier()) {
+      set_identifier(from.identifier());
+    }
+    if (from.has_method_guid()) {
+      set_method_guid(from.method_guid());
+    }
+    if (from.has_proxy_guid()) {
+      set_proxy_guid(from.proxy_guid());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void Command_RegistryEntry::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Command_RegistryEntry::CopyFrom(const Command_RegistryEntry& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Command_RegistryEntry::IsInitialized() const {
+  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+
+  return true;
+}
+
+void Command_RegistryEntry::Swap(Command_RegistryEntry* other) {
+  if (other != this) {
+    std::swap(type_, other->type_);
+    std::swap(identifier_, other->identifier_);
+    std::swap(method_guid_, other->method_guid_);
+    std::swap(proxy_guid_, other->proxy_guid_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata Command_RegistryEntry::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Command_RegistryEntry_descriptor_;
+  metadata.reflection = Command_RegistryEntry_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
 #ifndef _MSC_VER
 const int Command::kCmdFieldNumber;
 const int Command::kSourceProxyGuidFieldNumber;
@@ -167,6 +607,7 @@ const int Command::kGuidToFieldNumber;
 const int Command::kVersionFieldNumber;
 const int Command::kStartTimeFieldNumber;
 const int Command::kTimeoutMsFieldNumber;
+const int Command::kRegEntryFieldNumber;
 #endif  // !_MSC_VER
 
 Command::Command()
@@ -285,6 +726,7 @@ void Command::Clear() {
     start_time_ = 0u;
     timeout_ms_ = 0;
   }
+  reg_entry_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -461,6 +903,21 @@ bool Command::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(90)) goto parse_reg_entry;
+        break;
+      }
+
+      // repeated .ESB.Command.RegistryEntry reg_entry = 11;
+      case 11: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_reg_entry:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_reg_entry()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(90)) goto parse_reg_entry;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -558,6 +1015,12 @@ void Command::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(10, this->timeout_ms(), output);
   }
 
+  // repeated .ESB.Command.RegistryEntry reg_entry = 11;
+  for (int i = 0; i < this->reg_entry_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      11, this->reg_entry(i), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -647,6 +1110,13 @@ void Command::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(10, this->timeout_ms(), target);
   }
 
+  // repeated .ESB.Command.RegistryEntry reg_entry = 11;
+  for (int i = 0; i < this->reg_entry_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        11, this->reg_entry(i), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -730,6 +1200,14 @@ int Command::ByteSize() const {
     }
 
   }
+  // repeated .ESB.Command.RegistryEntry reg_entry = 11;
+  total_size += 1 * this->reg_entry_size();
+  for (int i = 0; i < this->reg_entry_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->reg_entry(i));
+  }
+
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -755,6 +1233,7 @@ void Command::MergeFrom(const ::google::protobuf::Message& from) {
 
 void Command::MergeFrom(const Command& from) {
   GOOGLE_CHECK_NE(&from, this);
+  reg_entry_.MergeFrom(from.reg_entry_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_cmd()) {
       set_cmd(from.cmd());
@@ -807,6 +1286,9 @@ void Command::CopyFrom(const Command& from) {
 bool Command::IsInitialized() const {
   if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
 
+  for (int i = 0; i < reg_entry_size(); i++) {
+    if (!this->reg_entry(i).IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -822,6 +1304,7 @@ void Command::Swap(Command* other) {
     std::swap(version_, other->version_);
     std::swap(start_time_, other->start_time_);
     std::swap(timeout_ms_, other->timeout_ms_);
+    reg_entry_.Swap(&other->reg_entry_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

@@ -102,13 +102,33 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		
 		return;
 	}
-	auto remoteEntry = remoteInvokeMethods[cmdReq.identifier()];
-	if(!remoteEntry) {
-		warn("identifier '%s' not found",cmdReq.identifier().c_str());
+	auto remoteEntryVec = remoteInvokeMethods[cmdReq.identifier()];
+	if(remoteEntryVec.size()<1) {
+		warn("identifier '%s' not found", cmdReq.identifier().c_str());
 		invokeErrors++;
 		cmdResp.set_cmd(ESB::Command::ERROR);
 		sprintf(buf, "Identifier '%s' not found in registry", cmdReq.identifier().c_str());
 		cmdResp.set_payload(buf);
+	}
+	else
+	{
+		int rand = std::rand() % remoteEntryVec.size();
+		auto entry = remoteEntryVec.at(rand);
+		
+		cmdResp.set_cmd(ESB::Command::INVOKE);
+		
+		cmdResp.set_guid_to(entry->methodGuid);
+		cmdResp.set_guid_from(cmdReq.guid_from());
+		cmdResp.set_source_proxy_guid(guid);
+		cmdResp.set_target_proxy_guid(entry->proxyGuid);
+		cmdResp.set_identifier(entry->identifier);
+		cmdResp.set_version(cmdReq.version());
+		cmdResp.set_payload(cmdReq.payload());
+		
+		invokeResponses.insert(std::pair<std::string,std::string*> {cmdReq.guid_from(), new std::string(cmdReq.source_proxy_guid())});
+		
+		publisher->Publish(entry->proxyGuid, cmdResp);
+		return;
 	}
 	
 	cmdResp.set_guid_to(cmdReq.guid_from());
@@ -135,13 +155,6 @@ void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 	entry->identifier = (char*)malloc((cmdReq.payload().length()+1)*sizeof(char));
 	strcpy(entry->identifier, cmdReq.identifier().c_str());
 
-//	auto vec = localInvokeMethods[entry->identifier];
-//	if(vec==NULL){
-//		vec = new std::vector<LocalInvokeMethod*>;
-//		localInvokeMethods.insert(std::pair<std::string,std::vector<LocalInvokeMethod*>*> {entry->identifier, vec});
-//	}
-//	vec->push_back(entry);
-//	localInvokeMethods.at(entry->identifier).push_back(entry);
 	localInvokeMethods.emplace(entry->identifier, std::vector<LocalInvokeMethod*>());
 	localInvokeMethods.at(entry->identifier).push_back(entry);
 	
@@ -225,6 +238,56 @@ void Proxy::InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid)
 void Proxy::RegistryExchangeResponder(ESB::Command &cmdReq)
 {
 	dbg("send local registry");
+	
+	ESB::Command cmdResp;
+	
+	cmdResp.set_cmd(ESB::Command::REGISTRY_EXCHANGE_RESPONSE);
+	cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
+	cmdResp.set_source_proxy_guid(guid);
+	cmdResp.set_payload("here is my registry");
+	
+	int total = 0;
+	for (auto it = localInvokeMethods.begin(); it != localInvokeMethods.end(); ++it)
+	{
+		for (size_t i=0; i < it->second.size(); i++){
+			auto entry = cmdResp.add_reg_entry();
+			entry->set_type(ESB::Command::INVOKE_METHOD);
+			entry->set_identifier(it->first);
+			entry->set_method_guid(it->second.at(i)->methodGuid);
+			entry->set_proxy_guid(guid);
+			total++;
+		}
+	}
+	
+	info("responce generated, total %i methods", total);
+	publisher->Publish(cmdReq.source_proxy_guid().c_str(), cmdResp);
+}
+
+void Proxy::RemoteRegistryUpdate(ESB::Command &cmdReq)
+{
+	dbg("getted list from %s, %i methods", cmdReq->source_proxy_guid().c_str(), cmdReq.reg_entry_size());
+	
+	for( int i=0; i < cmdReq.reg_entry_size(); i++)
+	{
+		auto entry = cmdReq.reg_entry(i);
+		if(entry.type() == ESB::Command::INVOKE_METHOD)
+		{
+			auto identifier = (char*)malloc(entry.identifier().length());
+			strcpy(identifier, entry.identifier().c_str());
+			remoteInvokeMethods.emplace(identifier, std::vector<RemoteInvokeMethod*>());
+			info("vec size: %i, add identifier '%s' method_guid '%s' proxyGuid '%s'", remoteInvokeMethods.at(identifier).size(), identifier, entry.method_guid().c_str(), entry.proxy_guid().c_str());
+			if(remoteInvokeMethodsMap.find(entry.method_guid()) != remoteInvokeMethodsMap.end()){
+				free(identifier);
+				continue;
+			}
+			auto entryStruct = (RemoteInvokeMethod*)malloc(sizeof(RemoteInvokeMethod));
+			entryStruct->identifier = identifier;
+			strcpy(entryStruct->methodGuid, entry.method_guid().c_str());
+			strcpy(entryStruct->proxyGuid, entry.proxy_guid().c_str());
+			remoteInvokeMethods.at(identifier).push_back(entryStruct);
+			remoteInvokeMethodsMap.emplace(entryStruct->methodGuid, entryStruct->identifier);
+		}
+	}
 }
 
 void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
@@ -253,6 +316,10 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 			return;
 		case ESB::Command::ERROR:
 			err("Subscriber %s got error '%s' from %s", guid, cmdReq.payload().c_str(), nodeGuid);
+			return;
+		case ESB::Command::REGISTRY_EXCHANGE_RESPONSE:
+			info("getted registry from %s", cmdReq.source_proxy_guid().c_str());
+			RemoteRegistryUpdate(cmdReq);
 			return;
 		default:
 			err("Error, received unknown cmd: %i, payload: %s", cmdReq.cmd(), cmdReq.payload().c_str());

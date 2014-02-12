@@ -33,6 +33,7 @@ struct RemoteInvokeMethod
 {
 	char *identifier;
 	char proxyGuid[39];
+	char methodGuid[39];
 };
 
 class Proxy : public node::ObjectWrap {
@@ -46,7 +47,8 @@ public:
 	void PingRedis();
 	void ConnectToAnotherProxy(const char *proxyGuid, const char *connectionString);
 	void RequestRegistryExchange();
-	void RegistryExchangeResponder(ESB::Command &cmdReq)
+	void RegistryExchangeResponder(ESB::Command &cmdReq);
+	void RemoteRegistryUpdate(ESB::Command &cmdReq);
 	
 	char guid[39];
 	Responder *responder;
@@ -78,7 +80,10 @@ private:
 	std::map<std::string, std::string> proxiesGuids;
 	std::unordered_map<std::string,Subscriber*> subscribers;
 	std::unordered_map<std::string,std::vector<LocalInvokeMethod*>> localInvokeMethods; //identifier, struct
-	std::unordered_map<std::string,RemoteInvokeMethod*> remoteInvokeMethods; //identifier, struct
+	
+	std::unordered_map<std::string,std::vector<RemoteInvokeMethod*>> remoteInvokeMethods; //identifier, struct
+	std::unordered_map<std::string, std::string> remoteInvokeMethodsMap;
+	
 	std::unordered_map<std::string,std::string*> invokeResponses; //identifier, struct
 };
 

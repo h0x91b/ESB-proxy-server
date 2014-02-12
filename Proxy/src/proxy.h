@@ -34,6 +34,7 @@ struct RemoteInvokeMethod
 	char *identifier;
 	char proxyGuid[39];
 	char methodGuid[39];
+	int lastCheckTime;
 };
 
 class Proxy : public node::ObjectWrap {
@@ -49,6 +50,7 @@ public:
 	void RequestRegistryExchange();
 	void RegistryExchangeResponder(ESB::Command &cmdReq);
 	void RemoteRegistryUpdate(ESB::Command &cmdReq);
+	void RemoteRegistryHealthCheck();
 	
 	char guid[39];
 	Responder *responder;
@@ -57,6 +59,8 @@ public:
 	int responderPort;
 	int publisherPort;
 	char host[128];
+	char redisHost[256];
+	unsigned long redisPort = 6379;
 	
 	int invokeCalls = 0;
 	int invokeErrors = 0;
@@ -65,7 +69,7 @@ public:
 	int lastRegistryExchange = 0;
 
 private:
-	Proxy();
+	Proxy(const v8::Arguments& args);
 	~Proxy();
 
 	static v8::Handle<v8::Value> New(const v8::Arguments& args);
@@ -78,13 +82,12 @@ private:
 	pthread_t thread;
 	std::map<std::string, std::string> nodesGuids;
 	std::map<std::string, std::string> proxiesGuids;
-	std::unordered_map<std::string,Subscriber*> subscribers;
-	std::unordered_map<std::string,std::vector<LocalInvokeMethod*>> localInvokeMethods; //identifier, struct
+	std::unordered_map<std::string, Subscriber*> subscribers;
+	std::unordered_map<std::string, std::vector<LocalInvokeMethod*>> localInvokeMethods; //identifier, struct
 	
-	std::unordered_map<std::string,std::vector<RemoteInvokeMethod*>> remoteInvokeMethods; //identifier, struct
-	std::unordered_map<std::string, std::string> remoteInvokeMethodsMap;
+	std::unordered_map<std::string, std::vector<RemoteInvokeMethod*>> remoteInvokeMethods; //identifier, struct
 	
-	std::unordered_map<std::string,std::string*> invokeResponses; //identifier, struct
+	std::unordered_map<std::string, std::string> invokeResponses; //identifier, struct
 };
 
 

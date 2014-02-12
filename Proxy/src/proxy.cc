@@ -10,13 +10,21 @@ void InitAll(Handle<Object> exports) {
 
 Persistent<Function> Proxy::constructor;
 
-Proxy::Proxy()
+Proxy::Proxy(const v8::Arguments& args)
 {
 	GenerateGuid(guid);
 	info("guid: %s", guid);
 	responderPort = 7770;
 	publisherPort = 7771;
-	strcpy(host, "localhost");
+
+	v8::String::Utf8Value esbhost(args[0]->ToString());
+	strcpy(host, *esbhost);
+	
+	v8::String::Utf8Value redishost(args[1]->ToString());
+	strcpy(redisHost, *redishost);
+	
+	redisPort = args[2]->ToUint32()->Value();
+	info("Init new ESB %s on host '%s' with redis '%s:%lu'", guid, host, redisHost, redisPort);
 	
 	responder = new Responder(responderPort, guid, this);
 	responderPort = responder->port;
@@ -24,7 +32,7 @@ Proxy::Proxy()
 	publisher = new Publisher(publisherPort);
 	publisherPort = publisher->port;
 	
-	redisCtx = redisConnect("127.0.0.1", 6379);
+	redisCtx = redisConnect(redisHost, redisPort);
 	if (redisCtx != NULL && redisCtx->err) {
 		err("Redis connection error: %s", redisCtx->errstr);
 		redisCtx = NULL;
@@ -84,7 +92,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		if(vec.size()>0)
 			rand = std::rand() % vec.size();
 		auto entry = vec.at(rand);
-		dbg("%s found in local methods", entry->identifier);
+		info("%s found in local methods", entry->identifier);
 		
 		cmdResp.set_cmd(ESB::Command::INVOKE);
 		
@@ -95,7 +103,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		cmdResp.set_version(cmdReq.version());
 		cmdResp.set_payload(cmdReq.payload());
 		
-		invokeResponses.insert(std::pair<std::string,std::string*> {cmdReq.guid_from(), new std::string(cmdReq.source_proxy_guid())});
+		invokeResponses.insert(std::pair<std::string,std::string> {cmdReq.guid_from(), std::string(cmdReq.source_proxy_guid())});
 		cmdResp.set_guid_from(cmdReq.guid_from());
 		
 		publisher->Publish(entry->nodeGuid, cmdResp);
@@ -112,6 +120,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 	}
 	else
 	{
+		info("identifier '%s' found in remote proxy", cmdReq.identifier().c_str());
 		int rand = std::rand() % remoteEntryVec.size();
 		auto entry = remoteEntryVec.at(rand);
 		
@@ -125,7 +134,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		cmdResp.set_version(cmdReq.version());
 		cmdResp.set_payload(cmdReq.payload());
 		
-		invokeResponses.insert(std::pair<std::string,std::string*> {cmdReq.guid_from(), new std::string(cmdReq.source_proxy_guid())});
+		invokeResponses.insert(std::pair<std::string,std::string> {cmdReq.guid_from(), std::string(cmdReq.source_proxy_guid())});
 		
 		publisher->Publish(entry->proxyGuid, cmdResp);
 		return;
@@ -210,13 +219,15 @@ void Proxy::InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid)
 {
 	ESB::Command cmdResp;
 	assert(strcmp(cmdReq.target_proxy_guid().c_str(), guid) == 0);
-	auto targetNode = invokeResponses[cmdReq.guid_to()];
-	if(targetNode == NULL)
+	auto targetNode = invokeResponses.find(cmdReq.guid_to());
+	if(targetNode == invokeResponses.end())
 	{
 		cmdResp.set_cmd(ESB::Command::ERROR);
 		cmdResp.set_payload("Response callback not found");
 		cmdResp.set_guid_from(guid);
 		cmdResp.set_guid_to(cmdReq.guid_from());
+		cmdResp.set_source_proxy_guid(guid);
+		cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
 		publisher->Publish(sourceNodeGuid, cmdResp);
 		return;
 	}
@@ -229,8 +240,7 @@ void Proxy::InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid)
 	cmdResp.set_source_proxy_guid(guid);
 	cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
 	
-	publisher->Publish(targetNode->c_str(), cmdResp);
-	delete targetNode;
+	publisher->Publish(targetNode->second.c_str(), cmdResp);
 	invokeResponses.erase(cmdReq.guid_to());
 
 }
@@ -259,13 +269,13 @@ void Proxy::RegistryExchangeResponder(ESB::Command &cmdReq)
 		}
 	}
 	
-	info("responce generated, total %i methods", total);
+	dbg("responce generated, total %i methods", total);
 	publisher->Publish(cmdReq.source_proxy_guid().c_str(), cmdResp);
 }
 
 void Proxy::RemoteRegistryUpdate(ESB::Command &cmdReq)
 {
-	dbg("getted list from %s, %i methods", cmdReq->source_proxy_guid().c_str(), cmdReq.reg_entry_size());
+	info("getted list from %s, %i methods", cmdReq.source_proxy_guid().c_str(), cmdReq.reg_entry_size());
 	
 	for( int i=0; i < cmdReq.reg_entry_size(); i++)
 	{
@@ -274,18 +284,34 @@ void Proxy::RemoteRegistryUpdate(ESB::Command &cmdReq)
 		{
 			auto identifier = (char*)malloc(entry.identifier().length());
 			strcpy(identifier, entry.identifier().c_str());
-			remoteInvokeMethods.emplace(identifier, std::vector<RemoteInvokeMethod*>());
-			info("vec size: %i, add identifier '%s' method_guid '%s' proxyGuid '%s'", remoteInvokeMethods.at(identifier).size(), identifier, entry.method_guid().c_str(), entry.proxy_guid().c_str());
-			if(remoteInvokeMethodsMap.find(entry.method_guid()) != remoteInvokeMethodsMap.end()){
+			//auto emplace = remoteInvokeMethods.emplace(identifier, std::vector<RemoteInvokeMethod*>());
+			auto vec = remoteInvokeMethods[identifier];
+			dbg("vec size: %lu, add identifier '%s' method_guid '%s' proxyGuid '%s'", remoteInvokeMethods.at(identifier).size(), identifier, entry.method_guid().c_str(), entry.proxy_guid().c_str());
+
+			bool found = false;
+//			auto vec = (*emplace.first).second;
+			for (auto it = vec.begin(); it != vec.end(); ++it)
+			{
+				auto tEntry = *it;
+				if(strcmp(tEntry->methodGuid, entry.method_guid().c_str())==0)
+				{
+					found = true;
+					tEntry->lastCheckTime = time(NULL);
+					break;
+				}
+			}
+			if(found) {
 				free(identifier);
 				continue;
 			}
+			
 			auto entryStruct = (RemoteInvokeMethod*)malloc(sizeof(RemoteInvokeMethod));
 			entryStruct->identifier = identifier;
 			strcpy(entryStruct->methodGuid, entry.method_guid().c_str());
 			strcpy(entryStruct->proxyGuid, entry.proxy_guid().c_str());
-			remoteInvokeMethods.at(identifier).push_back(entryStruct);
-			remoteInvokeMethodsMap.emplace(entryStruct->methodGuid, entryStruct->identifier);
+			entryStruct->lastCheckTime = time(NULL);
+			remoteInvokeMethods.at(entry.identifier()).push_back(entryStruct);
+			warn("push back %s %s", entryStruct->identifier, entryStruct->methodGuid);
 		}
 	}
 }
@@ -318,7 +344,7 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 			err("Subscriber %s got error '%s' from %s", guid, cmdReq.payload().c_str(), nodeGuid);
 			return;
 		case ESB::Command::REGISTRY_EXCHANGE_RESPONSE:
-			info("getted registry from %s", cmdReq.source_proxy_guid().c_str());
+			dbg("getted registry from %s", cmdReq.source_proxy_guid().c_str());
 			RemoteRegistryUpdate(cmdReq);
 			return;
 		default:
@@ -361,6 +387,30 @@ void Proxy::RequestRegistryExchange()
 	lastRegistryExchange = time(NULL);
 }
 
+void Proxy::RemoteRegistryHealthCheck()
+{
+	int now = time(NULL);
+	for (auto& pair: remoteInvokeMethods) {
+		auto vec = pair.second;
+		int index = 0;
+		for (auto it = vec.begin(); it != vec.end(); ++it)
+		{
+			auto tEntry = *it;
+			if( now > tEntry->lastCheckTime + 5)
+			{
+				warn("delete method `%s` with guid %s", tEntry->identifier, tEntry->methodGuid);
+				free(tEntry->identifier);
+				warn("identifier freed %s", vec[index]->methodGuid);
+				free(tEntry);
+				vec.erase(it);
+				remoteInvokeMethods[pair.first] = vec;
+				return;
+			}
+			index++;
+		}
+	}
+}
+
 void *Proxy::MainLoop(void *p)
 {
 	info("MainLoop started");
@@ -387,6 +437,7 @@ void *Proxy::MainLoop(void *p)
 		}
 		
 		self->PingRedis();
+		self->RemoteRegistryHealthCheck();
 		self->RequestRegistryExchange();
 		
 		if(needToSleep) usleep(50000);
@@ -483,7 +534,11 @@ Handle<Value> Proxy::New(const Arguments& args) {
 
 	if (args.IsConstructCall()) {
 		// Invoked as constructor: `new Proxy(...)`
-		Proxy* obj = new Proxy();
+		if(args.Length() != 3)
+		{
+			return v8::ThrowException(v8::String::New("3 arguments required! (esb-proxy-host, redis-host, redis-port)"));
+		}
+		Proxy* obj = new Proxy(args);
 		obj->Wrap(args.This());
 		obj->Ref();
 		return args.This();

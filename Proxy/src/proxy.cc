@@ -387,12 +387,11 @@ void Proxy::RequestRegistryExchange()
 	lastRegistryExchange = time(NULL);
 }
 
-void Proxy::RemoteRegistryHealthCheck()
+bool Proxy::RemoteRegistryHealthCheck()
 {
 	int now = time(NULL);
 	for (auto& pair: remoteInvokeMethods) {
 		auto vec = pair.second;
-		int index = 0;
 		for (auto it = vec.begin(); it != vec.end(); ++it)
 		{
 			auto tEntry = *it;
@@ -400,15 +399,14 @@ void Proxy::RemoteRegistryHealthCheck()
 			{
 				warn("delete method `%s` with guid %s", tEntry->identifier, tEntry->methodGuid);
 				free(tEntry->identifier);
-				warn("identifier freed %s", vec[index]->methodGuid);
 				free(tEntry);
-				vec.erase(it);
+				it = vec.erase(it);
 				remoteInvokeMethods[pair.first] = vec;
-				return;
+				return true;
 			}
-			index++;
 		}
 	}
+	return false;
 }
 
 void *Proxy::MainLoop(void *p)
@@ -437,7 +435,7 @@ void *Proxy::MainLoop(void *p)
 		}
 		
 		self->PingRedis();
-		self->RemoteRegistryHealthCheck();
+		while(self->RemoteRegistryHealthCheck());
 		self->RequestRegistryExchange();
 		
 		if(needToSleep) usleep(50000);

@@ -50,7 +50,7 @@ public:
 	void RequestRegistryExchange();
 	void RegistryExchangeResponder(ESB::Command &cmdReq);
 	void RemoteRegistryUpdate(ESB::Command &cmdReq);
-	void RemoteRegistryHealthCheck();
+	bool RemoteRegistryHealthCheck();
 	
 	char guid[39];
 	Responder *responder;

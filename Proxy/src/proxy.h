@@ -27,6 +27,7 @@ struct LocalInvokeMethod
 	char *identifier;
 	char nodeGuid[39];
 	char methodGuid[39];
+	int lastCheckTime;
 };
 
 struct RemoteInvokeMethod
@@ -51,6 +52,7 @@ public:
 	void RegistryExchangeResponder(ESB::Command &cmdReq);
 	void RemoteRegistryUpdate(ESB::Command &cmdReq);
 	bool RemoteRegistryHealthCheck();
+	bool LocalRegistryHealthCheck();
 	
 	char guid[39];
 	Responder *responder;

@@ -10,7 +10,7 @@ var esb = new ESB({
 esb.on('ready', function(){
 	console.log('esb is ready');
 	setInterval(function(){
-	for(var i=0;i<1;i++)
+	for(var i=0;i<100;i++)
 		esb.invoke('/math/plus', {a: 2, b: 2}, function(err, resp, errStr){
 			if(err){
 				console.log(err, errStr);
@@ -19,7 +19,7 @@ esb.on('ready', function(){
 			console.assert(resp == 4);
 			responses++;
 		});
-	},500);
+	},10);
 });
 
 setInterval(function(){

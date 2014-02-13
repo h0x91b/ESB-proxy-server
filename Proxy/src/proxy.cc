@@ -92,7 +92,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		if(vec.size()>0)
 			rand = std::rand() % vec.size();
 		auto entry = vec.at(rand);
-		info("%s found in local methods", entry->identifier);
+		dbg("%s found in local methods", entry->identifier);
 		
 		cmdResp.set_cmd(ESB::Command::INVOKE);
 		
@@ -120,7 +120,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 	}
 	else
 	{
-		info("identifier '%s' found in remote proxy", cmdReq.identifier().c_str());
+		dbg("identifier '%s' found in remote proxy", cmdReq.identifier().c_str());
 		int rand = std::rand() % remoteEntryVec.size();
 		auto entry = remoteEntryVec.at(rand);
 		
@@ -149,24 +149,51 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 
 void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 {
-	info(
-		"RegisterInvoke(%s) from node %s method guid %s",
-			cmdReq.identifier().c_str(),
-			cmdReq.source_proxy_guid().c_str(),
-			cmdReq.payload().c_str()
-	);
-	registerInvoke++;
+	dbg(
+		 "RegisterInvoke(%s) from node %s method guid %s",
+		 cmdReq.identifier().c_str(),
+		 cmdReq.source_proxy_guid().c_str(),
+		 cmdReq.payload().c_str()
+		 );
 	
-	LocalInvokeMethod *entry = (LocalInvokeMethod*)calloc(sizeof(LocalInvokeMethod), sizeof(LocalInvokeMethod));
-	strcpy(entry->nodeGuid, cmdReq.source_proxy_guid().c_str());
-	strcpy(entry->methodGuid, cmdReq.payload().c_str());
+	auto vec = localInvokeMethods[cmdReq.identifier().c_str()];
+	bool found = false;
+	if(vec.size()>0)
+	{
+		for (auto it = vec.begin(); it != vec.end(); ++it)
+		{
+			auto tEntry = *it;
+			if(strcmp(tEntry->methodGuid, cmdReq.payload().c_str())==0)
+			{
+				found = true;
+				tEntry->lastCheckTime = time(NULL);
+				break;
+			}
+		}
+	}
 	
-	entry->identifier = (char*)malloc((cmdReq.payload().length()+1)*sizeof(char));
-	strcpy(entry->identifier, cmdReq.identifier().c_str());
+	if(!found)
+	{
+		info(
+			 "RegisterInvoke(%s) from node %s method guid %s",
+			 cmdReq.identifier().c_str(),
+			 cmdReq.source_proxy_guid().c_str(),
+			 cmdReq.payload().c_str()
+		);
+		registerInvoke++;
+		
+		LocalInvokeMethod *entry = (LocalInvokeMethod*)calloc(sizeof(LocalInvokeMethod), sizeof(LocalInvokeMethod));
+		strcpy(entry->nodeGuid, cmdReq.source_proxy_guid().c_str());
+		strcpy(entry->methodGuid, cmdReq.payload().c_str());
+		
+		entry->identifier = (char*)malloc((cmdReq.payload().length()+1)*sizeof(char));
+		strcpy(entry->identifier, cmdReq.identifier().c_str());
+		
+		entry->lastCheckTime = time(NULL);
 
-	localInvokeMethods.emplace(entry->identifier, std::vector<LocalInvokeMethod*>());
-	localInvokeMethods.at(entry->identifier).push_back(entry);
-	
+		localInvokeMethods.emplace(entry->identifier, std::vector<LocalInvokeMethod*>());
+		localInvokeMethods.at(entry->identifier).push_back(entry);
+	}
 	
 	ESB::Command cmdResp;
 	
@@ -175,9 +202,8 @@ void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 	cmdResp.set_guid_to(cmdReq.source_proxy_guid());
 	cmdResp.set_source_proxy_guid(guid);
 	cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
-	cmdResp.set_guid_from(guid);
 	
-	cmdResp.set_payload(entry->identifier);
+	cmdResp.set_payload(cmdReq.identifier().c_str());
 	
 	publisher->Publish(cmdReq.source_proxy_guid().c_str(), cmdResp);
 }
@@ -397,11 +423,33 @@ bool Proxy::RemoteRegistryHealthCheck()
 			auto tEntry = *it;
 			if( now > tEntry->lastCheckTime + 5)
 			{
-				warn("delete method `%s` with guid %s", tEntry->identifier, tEntry->methodGuid);
+				warn("delete remote method `%s` with guid %s", tEntry->identifier, tEntry->methodGuid);
 				free(tEntry->identifier);
 				free(tEntry);
 				it = vec.erase(it);
 				remoteInvokeMethods[pair.first] = vec;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Proxy::LocalRegistryHealthCheck()
+{
+	int now = time(NULL);
+	for (auto& pair: localInvokeMethods) {
+		auto vec = pair.second;
+		for (auto it = vec.begin(); it != vec.end(); ++it)
+		{
+			auto tEntry = *it;
+			if( now > tEntry->lastCheckTime + 5)
+			{
+				warn("delete local method `%s` with guid %s", tEntry->identifier, tEntry->methodGuid);
+				free(tEntry->identifier);
+				free(tEntry);
+				it = vec.erase(it);
+				localInvokeMethods[pair.first] = vec;
 				return true;
 			}
 		}
@@ -436,9 +484,10 @@ void *Proxy::MainLoop(void *p)
 		
 		self->PingRedis();
 		while(self->RemoteRegistryHealthCheck());
+		while(self->LocalRegistryHealthCheck());
 		self->RequestRegistryExchange();
 		
-		if(needToSleep) usleep(50000);
+		if(needToSleep) usleep(15000);
 	}
 	
 	return 0;

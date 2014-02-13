@@ -107,6 +107,9 @@ ESB.prototype.sendHello= function() {
 		self.subscribeSocket.subscribe(self.guid);
 		//self.proxyGuid = respObj.source_proxy_guid;
 		self.emit('ready');
+		setInterval(function(){
+			self.sendRegistry();
+		},1000);
 	});
 	this.requestSocket.send(buf);
 	console.log('NODE_HELLO sended');
@@ -121,8 +124,8 @@ ESB.prototype.onMessage= function(data) {
 		switch(respObj.cmd)
 		{
 		case 'INVOKE':
-			//console.log('got INVOKE request');
-			var fn = this.invokeMethods[respObj.guid_to];
+			//console.log('got INVOKE request', respObj);
+			var fn = this.invokeMethods[respObj.guid_to].method;
 			if(!fn) {
 				console.log('can not find such invoke method', respObj, Object.keys(this.invokeMethods));
 				break;
@@ -159,13 +162,14 @@ ESB.prototype.onMessage= function(data) {
 			}
 			break;
 		case 'REGISTER_INVOKE_OK':
-			console.log("REGISTER_INVOKE_OK for %s from Proxy %s", respObj.payload, respObj.source_proxy_guid);
+			//console.log("REGISTER_INVOKE_OK for %s from Proxy %s", respObj.payload, respObj.source_proxy_guid);
 			break;
 		default:
 			console.log("unknown operation", respObj);
 		}
 	} catch(e){
 		console.log('ERROR while processing message', e);
+		console.log(data.toString());
 	}
 };
 
@@ -228,46 +232,64 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 	return cmdGuid;
 };
 
-ESB.prototype.register = function(identifier, version, cb, options) {
-	console.log('register', identifier, version);
+ESB.prototype.sendRegistry = function(){
+	for(var g in this.invokeMethods){
+		var m = this.invokeMethods[g];
+		this.register(m.identifier, m.version, m.method, m.options);
+	}
+}
+
+ESB.prototype.register = function(_identifier, version, cb, options) {
+	//console.log('register', _identifier, version);
 	options = extend(true, {
 		version: 1,
-		timeout: 3000
+		timeout: 3000,
+		guid: ('{'+uuid.v4()+'}').toUpperCase()
 	}, options);
-	identifier = identifier+'/v'+options.version;
+	var identifier = _identifier+'/v'+options.version;
 	
-	var cmdGuid = ('{'+uuid.v4()+'}').toUpperCase();
-	console.log('registerInvoke guid:',cmdGuid);
+	var cmdGuid = options.guid;
+	//console.log('registerInvoke guid:', cmdGuid);
 	var self = this;
-	this.invokeMethods[cmdGuid] = function(data){
-		//console.log('invoke method ', cmdGuid, data);
-		cb(JSON.parse(data.payload), function(err, resp){
-			//console.log('got response from method...', err, resp);
-			var obj = {
-				cmd: 'RESPONSE',
-				payload: JSON.stringify(resp, null, '\t'),
-				guid_from: cmdGuid,
-				guid_to: data.guid_from,
-				target_proxy_guid: self.proxyGuid,
-				source_proxy_guid: self.guid,
-				start_time: +new Date,
-			}
-			
-			try {
-				if(err) {
-					obj.cmd = 'ERROR';
-					obj.payload = err;
+	if(!this.invokeMethods[cmdGuid])
+	{
+		console.log('register', _identifier, version, cmdGuid);
+		var invokeMethod = {
+			identifier: _identifier,
+			guid: cmdGuid,
+			version: version,
+			options: options
+		};
+		invokeMethod.method = function(data){
+			//console.log('invoke method ', cmdGuid, data.payload);
+			cb(JSON.parse(data.payload), function(err, resp){
+				//console.log('got response from method...', err, resp);
+				var obj = {
+					cmd: 'RESPONSE',
+					payload: JSON.stringify(resp, null, '\t'),
+					guid_from: cmdGuid,
+					guid_to: data.guid_from,
+					target_proxy_guid: self.proxyGuid,
+					source_proxy_guid: self.guid,
+					start_time: +new Date,
 				}
-				//console.log('invoke response',obj);
-				var buf = pb.Serialize(obj, "ESB.Command");
-				self.publisherSocket.send(self.proxyGuid+buf);
-			} catch(e){
-				cb('Exception', null, 'Exception while encoding/sending message: '+e.toString(), resp);
-			}
 			
-		});
-	};
-	
+				try {
+					if(err) {
+						obj.cmd = 'ERROR';
+						obj.payload = err;
+					}
+					//console.log('invoke response',obj);
+					var buf = pb.Serialize(obj, "ESB.Command");
+					self.publisherSocket.send(self.proxyGuid+buf);
+				} catch(e){
+					cb('Exception', null, 'Exception while encoding/sending message: '+e.toString(), resp);
+				}
+			
+			});
+		};
+		this.invokeMethods[cmdGuid] = invokeMethod;
+	}
 	try {
 		var obj = {
 			cmd: 'REGISTER_INVOKE',

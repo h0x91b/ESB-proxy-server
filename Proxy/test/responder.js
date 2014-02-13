@@ -8,7 +8,7 @@ var esb1 = new ESB({
 });
 esb1.on('ready', function(){
 	console.log('esb1 is ready');
-	for(i=0;i<1000;i++){
+	for(i=0;i<1;i++){
 	esb1.register('/math/plus', 1, function(data, cb){
 		responses++;
 		cb(null, data.a + data.b);

@@ -47,6 +47,9 @@ Proxy::Proxy(const v8::Arguments& args)
 	}
 	isWork = true;
 	pthread_create(&thread, NULL, &MainLoop, this);
+#ifdef __linux__
+	pthread_setname_np(thread, "MainLoop of ESB");
+#endif
 }
 
 void Proxy::ProxyHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
@@ -488,7 +491,13 @@ bool Proxy::LocalRegistryHealthCheck()
 void *Proxy::MainLoop(void *p)
 {
 	info("MainLoop started");
+#ifdef __linux__
+	
+#endif
+#ifdef __APPLE__
 	pthread_setname_np("MainLoop of ESB");
+#endif
+
 	auto self = (Proxy*)p;
 	int loop = 0;
 	while (self->isWork) {

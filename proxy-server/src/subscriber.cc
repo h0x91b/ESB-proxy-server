@@ -34,12 +34,12 @@ bool Subscriber::Connect()
 		
 		rc = zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, proxy->guid, 38);
 		assert(rc == 0);
-		return TRUE;
+		return true;
 	}
 	
 	dbg("zmq failed to connect, errcode: %i, desc: %s", zmq_errno(), zmq_strerror(zmq_errno()));
 	
-	return FALSE;
+	return false;
 }
 
 Subscriber::~Subscriber()

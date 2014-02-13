@@ -1,0 +1,16 @@
+{
+  "name": "esb-proxy-server",
+  "version": "0.0.0",
+  "description": "The Server ===",
+  "main": "main.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp rebuild"
+  },
+  "author": "Arseniy Pavlenko",
+  "license": "BSD",
+  "gypfile": true
+}

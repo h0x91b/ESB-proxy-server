@@ -62,13 +62,13 @@ public:
 	int publisherPort;
 	char host[128];
 	char redisHost[256];
-	unsigned long redisPort = 6379;
+	unsigned long redisPort;
 	
-	int invokeCalls = 0;
-	int invokeErrors = 0;
-	int registerInvoke = 0;
-	int lastRedisPing = 0;
-	int lastRegistryExchange = 0;
+	int invokeCalls;
+	int invokeErrors;
+	int registerInvoke;
+	int lastRedisPing;
+	int lastRegistryExchange;
 
 private:
 	Proxy(const v8::Arguments& args);

@@ -55,11 +55,11 @@ bool Responder::Poll()
 	int len = zmq_recvmsg(zResponder, &msgReq, ZMQ_DONTWAIT);
 	if(len == -1 && zmq_errno() == EAGAIN){
 		zmq_msg_close (&msgReq);
-		return FALSE;
+		return false;
 	} else if(len<1){
 		dbg("Error %i, %s", zmq_errno(), zmq_strerror(zmq_errno()));
 		zmq_msg_close (&msgReq);
-		return FALSE;
+		return false;
 	}
 	assert (len != -1);
 	dbg ("received: %i bytes", len);
@@ -80,6 +80,6 @@ bool Responder::Poll()
 	assert(rc == (int)(size));
 	
 	zmq_msg_close (&msgReq);
-	return TRUE;
+	return true;
 }
 

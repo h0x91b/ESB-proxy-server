@@ -14,6 +14,14 @@ Proxy::Proxy(const v8::Arguments& args)
 {
 	GenerateGuid(guid);
 	info("guid: %s", guid);
+	
+	invokeCalls = 0;
+	invokeErrors = 0;
+	registerInvoke = 0;
+	lastRedisPing = 0;
+	lastRegistryExchange = 0;
+	
+	redisPort = 6379;
 	responderPort = 7770;
 	publisherPort = 7771;
 
@@ -37,7 +45,7 @@ Proxy::Proxy(const v8::Arguments& args)
 		err("Redis connection error: %s", redisCtx->errstr);
 		redisCtx = NULL;
 	}
-	isWork = TRUE;
+	isWork = true;
 	pthread_create(&thread, NULL, &MainLoop, this);
 }
 
@@ -65,7 +73,9 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 	if(subscriber->Connect()) {
 		info("connected successfull to %s %s", connectionString, tmp[0].c_str());
 		
-		for (auto& pair: subscribers) {
+		for(auto i = subscribers.begin(); i != subscribers.end(); i++){
+			auto& pair = *i;
+		//for (auto& pair: subscribers) {
 			auto sub = pair.second;
 			if(strcmp(sub->connectString, connectionString)==0)
 			{
@@ -406,7 +416,7 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 Proxy::~Proxy()
 {
 	dbg("Destructor");
-	isWork = FALSE;
+	isWork = false;
 }
 
 void Proxy::RequestRegistryExchange()
@@ -430,7 +440,9 @@ void Proxy::RequestRegistryExchange()
 bool Proxy::RemoteRegistryHealthCheck()
 {
 	int now = time(NULL);
-	for (auto& pair: remoteInvokeMethods) {
+	for(auto i = remoteInvokeMethods.begin(); i != remoteInvokeMethods.end(); i++){
+		auto& pair = *i;
+	//for (auto& pair: remoteInvokeMethods) {
 		auto vec = pair.second;
 		for (auto it = vec.begin(); it != vec.end(); ++it)
 		{
@@ -452,7 +464,9 @@ bool Proxy::RemoteRegistryHealthCheck()
 bool Proxy::LocalRegistryHealthCheck()
 {
 	int now = time(NULL);
-	for (auto& pair: localInvokeMethods) {
+	for(auto i = localInvokeMethods.begin(); i != localInvokeMethods.end(); i++){
+		auto& pair = *i;
+	//for (auto& pair: localInvokeMethods) {
 		auto vec = pair.second;
 		for (auto it = vec.begin(); it != vec.end(); ++it)
 		{
@@ -478,7 +492,7 @@ void *Proxy::MainLoop(void *p)
 	auto self = (Proxy*)p;
 	int loop = 0;
 	while (self->isWork) {
-		bool needToSleep = TRUE;
+		bool needToSleep = true;
 		
 		self->responder->Poll();
 		
@@ -487,7 +501,7 @@ void *Proxy::MainLoop(void *p)
 			auto s = local_it->second;
 			auto msg = s->Poll();
 			if(msg==NULL) continue;
-			needToSleep = FALSE;
+			needToSleep = false;
 			
 			auto nodeGuid = local_it->first;
 			self->SubscriberCallback(*msg->cmdReq, nodeGuid.c_str());
@@ -527,7 +541,9 @@ void Proxy::ConnectToAnotherProxy(const char *proxyGuid, const char *connectionS
 			if(subscriber->Connect()) {
 				info("connected successfull");
 				
-				for (auto& pair: subscribers) {
+				for(auto i = subscribers.begin(); i != subscribers.end(); i++){
+					auto& pair = *i;
+				//for (auto& pair: subscribers) {
 					auto sub = pair.second;
 					if(strcmp(sub->connectString, connectionString)==0)
 					{

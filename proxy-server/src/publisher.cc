@@ -21,7 +21,7 @@ Publisher::Publisher(int _port)
 	while (true) {
 		char bindstr[256] = {0};
 		sprintf(bindstr, "tcp://*:%i", port);
-		dbg("try to bind: %s", bindstr);
+		info("try to bind: %s", bindstr);
 		int rc = zmq_bind (zResponder, bindstr);
 		if(rc != 0)
 		{
@@ -35,7 +35,7 @@ Publisher::Publisher(int _port)
 			continue;
 		}
 		assert (rc == 0);
-		info("bind success");
+		info("bind success on %s", bindstr);
 		break;
 	}
 

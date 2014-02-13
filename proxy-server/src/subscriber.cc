@@ -32,6 +32,7 @@ bool Subscriber::Connect()
 		const int lingerTimeout = 250;
 		zmq_setsockopt(zResponder, ZMQ_LINGER, &lingerTimeout, sizeof(int));
 		
+		info("subscribe on channel %s", proxy->guid);
 		rc = zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, proxy->guid, 38);
 		assert(rc == 0);
 		return true;
@@ -59,7 +60,7 @@ SUBSCRIBER_POLL_MSG *Subscriber::Poll()
 		zmq_msg_close (&msg);
 		return NULL;
 	} else if(len<1){
-		dbg("Error %i, %s", zmq_errno(), zmq_strerror(zmq_errno()));
+		err("Error %i, %s", zmq_errno(), zmq_strerror(zmq_errno()));
 		zmq_msg_close (&msg);
 		return NULL;
 	}

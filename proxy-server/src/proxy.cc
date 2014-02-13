@@ -66,7 +66,7 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 	auto payload = cmdReq.payload().c_str();
 	char response[256];
 	sprintf(response, "%s#%i", host, publisherPort);
-	
+	info("response: %s", response);
 	dbg("payload: %s", payload);
 	auto tmp = split(payload, '#');
 	

@@ -3,16 +3,16 @@ var zmq = require('zmq');
 var uuid = require('uuid');
 var fs = require("fs")
 var proto = require("node-protobuf").Protobuf;
-var pb = new proto(fs.readFileSync(__dirname+"/../../Proxy/src/command.desc"));
+var pb = new proto(fs.readFileSync(__dirname+"/../../proxy-server/src/command.desc"));
 var util = require("util");
 var events = require("events");
 var Redis = require('redis');
 
 
 var _config = {
-	publisherHost: 'localhost',
+	publisherHost: 'h0x91b.il.paragonex.com',
 	publisherPort: 7780,
-	redisHost: 'localhost',
+	redisHost: 'esb-redis',
 	redisPort: 6379
 };
 
@@ -56,7 +56,7 @@ util.inherits(ESB, events.EventEmitter);
 
 ESB.prototype.connect= function(){
 	var self = this;
-	this.redis.zrevrangebyscore('ZSET:PROXIES','+inf', ~~(new Date/1000)-5, function(err, resp){
+	this.redis.zrevrange('ZSET:PROXIES','0', '1', function(err, resp){
 		if(err){
 			console.log('Cannot get data from registry', err);
 			self.emit('error', err);
@@ -86,7 +86,9 @@ ESB.prototype.sendHello= function() {
 	var obj = {
 		cmd: 'NODE_HELLO',
 		payload: this.guid+'#tcp://'+this.config.publisherHost+':'+this.config.publisherPort,
-		guid_from: cmdGuid
+		guid_from: cmdGuid,
+		source_proxy_guid: this.guid,
+		target_proxy_guid: ''
 	}
 	var buf = pb.Serialize(obj, "ESB.Command");
 	var self = this;
@@ -177,7 +179,7 @@ ESB.prototype.onMessage= function(data) {
 ESB.prototype.invoke = function(identifier, data, cb, options){
 	options = extend(true, {
 		version: 1,
-		timeout: 0
+		timeout: 3000
 	}, options);
 	identifier = identifier+'/v'+options.version;
 	//console.log('invoke()', identifier, options, data);
@@ -222,7 +224,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 			start_time: +new Date,
 			timeout_ms: options.timeout
 		}
-		//console.log(obj);
+		console.log(obj, this.proxyGuid);
 		var buf = pb.Serialize(obj, "ESB.Command");
 		this.publisherSocket.send(new Buffer(this.proxyGuid+buf));
 	} catch(e){

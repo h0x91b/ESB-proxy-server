@@ -56,4 +56,8 @@ Redhat based Linux
 	cd ~/
 	git clone https://github.com/h0x91b/ESB-proxy-server.git
 	cd ESB-proxy-server/proxy-server/
+	cd src/deps/hiredis/
+	make && make install
+	cd ../../../
+	./build.sh
 	

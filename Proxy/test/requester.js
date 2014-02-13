@@ -1,4 +1,4 @@
-var PROXY = require('../main.js');
+//var PROXY = require('../main.js');
 var ESB = require('../../Node/NodeJS/main.js');
 
 responses = 0;
@@ -10,7 +10,7 @@ var esb = new ESB({
 esb.on('ready', function(){
 	console.log('esb is ready');
 	setInterval(function(){
-	for(var i=0;i<100;i++)
+	for(var i=0;i<250;i++)
 		esb.invoke('/math/plus', {a: 2, b: 2}, function(err, resp, errStr){
 			if(err){
 				console.log(err, errStr);

@@ -41,6 +41,7 @@ function ESB(config) {
 		console.log('publisherSocket error', err);
 		self.emit('error', err);
 	});
+	console.log('try to bind', 'tcp://*:'+this.config.publisherPort)
 	this.publisherSocket.bindSync('tcp://*:'+this.config.publisherPort);
 	
 	this.redis = Redis.createClient(this.config.redisPort, this.config.redisHost);
@@ -55,7 +56,7 @@ util.inherits(ESB, events.EventEmitter);
 
 ESB.prototype.connect= function(){
 	var self = this;
-	this.redis.zrevrangebyscore('ZSET:PROXIES','+inf', ~~(new Date/1000), function(err, resp){
+	this.redis.zrevrangebyscore('ZSET:PROXIES','+inf', ~~(new Date/1000)-5, function(err, resp){
 		if(err){
 			console.log('Cannot get data from registry', err);
 			self.emit('error', err);
@@ -133,7 +134,7 @@ ESB.prototype.onMessage= function(data) {
 			fn(respObj);
 			break;
 		case 'RESPONSE':
-			//console.log('got RESPONSE');
+			//console.log('got RESPONSE', respObj);
 			var fn = this.responseCallbacks[respObj.guid_to];
 			if(fn){
 				delete this.responseCallbacks[respObj.guid_to];
@@ -195,9 +196,10 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 		options.timeout = 0;
 	
 	var cmdGuid = ('{'+uuid.v4()+'}').toUpperCase();
-	//console.log('invoke temp guid', cmdGuid);
+	//console.log('invoke guid for response', cmdGuid);
 	
 	this.responseCallbacks[cmdGuid] = function(err, data, errString){
+		//console.log('invoke %s get response', cmdGuid, data);
 		if(isCalled){
 			console.log('got response from Proxy, but callback already was called');
 			return;
@@ -220,6 +222,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 			start_time: +new Date,
 			timeout_ms: options.timeout
 		}
+		//console.log(obj);
 		var buf = pb.Serialize(obj, "ESB.Command");
 		this.publisherSocket.send(new Buffer(this.proxyGuid+buf));
 	} catch(e){
@@ -253,7 +256,7 @@ ESB.prototype.register = function(_identifier, version, cb, options) {
 	var self = this;
 	if(!this.invokeMethods[cmdGuid])
 	{
-		console.log('register', _identifier, version, cmdGuid);
+		//console.log('register', _identifier, version, cmdGuid);
 		var invokeMethod = {
 			identifier: _identifier,
 			guid: cmdGuid,
@@ -261,7 +264,7 @@ ESB.prototype.register = function(_identifier, version, cb, options) {
 			options: options
 		};
 		invokeMethod.method = function(data){
-			//console.log('invoke method ', cmdGuid, data.payload);
+			//console.log('invoke method ', data);
 			cb(JSON.parse(data.payload), function(err, resp){
 				//console.log('got response from method...', err, resp);
 				var obj = {
@@ -279,7 +282,7 @@ ESB.prototype.register = function(_identifier, version, cb, options) {
 						obj.cmd = 'ERROR';
 						obj.payload = err;
 					}
-					//console.log('invoke response',obj);
+					//console.log('invoke method send response',obj);
 					var buf = pb.Serialize(obj, "ESB.Command");
 					self.publisherSocket.send(self.proxyGuid+buf);
 				} catch(e){

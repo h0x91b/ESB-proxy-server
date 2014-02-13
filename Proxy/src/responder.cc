@@ -62,7 +62,7 @@ bool Responder::Poll()
 		return FALSE;
 	}
 	assert (len != -1);
-	info ("received: %i bytes", len);
+	dbg ("received: %i bytes", len);
 	
 	ESB::Command cmdReq;
 	cmdReq.ParseFromArray(zmq_msg_data(&msgReq), len);

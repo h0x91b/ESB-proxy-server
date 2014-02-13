@@ -14,6 +14,8 @@ Publisher::Publisher(int _port)
 	port = _port;
 	zContext = zmq_ctx_new();
 	zResponder = zmq_socket (zContext, ZMQ_PUB);
+	uint64_t highWaterMark = 100;
+	zmq_setsockopt(zResponder, ZMQ_SNDHWM, &highWaterMark, sizeof(uint64_t));
 	
 	int retries = 0;
 	while (true) {
@@ -66,6 +68,6 @@ void Publisher::Publish(const char* targetGuid, ESB::Command &cmd)
 	bb-=guidSize;
 	dbg("Publish len: %zu bytes", size+guidSize);
 
-	rc = zmq_msg_send (&msg, zResponder, 0);
+	rc = zmq_msg_send (&msg, zResponder, ZMQ_DONTWAIT);
 	assert(rc == (int)(size+sizeof(char)*guidSize));
 }

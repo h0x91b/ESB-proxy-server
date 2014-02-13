@@ -15,6 +15,8 @@ Subscriber::Subscriber(const char *_connectString, const char *_targetGuid, Prox
 	proxy = _proxy;
 	zContext = zmq_ctx_new();
 	zResponder = zmq_socket (zContext, ZMQ_SUB);
+	
+	info("new subscriber for target: %s", targetGuid);
 }
 
 bool Subscriber::Connect()
@@ -24,6 +26,12 @@ bool Subscriber::Connect()
 	
 	if(rc==0)
 	{
+		const int timeout = 250;
+		zmq_setsockopt(zResponder, ZMQ_RCVTIMEO, &timeout, sizeof(int));
+		
+		const int lingerTimeout = 250;
+		zmq_setsockopt(zResponder, ZMQ_LINGER, &lingerTimeout, sizeof(int));
+		
 		rc = zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, proxy->guid, 38);
 		assert(rc == 0);
 		return TRUE;
@@ -36,7 +44,8 @@ bool Subscriber::Connect()
 
 Subscriber::~Subscriber()
 {
-	dbg("the end");
+	info("The end for subscriber for target: %s, %s", targetGuid, connectString);
+	zmq_close(zResponder);
 	zmq_ctx_term(zContext);
 }
 

@@ -63,8 +63,20 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 		
 	auto subscriber = new Subscriber(connectionString, tmp[0].c_str(), this);
 	if(subscriber->Connect()) {
-		info("connected successfull");
-		subscribers.insert(std::pair<std::string,Subscriber*> {tmp[0], subscriber});
+		info("connected successfull to %s %s", connectionString, tmp[0].c_str());
+		
+		for (auto& pair: subscribers) {
+			auto sub = pair.second;
+			if(strcmp(sub->connectString, connectionString)==0)
+			{
+				warn("Duplicate connection to %s, kill the previous one", connectionString);
+				delete sub;
+				subscribers.erase(pair.first);
+				break;
+			}
+		}
+		
+		subscribers.insert(std::pair<std::string,Subscriber*> {connectionString, subscriber});
 		nodesGuids.emplace(tmp[0], tmp[0]);
 		
 		cmdResp.set_cmd(ESB::Command::RESPONSE);
@@ -103,7 +115,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		cmdResp.set_version(cmdReq.version());
 		cmdResp.set_payload(cmdReq.payload());
 		
-		invokeResponses.insert(std::pair<std::string,std::string> {cmdReq.guid_from(), std::string(cmdReq.source_proxy_guid())});
+		invokeResponses.insert(std::pair<std::string,std::string> {cmdReq.guid_from(), cmdReq.source_proxy_guid()});
 		cmdResp.set_guid_from(cmdReq.guid_from());
 		
 		publisher->Publish(entry->nodeGuid, cmdResp);
@@ -134,7 +146,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		cmdResp.set_version(cmdReq.version());
 		cmdResp.set_payload(cmdReq.payload());
 		
-		invokeResponses.insert(std::pair<std::string,std::string> {cmdReq.guid_from(), std::string(cmdReq.source_proxy_guid())});
+		invokeResponses.insert(std::pair<std::string,std::string> {cmdReq.guid_from(), cmdReq.source_proxy_guid()});
 		
 		publisher->Publish(entry->proxyGuid, cmdResp);
 		return;
@@ -249,7 +261,9 @@ void Proxy::InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid)
 	if(targetNode == invokeResponses.end())
 	{
 		cmdResp.set_cmd(ESB::Command::ERROR);
-		cmdResp.set_payload("Response callback not found");
+		char buf[1024];
+		sprintf(buf, "Response callback %s not found", cmdReq.guid_to().c_str());
+		cmdResp.set_payload(buf);
 		cmdResp.set_guid_from(guid);
 		cmdResp.set_guid_to(cmdReq.guid_from());
 		cmdResp.set_source_proxy_guid(guid);
@@ -462,6 +476,7 @@ void *Proxy::MainLoop(void *p)
 	info("MainLoop started");
 	pthread_setname_np("MainLoop of ESB");
 	auto self = (Proxy*)p;
+	int loop = 0;
 	while (self->isWork) {
 		bool needToSleep = TRUE;
 		
@@ -482,10 +497,12 @@ void *Proxy::MainLoop(void *p)
 			free(msg);
 		}
 		
-		self->PingRedis();
-		while(self->RemoteRegistryHealthCheck());
-		while(self->LocalRegistryHealthCheck());
-		self->RequestRegistryExchange();
+		if(loop++ % 25 == 0){
+			self->PingRedis();
+			while(self->RemoteRegistryHealthCheck());
+			while(self->LocalRegistryHealthCheck());
+			self->RequestRegistryExchange();
+		}
 		
 		if(needToSleep) usleep(15000);
 	}
@@ -509,6 +526,18 @@ void Proxy::ConnectToAnotherProxy(const char *proxyGuid, const char *connectionS
 			auto subscriber = new Subscriber(connectionString, proxyGuid, this);
 			if(subscriber->Connect()) {
 				info("connected successfull");
+				
+				for (auto& pair: subscribers) {
+					auto sub = pair.second;
+					if(strcmp(sub->connectString, connectionString)==0)
+					{
+						warn("Duplicate connection to %s, kill the previous one", connectionString);
+						delete sub;
+						subscribers.erase(pair.first);
+						break;
+					}
+				}
+				
 				subscribers.insert(std::pair<std::string,Subscriber*> {proxyGuid, subscriber});
 				proxiesGuids.emplace(proxyGuid, proxyGuid);
 			} else {
@@ -525,7 +554,7 @@ void Proxy::ConnectToAnotherProxy(const char *proxyGuid, const char *connectionS
 
 void Proxy::PingRedis()
 {
-	if(time(NULL)-lastRedisPing<3) return;
+	if(time(NULL)-lastRedisPing<2) return;
 	info("ping redis");
 	auto reply = (redisReply*)redisCommand(
 										   redisCtx,

@@ -22,6 +22,9 @@ Requester::Requester(const char *_connectString, const char *_targetGuid, Proxy 
 	
 	const int lingerTimeout = 250;
 	zmq_setsockopt(zResponder, ZMQ_LINGER, &lingerTimeout, sizeof(int));
+	
+	uint64_t highWaterMark = 1;
+	zmq_setsockopt(zResponder, ZMQ_SNDHWM, &highWaterMark, sizeof(uint64_t));
 }
 
 Requester::~Requester()

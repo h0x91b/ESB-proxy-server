@@ -33,10 +33,11 @@ public:
 	bool Connect();
 	~Subscriber();
 	SUBSCRIBER_POLL_MSG *Poll();
+	
+	char connectString[512];
 private:
 	void *zContext;
 	void *zResponder;
-	char connectString[512];
 	
 	char targetGuid[39];
 	Proxy *proxy;

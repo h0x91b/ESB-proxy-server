@@ -90,7 +90,7 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 		}
 		
 		subscribers.insert(std::pair<std::string,Subscriber*> {connectionString, subscriber});
-		nodesGuids.emplace(tmp[0], tmp[0]);
+		nodesGuids[tmp[0]] = tmp[0];
 		
 		cmdResp.set_cmd(ESB::Command::RESPONSE);
 		cmdResp.set_payload(response);
@@ -216,7 +216,7 @@ void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 		
 		entry->lastCheckTime = time(NULL);
 
-		localInvokeMethods.emplace(entry->identifier, std::vector<LocalInvokeMethod*>());
+		localInvokeMethods[entry->identifier] = std::vector<LocalInvokeMethod*>();
 		localInvokeMethods.at(entry->identifier).push_back(entry);
 	}
 	
@@ -564,7 +564,7 @@ void Proxy::ConnectToAnotherProxy(const char *proxyGuid, const char *connectionS
 				}
 				
 				subscribers.insert(std::pair<std::string,Subscriber*> {proxyGuid, subscriber});
-				proxiesGuids.emplace(proxyGuid, proxyGuid);
+				proxiesGuids[proxyGuid] = proxyGuid;
 			} else {
 				err("can not connect to publisher");
 				delete subscriber;

@@ -1,5 +1,5 @@
 //var PROXY = require('../main.js');
-var ESB = require('../../Node/NodeJS/main.js');
+var ESB = require('../../adapter-client/NodeJS/main.js');
 
 responses = 0;
 

@@ -84,7 +84,7 @@
 			buildPhases = (
 			);
 			buildToolPath = ./build.sh;
-			buildWorkingDirectory = "/Volumes/Work-Case-Sens/src/ESB/Proxy";
+			buildWorkingDirectory = "/Volumes/Work-Case-Sens/src/ESB/proxy-server";
 			dependencies = (
 			);
 			name = ESB;

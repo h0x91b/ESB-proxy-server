@@ -32,6 +32,9 @@ bool Subscriber::Connect()
 		const int lingerTimeout = 250;
 		zmq_setsockopt(zResponder, ZMQ_LINGER, &lingerTimeout, sizeof(int));
 		
+		int rcvBufSize = 256*1024;
+		zmq_setsockopt(zResponder, ZMQ_RCVBUF, &rcvBufSize, sizeof(int));
+		
 		info("subscribe on channel %s", proxy->guid);
 		rc = zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, proxy->guid, 38);
 		assert(rc == 0);

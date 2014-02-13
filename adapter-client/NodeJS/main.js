@@ -56,7 +56,7 @@ util.inherits(ESB, events.EventEmitter);
 
 ESB.prototype.connect= function(){
 	var self = this;
-	this.redis.zrevrange('ZSET:PROXIES','0', '1', function(err, resp){
+	this.redis.zrevrange('ZSET:PROXIES','0', '0', function(err, resp){
 		if(err){
 			console.log('Cannot get data from registry', err);
 			self.emit('error', err);

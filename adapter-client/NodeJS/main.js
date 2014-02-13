@@ -224,7 +224,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 			start_time: +new Date,
 			timeout_ms: options.timeout
 		}
-		console.log(obj, this.proxyGuid);
+		//console.log(obj, this.proxyGuid);
 		var buf = pb.Serialize(obj, "ESB.Command");
 		this.publisherSocket.send(new Buffer(this.proxyGuid+buf));
 	} catch(e){

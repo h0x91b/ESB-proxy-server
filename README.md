@@ -61,3 +61,7 @@ Redhat based Linux
 	cd ../../../
 	./build.sh
 	
+	#run proxy
+	export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+	node main.js
+	

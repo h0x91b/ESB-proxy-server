@@ -2,8 +2,8 @@
 node_modules/
 build/
 command.desc
-proxy-server/src/command.pb.cc
-proxy-server/src/command.pb.h
+src/command.pb.cc
+src/command.pb.h
 
 #https://github.com/github/gitignore/blob/master/Objective-C.gitignore
 # Xcode

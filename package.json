@@ -12,5 +12,8 @@
   },
   "author": "Arseniy Pavlenko",
   "license": "BSD",
-  "gypfile": true
+  "gypfile": true,
+  "dependencies": {
+    "esb-node-driver": "git+ssh://git@github.com:h0x91b/ESB-node-driver.git"
+  }
 }

@@ -3,6 +3,18 @@ ESB
 
 Enterprise service bus
 
+The Server
+===
+
+Dependencies
+===
+
+* protobuf
+* zeromq
+* redis
+
+	CXXFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib/ V=1 npm install
+
 Redhat based Linux
 ===
 

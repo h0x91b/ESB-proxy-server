@@ -14,7 +14,7 @@ Publisher::Publisher(int _port)
 	port = _port;
 	zContext = zmq_ctx_new();
 	zResponder = zmq_socket (zContext, ZMQ_PUB);
-	uint64_t highWaterMark = 2000;
+	uint64_t highWaterMark = 10000;
 	zmq_setsockopt(zResponder, ZMQ_SNDHWM, &highWaterMark, sizeof(uint64_t));
 	int sndBufSize = 256*1024;
 	zmq_setsockopt(zResponder, ZMQ_SNDBUF, &sndBufSize, sizeof(int));
@@ -50,7 +50,7 @@ Publisher::~Publisher()
 
 void Publisher::Publish(const char* targetGuid, ESB::Command &cmd)
 {
-	cmd.set_target_proxy_guid(targetGuid);
+	//cmd.set_target_proxy_guid(targetGuid);
 	
 	size_t guidSize = 38*sizeof(char);
 	size_t size = cmd.ByteSize();

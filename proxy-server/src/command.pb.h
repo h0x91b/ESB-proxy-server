@@ -343,22 +343,10 @@ class Command : public ::google::protobuf::Message {
   inline ::std::string* release_source_proxy_guid();
   inline void set_allocated_source_proxy_guid(::std::string* source_proxy_guid);
 
-  // required string target_proxy_guid = 3;
-  inline bool has_target_proxy_guid() const;
-  inline void clear_target_proxy_guid();
-  static const int kTargetProxyGuidFieldNumber = 3;
-  inline const ::std::string& target_proxy_guid() const;
-  inline void set_target_proxy_guid(const ::std::string& value);
-  inline void set_target_proxy_guid(const char* value);
-  inline void set_target_proxy_guid(const char* value, size_t size);
-  inline ::std::string* mutable_target_proxy_guid();
-  inline ::std::string* release_target_proxy_guid();
-  inline void set_allocated_target_proxy_guid(::std::string* target_proxy_guid);
-
-  // required string payload = 4;
+  // required string payload = 3;
   inline bool has_payload() const;
   inline void clear_payload();
-  static const int kPayloadFieldNumber = 4;
+  static const int kPayloadFieldNumber = 3;
   inline const ::std::string& payload() const;
   inline void set_payload(const ::std::string& value);
   inline void set_payload(const char* value);
@@ -366,6 +354,18 @@ class Command : public ::google::protobuf::Message {
   inline ::std::string* mutable_payload();
   inline ::std::string* release_payload();
   inline void set_allocated_payload(::std::string* payload);
+
+  // optional string target_proxy_guid = 4;
+  inline bool has_target_proxy_guid() const;
+  inline void clear_target_proxy_guid();
+  static const int kTargetProxyGuidFieldNumber = 4;
+  inline const ::std::string& target_proxy_guid() const;
+  inline void set_target_proxy_guid(const ::std::string& value);
+  inline void set_target_proxy_guid(const char* value);
+  inline void set_target_proxy_guid(const char* value, size_t size);
+  inline ::std::string* mutable_target_proxy_guid();
+  inline ::std::string* release_target_proxy_guid();
+  inline void set_allocated_target_proxy_guid(::std::string* target_proxy_guid);
 
   // optional string identifier = 5;
   inline bool has_identifier() const;
@@ -442,10 +442,10 @@ class Command : public ::google::protobuf::Message {
   inline void clear_has_cmd();
   inline void set_has_source_proxy_guid();
   inline void clear_has_source_proxy_guid();
-  inline void set_has_target_proxy_guid();
-  inline void clear_has_target_proxy_guid();
   inline void set_has_payload();
   inline void clear_has_payload();
+  inline void set_has_target_proxy_guid();
+  inline void clear_has_target_proxy_guid();
   inline void set_has_identifier();
   inline void clear_has_identifier();
   inline void set_has_guid_from();
@@ -462,8 +462,8 @@ class Command : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::std::string* source_proxy_guid_;
-  ::std::string* target_proxy_guid_;
   ::std::string* payload_;
+  ::std::string* target_proxy_guid_;
   int cmd_;
   ::google::protobuf::int32 version_;
   ::std::string* identifier_;
@@ -820,85 +820,15 @@ inline void Command::set_allocated_source_proxy_guid(::std::string* source_proxy
   }
 }
 
-// required string target_proxy_guid = 3;
-inline bool Command::has_target_proxy_guid() const {
+// required string payload = 3;
+inline bool Command::has_payload() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void Command::set_has_target_proxy_guid() {
+inline void Command::set_has_payload() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void Command::clear_has_target_proxy_guid() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void Command::clear_target_proxy_guid() {
-  if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
-    target_proxy_guid_->clear();
-  }
-  clear_has_target_proxy_guid();
-}
-inline const ::std::string& Command::target_proxy_guid() const {
-  return *target_proxy_guid_;
-}
-inline void Command::set_target_proxy_guid(const ::std::string& value) {
-  set_has_target_proxy_guid();
-  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
-    target_proxy_guid_ = new ::std::string;
-  }
-  target_proxy_guid_->assign(value);
-}
-inline void Command::set_target_proxy_guid(const char* value) {
-  set_has_target_proxy_guid();
-  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
-    target_proxy_guid_ = new ::std::string;
-  }
-  target_proxy_guid_->assign(value);
-}
-inline void Command::set_target_proxy_guid(const char* value, size_t size) {
-  set_has_target_proxy_guid();
-  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
-    target_proxy_guid_ = new ::std::string;
-  }
-  target_proxy_guid_->assign(reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* Command::mutable_target_proxy_guid() {
-  set_has_target_proxy_guid();
-  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
-    target_proxy_guid_ = new ::std::string;
-  }
-  return target_proxy_guid_;
-}
-inline ::std::string* Command::release_target_proxy_guid() {
-  clear_has_target_proxy_guid();
-  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
-    return NULL;
-  } else {
-    ::std::string* temp = target_proxy_guid_;
-    target_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-    return temp;
-  }
-}
-inline void Command::set_allocated_target_proxy_guid(::std::string* target_proxy_guid) {
-  if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
-    delete target_proxy_guid_;
-  }
-  if (target_proxy_guid) {
-    set_has_target_proxy_guid();
-    target_proxy_guid_ = target_proxy_guid;
-  } else {
-    clear_has_target_proxy_guid();
-    target_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  }
-}
-
-// required string payload = 4;
-inline bool Command::has_payload() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
-}
-inline void Command::set_has_payload() {
-  _has_bits_[0] |= 0x00000008u;
-}
 inline void Command::clear_has_payload() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void Command::clear_payload() {
   if (payload_ != &::google::protobuf::internal::kEmptyString) {
@@ -957,6 +887,76 @@ inline void Command::set_allocated_payload(::std::string* payload) {
   } else {
     clear_has_payload();
     payload_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// optional string target_proxy_guid = 4;
+inline bool Command::has_target_proxy_guid() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void Command::set_has_target_proxy_guid() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void Command::clear_has_target_proxy_guid() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void Command::clear_target_proxy_guid() {
+  if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+    target_proxy_guid_->clear();
+  }
+  clear_has_target_proxy_guid();
+}
+inline const ::std::string& Command::target_proxy_guid() const {
+  return *target_proxy_guid_;
+}
+inline void Command::set_target_proxy_guid(const ::std::string& value) {
+  set_has_target_proxy_guid();
+  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    target_proxy_guid_ = new ::std::string;
+  }
+  target_proxy_guid_->assign(value);
+}
+inline void Command::set_target_proxy_guid(const char* value) {
+  set_has_target_proxy_guid();
+  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    target_proxy_guid_ = new ::std::string;
+  }
+  target_proxy_guid_->assign(value);
+}
+inline void Command::set_target_proxy_guid(const char* value, size_t size) {
+  set_has_target_proxy_guid();
+  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    target_proxy_guid_ = new ::std::string;
+  }
+  target_proxy_guid_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Command::mutable_target_proxy_guid() {
+  set_has_target_proxy_guid();
+  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    target_proxy_guid_ = new ::std::string;
+  }
+  return target_proxy_guid_;
+}
+inline ::std::string* Command::release_target_proxy_guid() {
+  clear_has_target_proxy_guid();
+  if (target_proxy_guid_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = target_proxy_guid_;
+    target_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Command::set_allocated_target_proxy_guid(::std::string* target_proxy_guid) {
+  if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+    delete target_proxy_guid_;
+  }
+  if (target_proxy_guid) {
+    set_has_target_proxy_guid();
+    target_proxy_guid_ = target_proxy_guid;
+  } else {
+    clear_has_target_proxy_guid();
+    target_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
 }
 

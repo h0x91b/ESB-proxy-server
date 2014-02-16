@@ -22,19 +22,19 @@ Subscriber::Subscriber(const char *_connectString, const char *_targetGuid, Prox
 bool Subscriber::Connect()
 {
 	dbg("connect to %s", connectString);
+	const int timeout = 250;
+	zmq_setsockopt(zResponder, ZMQ_RCVTIMEO, &timeout, sizeof(int));
+	
+	const int lingerTimeout = 250;
+	zmq_setsockopt(zResponder, ZMQ_LINGER, &lingerTimeout, sizeof(int));
+	
+	int rcvBufSize = 256*1024;
+	zmq_setsockopt(zResponder, ZMQ_RCVBUF, &rcvBufSize, sizeof(int));
+	
 	auto rc = zmq_connect(zResponder, connectString);
 	
 	if(rc==0)
 	{
-		const int timeout = 250;
-		zmq_setsockopt(zResponder, ZMQ_RCVTIMEO, &timeout, sizeof(int));
-		
-		const int lingerTimeout = 250;
-		zmq_setsockopt(zResponder, ZMQ_LINGER, &lingerTimeout, sizeof(int));
-		
-		int rcvBufSize = 256*1024;
-		zmq_setsockopt(zResponder, ZMQ_RCVBUF, &rcvBufSize, sizeof(int));
-		
 		info("subscribe on channel %s", proxy->guid);
 		rc = zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, proxy->guid, 38);
 		assert(rc == 0);
@@ -77,10 +77,11 @@ SUBSCRIBER_POLL_MSG *Subscriber::Poll()
 	cmdReq->ParseFromArray(buffer, len-guidSize);
 	buffer-=guidSize;
 	
-	if(strcmp(cmdReq->target_proxy_guid().c_str(), proxy->guid) != 0)
-	{
-		err("subscriber receive wrong target_proxy_guid call");
-	}
+//	if(strcmp(cmdReq->target_proxy_guid().c_str(), proxy->guid) != 0)
+//	{
+//		err("subscriber receive wrong target_proxy_guid call");
+//	}
+	cmdReq->set_target_proxy_guid(targetGuid);
 	
 	auto ret = (SUBSCRIBER_POLL_MSG*)malloc(sizeof(SUBSCRIBER_POLL_MSG));
 	ret->cmdReq = cmdReq;

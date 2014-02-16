@@ -42,8 +42,8 @@ void protobuf_AssignDesc_command_2eproto() {
   static const int Command_offsets_[11] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, cmd_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, source_proxy_guid_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, target_proxy_guid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, payload_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, target_proxy_guid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, identifier_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, guid_from_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, guid_to_),
@@ -119,8 +119,8 @@ void protobuf_AddDesc_command_2eproto() {
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\rcommand.proto\022\003ESB\"\221\005\n\007Command\022\035\n\003cmd\030"
     "\001 \002(\0162\020.ESB.Command.Cmd\022\031\n\021source_proxy_"
-    "guid\030\002 \002(\t\022\031\n\021target_proxy_guid\030\003 \002(\t\022\017\n"
-    "\007payload\030\004 \002(\t\022\022\n\nidentifier\030\005 \001(\t\022\021\n\tgu"
+    "guid\030\002 \002(\t\022\017\n\007payload\030\003 \002(\t\022\031\n\021target_pr"
+    "oxy_guid\030\004 \001(\t\022\022\n\nidentifier\030\005 \001(\t\022\021\n\tgu"
     "id_from\030\006 \001(\t\022\017\n\007guid_to\030\007 \001(\t\022\017\n\007versio"
     "n\030\010 \001(\005\022\022\n\nstart_time\030\t \001(\r\022\022\n\ntimeout_m"
     "s\030\n \001(\005\022-\n\treg_entry\030\013 \003(\0132\032.ESB.Command"
@@ -599,8 +599,8 @@ void Command_RegistryEntry::Swap(Command_RegistryEntry* other) {
 #ifndef _MSC_VER
 const int Command::kCmdFieldNumber;
 const int Command::kSourceProxyGuidFieldNumber;
-const int Command::kTargetProxyGuidFieldNumber;
 const int Command::kPayloadFieldNumber;
+const int Command::kTargetProxyGuidFieldNumber;
 const int Command::kIdentifierFieldNumber;
 const int Command::kGuidFromFieldNumber;
 const int Command::kGuidToFieldNumber;
@@ -628,8 +628,8 @@ void Command::SharedCtor() {
   _cached_size_ = 0;
   cmd_ = 1;
   source_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  target_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   payload_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  target_proxy_guid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   identifier_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   guid_from_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   guid_to_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
@@ -647,11 +647,11 @@ void Command::SharedDtor() {
   if (source_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
     delete source_proxy_guid_;
   }
-  if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
-    delete target_proxy_guid_;
-  }
   if (payload_ != &::google::protobuf::internal::kEmptyString) {
     delete payload_;
+  }
+  if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+    delete target_proxy_guid_;
   }
   if (identifier_ != &::google::protobuf::internal::kEmptyString) {
     delete identifier_;
@@ -695,14 +695,14 @@ void Command::Clear() {
         source_proxy_guid_->clear();
       }
     }
-    if (has_target_proxy_guid()) {
-      if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
-        target_proxy_guid_->clear();
-      }
-    }
     if (has_payload()) {
       if (payload_ != &::google::protobuf::internal::kEmptyString) {
         payload_->clear();
+      }
+    }
+    if (has_target_proxy_guid()) {
+      if (target_proxy_guid_ != &::google::protobuf::internal::kEmptyString) {
+        target_proxy_guid_->clear();
       }
     }
     if (has_identifier()) {
@@ -770,29 +770,12 @@ bool Command::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_target_proxy_guid;
+        if (input->ExpectTag(26)) goto parse_payload;
         break;
       }
 
-      // required string target_proxy_guid = 3;
+      // required string payload = 3;
       case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_target_proxy_guid:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_target_proxy_guid()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->target_proxy_guid().data(), this->target_proxy_guid().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(34)) goto parse_payload;
-        break;
-      }
-
-      // required string payload = 4;
-      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_payload:
@@ -800,6 +783,23 @@ bool Command::MergePartialFromCodedStream(
                 input, this->mutable_payload()));
           ::google::protobuf::internal::WireFormat::VerifyUTF8String(
             this->payload().data(), this->payload().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_target_proxy_guid;
+        break;
+      }
+
+      // optional string target_proxy_guid = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_target_proxy_guid:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_target_proxy_guid()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->target_proxy_guid().data(), this->target_proxy_guid().length(),
             ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
@@ -955,22 +955,22 @@ void Command::SerializeWithCachedSizes(
       2, this->source_proxy_guid(), output);
   }
 
-  // required string target_proxy_guid = 3;
-  if (has_target_proxy_guid()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->target_proxy_guid().data(), this->target_proxy_guid().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      3, this->target_proxy_guid(), output);
-  }
-
-  // required string payload = 4;
+  // required string payload = 3;
   if (has_payload()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->payload().data(), this->payload().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      4, this->payload(), output);
+      3, this->payload(), output);
+  }
+
+  // optional string target_proxy_guid = 4;
+  if (has_target_proxy_guid()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->target_proxy_guid().data(), this->target_proxy_guid().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      4, this->target_proxy_guid(), output);
   }
 
   // optional string identifier = 5;
@@ -1045,24 +1045,24 @@ void Command::SerializeWithCachedSizes(
         2, this->source_proxy_guid(), target);
   }
 
-  // required string target_proxy_guid = 3;
-  if (has_target_proxy_guid()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->target_proxy_guid().data(), this->target_proxy_guid().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->target_proxy_guid(), target);
-  }
-
-  // required string payload = 4;
+  // required string payload = 3;
   if (has_payload()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->payload().data(), this->payload().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        4, this->payload(), target);
+        3, this->payload(), target);
+  }
+
+  // optional string target_proxy_guid = 4;
+  if (has_target_proxy_guid()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->target_proxy_guid().data(), this->target_proxy_guid().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        4, this->target_proxy_guid(), target);
   }
 
   // optional string identifier = 5;
@@ -1141,18 +1141,18 @@ int Command::ByteSize() const {
           this->source_proxy_guid());
     }
 
-    // required string target_proxy_guid = 3;
-    if (has_target_proxy_guid()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->target_proxy_guid());
-    }
-
-    // required string payload = 4;
+    // required string payload = 3;
     if (has_payload()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->payload());
+    }
+
+    // optional string target_proxy_guid = 4;
+    if (has_target_proxy_guid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->target_proxy_guid());
     }
 
     // optional string identifier = 5;
@@ -1241,11 +1241,11 @@ void Command::MergeFrom(const Command& from) {
     if (from.has_source_proxy_guid()) {
       set_source_proxy_guid(from.source_proxy_guid());
     }
-    if (from.has_target_proxy_guid()) {
-      set_target_proxy_guid(from.target_proxy_guid());
-    }
     if (from.has_payload()) {
       set_payload(from.payload());
+    }
+    if (from.has_target_proxy_guid()) {
+      set_target_proxy_guid(from.target_proxy_guid());
     }
     if (from.has_identifier()) {
       set_identifier(from.identifier());
@@ -1284,7 +1284,7 @@ void Command::CopyFrom(const Command& from) {
 }
 
 bool Command::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
 
   for (int i = 0; i < reg_entry_size(); i++) {
     if (!this->reg_entry(i).IsInitialized()) return false;
@@ -1296,8 +1296,8 @@ void Command::Swap(Command* other) {
   if (other != this) {
     std::swap(cmd_, other->cmd_);
     std::swap(source_proxy_guid_, other->source_proxy_guid_);
-    std::swap(target_proxy_guid_, other->target_proxy_guid_);
     std::swap(payload_, other->payload_);
+    std::swap(target_proxy_guid_, other->target_proxy_guid_);
     std::swap(identifier_, other->identifier_);
     std::swap(guid_from_, other->guid_from_);
     std::swap(guid_to_, other->guid_to_);

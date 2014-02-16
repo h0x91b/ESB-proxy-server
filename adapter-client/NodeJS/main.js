@@ -10,7 +10,7 @@ var Redis = require('redis');
 
 
 var _config = {
-	publisherHost: 'h0x91b.il.paragonex.com',
+	publisherHost: 'h0x91b.toyga.local',
 	publisherPort: 7780,
 	redisHost: 'esb-redis',
 	redisPort: 6379
@@ -88,7 +88,7 @@ ESB.prototype.sendHello= function() {
 		payload: this.guid+'#tcp://'+this.config.publisherHost+':'+this.config.publisherPort,
 		guid_from: cmdGuid,
 		source_proxy_guid: this.guid,
-		target_proxy_guid: ''
+		//target_proxy_guid: ''
 	}
 	var buf = pb.Serialize(obj, "ESB.Command");
 	var self = this;
@@ -219,7 +219,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 			identifier: identifier,
 			payload: JSON.stringify(data),
 			guid_from: cmdGuid,
-			target_proxy_guid: this.proxyGuid,
+			//target_proxy_guid: this.proxyGuid,
 			source_proxy_guid: this.guid,
 			start_time: +new Date,
 			timeout_ms: options.timeout
@@ -274,7 +274,7 @@ ESB.prototype.register = function(_identifier, version, cb, options) {
 					payload: JSON.stringify(resp, null, '\t'),
 					guid_from: cmdGuid,
 					guid_to: data.guid_from,
-					target_proxy_guid: self.proxyGuid,
+					//target_proxy_guid: self.proxyGuid,
 					source_proxy_guid: self.guid,
 					start_time: +new Date,
 				}
@@ -301,7 +301,7 @@ ESB.prototype.register = function(_identifier, version, cb, options) {
 			identifier: identifier,
 			payload: cmdGuid,
 			guid_from: cmdGuid,
-			target_proxy_guid: this.proxyGuid,
+			//target_proxy_guid: this.proxyGuid,
 			source_proxy_guid: this.guid,
 			start_time: +new Date,
 		}

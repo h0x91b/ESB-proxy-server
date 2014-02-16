@@ -123,7 +123,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		
 		cmdResp.set_guid_to(entry->methodGuid);
 		cmdResp.set_source_proxy_guid(guid);
-		cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
+		//cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
 		cmdResp.set_identifier(entry->identifier);
 		cmdResp.set_version(cmdReq.version());
 		cmdResp.set_payload(cmdReq.payload());
@@ -154,7 +154,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		cmdResp.set_guid_to(entry->methodGuid);
 		cmdResp.set_guid_from(cmdReq.guid_from());
 		cmdResp.set_source_proxy_guid(guid);
-		cmdResp.set_target_proxy_guid(entry->proxyGuid);
+		//cmdResp.set_target_proxy_guid(entry->proxyGuid);
 		cmdResp.set_identifier(entry->identifier);
 		cmdResp.set_version(cmdReq.version());
 		cmdResp.set_payload(cmdReq.payload());
@@ -216,8 +216,11 @@ void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 		
 		entry->lastCheckTime = time(NULL);
 
-		localInvokeMethods[entry->identifier] = std::vector<LocalInvokeMethod*>();
-		localInvokeMethods.at(entry->identifier).push_back(entry);
+//		localInvokeMethods[entry->identifier] = std::vector<LocalInvokeMethod*>();
+//		localInvokeMethods.at(entry->identifier).push_back(entry);
+		auto vec = localInvokeMethods[entry->identifier];
+		vec.push_back(entry);
+		localInvokeMethods[entry->identifier] = vec;
 	}
 	
 	ESB::Command cmdResp;
@@ -226,7 +229,7 @@ void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 	
 	cmdResp.set_guid_to(cmdReq.source_proxy_guid());
 	cmdResp.set_source_proxy_guid(guid);
-	cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
+	//cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
 	
 	cmdResp.set_payload(cmdReq.identifier().c_str());
 	
@@ -261,7 +264,7 @@ ESB::Command Proxy::ResponderCallback(ESB::Command &cmdReq)
 	cmdResp.set_guid_from(guid);
 	cmdResp.set_guid_to(cmdReq.guid_from());
 	cmdResp.set_source_proxy_guid(guid);
-	cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
+	//cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
 		
 	return cmdResp;
 }
@@ -269,7 +272,7 @@ ESB::Command Proxy::ResponderCallback(ESB::Command &cmdReq)
 void Proxy::InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid)
 {
 	ESB::Command cmdResp;
-	assert(strcmp(cmdReq.target_proxy_guid().c_str(), guid) == 0);
+	//assert(strcmp(cmdReq.target_proxy_guid().c_str(), guid) == 0);
 	auto targetNode = invokeResponses.find(cmdReq.guid_to());
 	if(targetNode == invokeResponses.end())
 	{
@@ -280,7 +283,7 @@ void Proxy::InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid)
 		cmdResp.set_guid_from(guid);
 		cmdResp.set_guid_to(cmdReq.guid_from());
 		cmdResp.set_source_proxy_guid(guid);
-		cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
+		//cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
 		publisher->Publish(sourceNodeGuid, cmdResp);
 		return;
 	}
@@ -291,7 +294,7 @@ void Proxy::InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid)
 	cmdResp.set_guid_from(cmdReq.guid_from());
 	cmdResp.set_guid_to(cmdReq.guid_to());
 	cmdResp.set_source_proxy_guid(guid);
-	cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
+	//cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
 	
 	publisher->Publish(targetNode->second.c_str(), cmdResp);
 	invokeResponses.erase(cmdReq.guid_to());
@@ -305,7 +308,7 @@ void Proxy::RegistryExchangeResponder(ESB::Command &cmdReq)
 	ESB::Command cmdResp;
 	
 	cmdResp.set_cmd(ESB::Command::REGISTRY_EXCHANGE_RESPONSE);
-	cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
+	//cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
 	cmdResp.set_source_proxy_guid(guid);
 	cmdResp.set_payload("here is my registry");
 	
@@ -411,7 +414,7 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 	cmdResp.set_guid_from(guid);
 	cmdResp.set_guid_to(cmdReq.guid_from());
 	cmdResp.set_source_proxy_guid(guid);
-	cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
+	//cmdResp.set_target_proxy_guid(cmdReq.source_proxy_guid());
 	
 	publisher->Publish(nodeGuid, cmdResp);
 }
@@ -433,7 +436,7 @@ void Proxy::RequestRegistryExchange()
 		ESB::Command cmdReq;
 		cmdReq.set_cmd(ESB::Command::REGISTRY_EXCHANGE_REQUEST);
 		cmdReq.set_source_proxy_guid(guid);
-		cmdReq.set_target_proxy_guid(s);
+		//cmdReq.set_target_proxy_guid(s);
 		cmdReq.set_payload("REGISTRY_EXCHANGE_REQUEST please :)");
 		publisher->Publish(s.c_str(), cmdReq);
 	}

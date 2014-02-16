@@ -54,7 +54,7 @@ bool Requester::SendProxyHello(char *respConnectionString)
 	ESB::Command cmdReq;
 	cmdReq.set_cmd(ESB::Command::PROXY_HELLO);
 	
-	cmdReq.set_target_proxy_guid(targetGuid);
+	//cmdReq.set_target_proxy_guid(targetGuid);
 	cmdReq.set_guid_to(targetGuid);
 	cmdReq.set_guid_from(proxy->guid);
 	cmdReq.set_source_proxy_guid(proxy->guid);

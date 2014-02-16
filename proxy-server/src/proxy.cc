@@ -329,6 +329,19 @@ void Proxy::RegistryExchangeResponder(ESB::Command &cmdReq)
 	publisher->Publish(cmdReq.source_proxy_guid().c_str(), cmdResp);
 }
 
+void Proxy::PingRequest(ESB::Command &cmdReq)
+{
+	dbg("ping request");
+	ESB::Command cmdResp;
+	cmdResp.set_cmd(ESB::Command::RESPONSE);
+	cmdResp.set_payload("\"Pong\"");
+	
+	cmdResp.set_guid_to(cmdReq.guid_from());
+	cmdResp.set_source_proxy_guid(guid);
+	
+	publisher->Publish(cmdReq.source_proxy_guid().c_str(), cmdResp);
+}
+
 void Proxy::RemoteRegistryUpdate(ESB::Command &cmdReq)
 {
 	info("getted list from %s, %i methods", cmdReq.source_proxy_guid().c_str(), cmdReq.reg_entry_size());
@@ -402,6 +415,10 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 		case ESB::Command::REGISTRY_EXCHANGE_RESPONSE:
 			dbg("getted registry from %s", cmdReq.source_proxy_guid().c_str());
 			RemoteRegistryUpdate(cmdReq);
+			return;
+		case ESB::Command::PING:
+			dbg("getted ping request from %s", cmdReq.source_proxy_guid().c_str());
+			PingRequest(cmdReq);
 			return;
 		default:
 			err("Error, received unknown cmd: %i, payload: %s", cmdReq.cmd(), cmdReq.payload().c_str());

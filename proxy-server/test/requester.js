@@ -20,9 +20,15 @@ esb.on('ready', function(){
 			responses++;
 		});
 	},10);
+	
+	setInterval(function(){
+		console.log('%s invokes per second', responses);
+		responses=0;
+	},1000);
+	
 });
 
-setInterval(function(){
-	console.log('%s invokes per second', responses);
-	responses=0;
-},1000);
+esb.on('disconnected', function(){
+	process.exit();
+});
+

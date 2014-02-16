@@ -21,7 +21,8 @@ function ESB(config) {
 	this.config = extend(true, {}, _config, config);
 	this.guid = ('{'+uuid.v4()+'}').toUpperCase();
 	this.proxyGuid = '';
-	console.log('new ESB %s', this.guid);
+	this.ready = false;
+	console.log('new ESB driver %s', this.guid);
 	this.responseCallbacks = [];
 	this.invokeMethods = [];
 	var socket = zmq.socket('req');
@@ -49,6 +50,7 @@ function ESB(config) {
 		console.log('redis error', err);
 		self.emit('error', err);
 	});
+	
 	this.connect();
 }
 
@@ -62,7 +64,6 @@ ESB.prototype.connect= function(){
 			self.emit('error', err);
 			return;
 		}
-		console.log('available proxies: %s',resp.length);
 		if(resp.length<1){
 			console.log('currently no proxies can be found, wait 1 sec');
 			setTimeout(function(){
@@ -70,9 +71,20 @@ ESB.prototype.connect= function(){
 			}, 1000);
 			return;
 		}
-		var d = resp.pop().split('#');
+		var id = null;
+		var entry = resp.pop();
+		var d = entry.split('#');
 		var connectStr = d[1];
 		self.proxyGuid = d[0];
+		
+		setTimeout(function(){
+			if(self.ready) return;
+			console.log('connection failed to %s, remove entry from redis and try again', entry);
+			self.redis.zrem('ZSET:PROXIES', entry, function(err, resp){
+				self.connect();
+			});
+		}, 5000);
+
 		console.log('ESB Node %s connecting to: %s (%s)', self.guid, connectStr, self.proxyGuid);
 		self.requestSocket.connect(connectStr);
 		console.log('ESB Node %s connected', self.guid);
@@ -109,13 +121,51 @@ ESB.prototype.sendHello= function() {
 		console.log('ESB Node %s connected to publisher of ESB Proxy %s', self.guid, self.proxyGuid);
 		self.subscribeSocket.subscribe(self.guid);
 		//self.proxyGuid = respObj.source_proxy_guid;
+		self.ready = true;
 		self.emit('ready');
 		setInterval(function(){
 			self.sendRegistry();
-		},1000);
+			self.ping();
+		}, 1000);
 	});
 	this.requestSocket.send(buf);
 	console.log('NODE_HELLO sended');
+};
+
+ESB.prototype.ping = function(){
+	//console.log('send ping to %s', this.guid, this.proxyGuid);
+	if(!this.ready) return;
+	var cmdGuid = ('{'+uuid.v4()+'}').toUpperCase();
+	var obj = {
+		cmd: 'PING',
+		payload: 'hi',
+		guid_from: cmdGuid,
+		source_proxy_guid: this.guid,
+		//target_proxy_guid: ''
+	}
+	var buf = pb.Serialize(obj, "ESB.Command");
+	var id = null;
+	var self = this;
+	
+	function timeout(){
+		console.log('proxy timeout!');
+		if(self.ready){
+			self.ready = false;
+			self.emit('disconnected');
+		}
+		delete self.responseCallbacks[cmdGuid];
+	}
+	
+	id = setTimeout(timeout, 3000);
+	
+	this.responseCallbacks[cmdGuid] = function(err, data, errString){
+		//console.log('pong');
+		self.ready = true;
+		if(id) clearTimeout(id);
+		delete self.responseCallbacks[cmdGuid];
+	}
+	
+	this.publisherSocket.send(new Buffer(this.proxyGuid+buf));
 };
 
 ESB.prototype.onMessage= function(data) {
@@ -177,6 +227,10 @@ ESB.prototype.onMessage= function(data) {
 };
 
 ESB.prototype.invoke = function(identifier, data, cb, options){
+	if(!this.ready){
+		cb('Not connected!', null, 'Currently driver not connected to any proxy.');
+		return;
+	}
 	options = extend(true, {
 		version: 1,
 		timeout: 3000
@@ -238,6 +292,7 @@ ESB.prototype.invoke = function(identifier, data, cb, options){
 };
 
 ESB.prototype.sendRegistry = function(){
+	if(!this.ready) return;
 	for(var g in this.invokeMethods){
 		var m = this.invokeMethods[g];
 		this.register(m.identifier, m.version, m.method, m.options);
@@ -245,6 +300,11 @@ ESB.prototype.sendRegistry = function(){
 }
 
 ESB.prototype.register = function(_identifier, version, cb, options) {
+	if(!this.ready){
+		cb('Not connected!', null, 'Currently driver not connected to any proxy.');
+		return;
+	}
+	
 	//console.log('register', _identifier, version);
 	options = extend(true, {
 		version: 1,

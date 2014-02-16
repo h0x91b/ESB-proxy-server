@@ -22,9 +22,13 @@ esb1.on('ready', function(){
 		cb(null, data.a + data.b);
 	});
 	}
+	
+	setInterval(function(){
+		console.log('%s invokes per second', responses);
+		responses=0;
+	},1000);
 });
 
-setInterval(function(){
-	console.log('%s invokes per second', responses);
-	responses=0;
-},1000);
+esb1.on('disconnected', function(){
+	process.exit();
+});

@@ -53,6 +53,7 @@ public:
 	void RemoteRegistryUpdate(ESB::Command &cmdReq);
 	bool RemoteRegistryHealthCheck();
 	bool LocalRegistryHealthCheck();
+	void PingRequest(ESB::Command &cmdReq);
 	
 	char guid[39];
 	Responder *responder;

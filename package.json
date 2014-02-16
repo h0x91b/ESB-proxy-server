@@ -1,6 +1,6 @@
 {
   "name": "esb-proxy-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The Server",
   "main": "main.js",
   "directories": {

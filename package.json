@@ -1,7 +1,7 @@
 {
   "name": "esb-proxy-server",
-  "version": "0.0.0",
-  "description": "The Server ===",
+  "version": "0.0.1",
+  "description": "The Server",
   "main": "main.js",
   "directories": {
     "test": "test"
@@ -14,6 +14,6 @@
   "license": "BSD",
   "gypfile": true,
   "dependencies": {
-    "esb-node-driver": "git+ssh://git@github.com:h0x91b/ESB-node-driver.git"
+    "esb-node-driver": "latest"
   }
 }

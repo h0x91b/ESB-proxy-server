@@ -1,9 +1,6 @@
 .DS_Store
 node_modules/
 build/
-command.desc
-src/command.pb.cc
-src/command.pb.h
 
 #https://github.com/github/gitignore/blob/master/Objective-C.gitignore
 # Xcode

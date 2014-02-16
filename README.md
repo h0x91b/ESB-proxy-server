@@ -13,8 +13,6 @@ Dependencies
 * zeromq
 * redis
 
-	CXXFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib/ V=1 npm install
-
 Redhat based Linux
 ===
 
@@ -66,6 +64,7 @@ Redhat based Linux
 	./build.sh
 	
 	#run proxy
+	CXXFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib/ V=1 npm install
 	export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 	node main.js
 	

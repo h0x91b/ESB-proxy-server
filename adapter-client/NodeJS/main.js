@@ -107,11 +107,11 @@ ESB.prototype.sendHello= function() {
 	this.requestSocket.once('message', function(data){
 		self.requestSocket.close();
 		var respObj = pb.Parse(data, "ESB.Command");
-		console.log('got response from Proxy', respObj.payload);
+		console.log('got response from Proxy', respObj.payload.toString());
 		if(respObj.cmd === 'ERROR') {
-			throw new Error(respObj.payload);
+			throw new Error(respObj.payload.toString());
 		}
-		var t = respObj.payload.split('#');
+		var t = respObj.payload.toString().split('#');
 		t = 'tcp://'+t[0]+':'+t[1];
 		console.log('connecting to: '+t);
 		self.subscribeSocket.on('message', function(data){
@@ -190,7 +190,7 @@ ESB.prototype.onMessage= function(data) {
 			var fn = this.responseCallbacks[respObj.guid_to];
 			if(fn){
 				delete this.responseCallbacks[respObj.guid_to];
-				fn(null, JSON.parse(respObj.payload), null);
+				fn(null, JSON.parse(respObj.payload.toString()), null);
 			} else {
 				console.log('callback %s for response not found', respObj.guid_to);
 			}
@@ -208,10 +208,10 @@ ESB.prototype.onMessage= function(data) {
 			this.publisherSocket.send(this.guid+buf);
 			break;
 		case 'ERROR':
-			console.log('got ERROR response: ', respObj.payload);
+			console.log('got ERROR response: ', respObj.payload.toString());
 			if(this.responseCallbacks[respObj.guid_to]){
 				var fn = this.responseCallbacks[respObj.guid_to];
-				fn(respObj.cmd, null, respObj.payload);
+				fn(respObj.cmd, null, respObj.payload.toString());
 			}
 			break;
 		case 'REGISTER_INVOKE_OK':
@@ -327,7 +327,7 @@ ESB.prototype.register = function(_identifier, version, cb, options) {
 		};
 		invokeMethod.method = function(data){
 			//console.log('invoke method ', data);
-			cb(JSON.parse(data.payload), function(err, resp){
+			cb(JSON.parse(data.payload.toString()), function(err, resp){
 				//console.log('got response from method...', err, resp);
 				var obj = {
 					cmd: 'RESPONSE',

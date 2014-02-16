@@ -8,7 +8,7 @@ Redhat based Linux
 
 	#Installing nodejs
 	yum groupinstall "Development Tools" -y
-	yum install -y git
+	yum install -y git wget
 	cd /tmp/
 	wget http://nodejs.org/dist/node-latest.tar.gz
 	tar -xzvf node-latest.tar.gz

@@ -119,7 +119,7 @@ void protobuf_AddDesc_command_2eproto() {
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\rcommand.proto\022\003ESB\"\221\005\n\007Command\022\035\n\003cmd\030"
     "\001 \002(\0162\020.ESB.Command.Cmd\022\031\n\021source_proxy_"
-    "guid\030\002 \002(\t\022\017\n\007payload\030\003 \002(\t\022\031\n\021target_pr"
+    "guid\030\002 \002(\t\022\017\n\007payload\030\003 \002(\014\022\031\n\021target_pr"
     "oxy_guid\030\004 \001(\t\022\022\n\nidentifier\030\005 \001(\t\022\021\n\tgu"
     "id_from\030\006 \001(\t\022\017\n\007guid_to\030\007 \001(\t\022\017\n\007versio"
     "n\030\010 \001(\005\022\022\n\nstart_time\030\t \001(\r\022\022\n\ntimeout_m"
@@ -774,16 +774,13 @@ bool Command::MergePartialFromCodedStream(
         break;
       }
 
-      // required string payload = 3;
+      // required bytes payload = 3;
       case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_payload:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_payload()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->payload().data(), this->payload().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
@@ -955,12 +952,9 @@ void Command::SerializeWithCachedSizes(
       2, this->source_proxy_guid(), output);
   }
 
-  // required string payload = 3;
+  // required bytes payload = 3;
   if (has_payload()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->payload().data(), this->payload().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
+    ::google::protobuf::internal::WireFormatLite::WriteBytes(
       3, this->payload(), output);
   }
 
@@ -1045,13 +1039,10 @@ void Command::SerializeWithCachedSizes(
         2, this->source_proxy_guid(), target);
   }
 
-  // required string payload = 3;
+  // required bytes payload = 3;
   if (has_payload()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->payload().data(), this->payload().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
         3, this->payload(), target);
   }
 
@@ -1141,10 +1132,10 @@ int Command::ByteSize() const {
           this->source_proxy_guid());
     }
 
-    // required string payload = 3;
+    // required bytes payload = 3;
     if (has_payload()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
+        ::google::protobuf::internal::WireFormatLite::BytesSize(
           this->payload());
     }
 

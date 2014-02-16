@@ -18,7 +18,7 @@ message Command {
 	
 	required Cmd cmd = 1;
 	required string source_proxy_guid = 2;
-	required string payload = 3;
+	required bytes payload = 3;
 	optional string target_proxy_guid = 4;
 	optional string identifier = 5;
 	optional string guid_from = 6;

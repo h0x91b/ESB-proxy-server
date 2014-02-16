@@ -20,6 +20,7 @@
 #include <vector>
 
 #define LOG_LEVEL 2
+#define GUID_SIZE 16
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -50,7 +51,8 @@
 #define err(format, ...) fprintf(stderr, ANSI_COLOR_RED "ERROR: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 
 
-void GenerateGuid(char *guidStr);
+void GenerateGuid(char *guidStr, const size_t len);
+unsigned long mix(unsigned long a, unsigned long b, unsigned long c);
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
 std::vector<std::string> split(const std::string &s, char delim);
 

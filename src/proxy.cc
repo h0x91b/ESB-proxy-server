@@ -12,7 +12,8 @@ Persistent<Function> Proxy::constructor;
 
 Proxy::Proxy(const v8::Arguments& args)
 {
-	GenerateGuid(guid);
+	srand(mix(clock(), time(NULL), getpid()));
+	GenerateGuid(guid, GUID_SIZE);
 	info("guid: %s", guid);
 	
 	invokeCalls = 0;
@@ -671,7 +672,17 @@ Handle<Value> Proxy::New(const Arguments& args) {
 	}
 }
 
-void GenerateGuid(char *guidStr)
+void GenerateGuid(char *guidStr, const size_t len)
+{
+	char *pGuidStr = guidStr;
+	size_t i;
+	
+	for(i = 0; i < len; i++, pGuidStr++)
+		((*pGuidStr = (rand() % 16)) < 10) ? *pGuidStr += 48 : *pGuidStr += 55;
+
+}
+
+void GenerateLongGuid(char *guidStr)
 {
 	char *pGuidStr = guidStr;
 	int i;
@@ -731,4 +742,17 @@ inline double timestamp()
 	return (double)(t*1000);
 }
 
+unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
+{
+    a=a-b;  a=a-c;  a=a^(c >> 13);
+    b=b-c;  b=b-a;  b=b^(a << 8);
+    c=c-a;  c=c-b;  c=c^(b >> 13);
+    a=a-b;  a=a-c;  a=a^(c >> 12);
+    b=b-c;  b=b-a;  b=b^(a << 16);
+    c=c-a;  c=c-b;  c=c^(b >> 5);
+    a=a-b;  a=a-c;  a=a^(c >> 3);
+    b=b-c;  b=b-a;  b=b^(a << 10);
+    c=c-a;  c=c-b;  c=c^(b >> 15);
+    return c;
+}
 NODE_MODULE(proxy, InitAll)

@@ -39,7 +39,7 @@ private:
 	void *zContext;
 	void *zResponder;
 	
-	char targetGuid[39];
+	char targetGuid[GUID_SIZE+1];
 	Proxy *proxy;
 };
 

@@ -36,7 +36,7 @@ bool Subscriber::Connect()
 	if(rc==0)
 	{
 		info("subscribe on channel %s", proxy->guid);
-		rc = zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, proxy->guid, 38);
+		rc = zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, proxy->guid, GUID_SIZE);
 		assert(rc == 0);
 		return true;
 	}
@@ -72,7 +72,7 @@ SUBSCRIBER_POLL_MSG *Subscriber::Poll()
 	assert (len != -1);
 	auto buffer = (unsigned char *)zmq_msg_data(&msg);
 	
-	const int guidSize = 38*sizeof(char);
+	const int guidSize = GUID_SIZE*sizeof(char);
 	buffer+=guidSize;
 	cmdReq->ParseFromArray(buffer, len-guidSize);
 	buffer-=guidSize;

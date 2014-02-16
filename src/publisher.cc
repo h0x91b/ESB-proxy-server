@@ -52,7 +52,7 @@ void Publisher::Publish(const char* targetGuid, ESB::Command &cmd)
 {
 	//cmd.set_target_proxy_guid(targetGuid);
 	
-	size_t guidSize = 38*sizeof(char);
+	size_t guidSize = GUID_SIZE*sizeof(char);
 	size_t size = cmd.ByteSize();
 	
 	zmq_msg_t msg;

@@ -32,7 +32,7 @@ private:
 	void *zResponder;
 	char connectString[512];
 	
-	char targetGuid[39];
+	char targetGuid[GUID_SIZE+1];
 	Proxy *proxy;
 };
 

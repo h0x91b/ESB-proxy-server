@@ -25,16 +25,16 @@ class Responder;
 struct LocalInvokeMethod
 {
 	char *identifier;
-	char nodeGuid[39];
-	char methodGuid[39];
+	char nodeGuid[GUID_SIZE+1];
+	char methodGuid[GUID_SIZE+1];
 	int lastCheckTime;
 };
 
 struct RemoteInvokeMethod
 {
 	char *identifier;
-	char proxyGuid[39];
-	char methodGuid[39];
+	char proxyGuid[GUID_SIZE+1];
+	char methodGuid[GUID_SIZE+1];
 	int lastCheckTime;
 };
 
@@ -55,7 +55,7 @@ public:
 	bool LocalRegistryHealthCheck();
 	void PingRequest(ESB::Command &cmdReq);
 	
-	char guid[39];
+	char guid[GUID_SIZE+1];
 	Responder *responder;
 	Publisher *publisher;
 	redisContext *redisCtx;

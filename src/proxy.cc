@@ -345,7 +345,7 @@ void Proxy::PingRequest(ESB::Command &cmdReq)
 
 void Proxy::RemoteRegistryUpdate(ESB::Command &cmdReq)
 {
-	info("getted list from %s, %i methods", cmdReq.source_proxy_guid().c_str(), cmdReq.reg_entry_size());
+	verb("getted list from %s, %i methods", cmdReq.source_proxy_guid().c_str(), cmdReq.reg_entry_size());
 	
 	for( int i=0; i < cmdReq.reg_entry_size(); i++)
 	{
@@ -381,7 +381,7 @@ void Proxy::RemoteRegistryUpdate(ESB::Command &cmdReq)
 			strcpy(entryStruct->proxyGuid, entry.proxy_guid().c_str());
 			entryStruct->lastCheckTime = time(NULL);
 			remoteInvokeMethods.at(entry.identifier()).push_back(entryStruct);
-			warn("push back %s %s", entryStruct->identifier, entryStruct->methodGuid);
+			info("push back remote method %s %s", entryStruct->identifier, entryStruct->methodGuid);
 		}
 	}
 }
@@ -601,7 +601,7 @@ void Proxy::ConnectToAnotherProxy(const char *proxyGuid, const char *connectionS
 void Proxy::PingRedis()
 {
 	if(time(NULL)-lastRedisPing<2) return;
-	info("ping redis");
+	verb("ping redis");
 	auto reply = (redisReply*)redisCommand(
 										   redisCtx,
 										   "ZADD ZSET:PROXIES %i %s#tcp://%s:%i",
@@ -613,7 +613,7 @@ void Proxy::PingRedis()
 	freeReplyObject(reply);
 	reply = (redisReply*)redisCommand(redisCtx, "ZREVRANGEBYSCORE ZSET:PROXIES +inf %i", time(NULL)-5);
 	if(reply->type == REDIS_REPLY_ARRAY) {
-		dbg("get %zu proxies from redis", reply->elements);
+		verb("get %zu proxies from redis", reply->elements);
 		for(size_t n=0;n<reply->elements;n++) {
 			auto proxy = (redisReply*)reply->element[n];
 			auto vector = split(proxy->str, '#');
@@ -633,7 +633,7 @@ void Proxy::PingRedis()
 			ConnectToAnotherProxy(guid2, connectionString);
 		}
 	} else {
-		err("Redis return weird answer...");
+		err("Redis return weird answer... %i", reply->type);
 	}
 	freeReplyObject(reply);
 	lastRedisPing = time(NULL);

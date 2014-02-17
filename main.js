@@ -1,5 +1,10 @@
-//var Proxy = require('./build/Release/proxy');
-var Proxy = require('./build/Debug/proxy');
+var fs = require('fs');
+var Proxy;
+
+if(fs.existsSync(__dirname+'./build/Debug/proxy'))
+	Proxy = require('./build/Debug/proxy');
+else
+	Proxy = require('./build/Release/proxy');
 
 var p = new Proxy.Proxy('plt-esb01', 'esb-redis', 6379);
 

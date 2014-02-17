@@ -19,7 +19,7 @@
 #include <sstream>
 #include <vector>
 
-#define LOG_LEVEL 2
+#define LOG_LEVEL 3
 #define GUID_SIZE 16
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -30,26 +30,40 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-#if LOG_LEVEL >= 3
-#  define dbg(format, ...) fprintf(stdout, ANSI_COLOR_YELLOW "DEBUG: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+#if LOG_LEVEL >= 4
+#  define dbg(format, ...) fprintf(stdout, ANSI_COLOR_MAGENTA "DEBUG: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #else
 #  define dbg(...)
 #endif
 
+#if LOG_LEVEL >= 3
+#  define verb(format, ...) fprintf(stdout, ANSI_COLOR_CYAN "VERBOSE: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+#else
+#  define verb(...)
+#endif
+
 #if LOG_LEVEL >= 2
-#  define info(format, ...) fprintf(stdout, ANSI_COLOR_CYAN "INFO: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+#  define info(format, ...) fprintf(stdout, ANSI_COLOR_GREEN "INFO: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #else
 #  define info(...)
 #endif
 
 #if LOG_LEVEL >= 1
-#  define warn(format, ...) fprintf(stderr, ANSI_COLOR_GREEN "WARN: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
+#  define warn(format, ...) fprintf(stderr, ANSI_COLOR_YELLOW "WARN: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #else
 #  define warn(...)
 #endif
 
 #define err(format, ...) fprintf(stderr, ANSI_COLOR_RED "ERROR: %s:%i %s: " format ANSI_COLOR_RESET "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 
+
+//48 - Address already in use (mac)
+//98 - Address already in use (linux)
+#ifdef __APPLE__
+#define ADDR_IN_USE_ERROR 48
+#else
+#define ADDR_IN_USE_ERROR 98
+#endif
 
 void GenerateGuid(char *guidStr, const size_t len);
 unsigned long mix(unsigned long a, unsigned long b, unsigned long c);

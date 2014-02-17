@@ -29,8 +29,7 @@ Publisher::Publisher(int _port)
 		{
 			err("Bind on port %i failed, code: %i, reason: %s", port, zmq_errno(), zmq_strerror(zmq_errno()));
 		}
-		//48 - Address already in use
-		if(zmq_errno() == 48 && ++retries < 10)
+		if(zmq_errno() == ADDR_IN_USE_ERROR && ++retries < 10)
 		{
 			warn("Try to bind on next port");
 			port++;

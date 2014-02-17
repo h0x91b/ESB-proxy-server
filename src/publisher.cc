@@ -56,20 +56,24 @@ void Publisher::Publish(const char* targetGuid, ESB::Command &cmd)
 	size_t size = cmd.ByteSize();
 	
 	zmq_msg_t msg;
-	int rc = zmq_msg_init_size (&msg, size+guidSize);
+	int rc = zmq_msg_init_size (&msg, size+guidSize+1); //+1 \0 delimiter
 	assert(rc == 0);
 	
 	char *bb = (char*)zmq_msg_data (&msg);
 	memcpy(bb, targetGuid, guidSize);
 	bb+=guidSize;
+	*bb = '\t';
+	bb++;
 	
 	if(!cmd.SerializeToArray(bb, size))
 	{
 		dbg("SerializeToArray fail!!!");
 	}
-	bb-=guidSize;
+	bb-=(guidSize+1);
 	dbg("Publish len: %zu bytes", size+guidSize);
 
 	rc = zmq_msg_send (&msg, zResponder, ZMQ_DONTWAIT);
-	assert(rc == (int)(size+sizeof(char)*guidSize));
+	if(rc != (int)(size+sizeof(char)*guidSize+1)){
+		err("sent %i, but need to send %i", rc, (int)(size+sizeof(char)*guidSize+1));
+	}
 }

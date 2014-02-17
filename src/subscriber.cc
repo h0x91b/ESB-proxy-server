@@ -72,16 +72,36 @@ SUBSCRIBER_POLL_MSG *Subscriber::Poll()
 	assert (len != -1);
 	auto buffer = (unsigned char *)zmq_msg_data(&msg);
 	
-	const int guidSize = GUID_SIZE*sizeof(char);
-	buffer+=guidSize;
-	cmdReq->ParseFromArray(buffer, len-guidSize);
-	buffer-=guidSize;
+	int index = 0;
+	bool found = false;
+	while (!found || index > len)
+	{
+		if(*buffer == '\t') {
+			found = true;
+		}
+		index++;
+		buffer++;
+	}
 	
-//	if(strcmp(cmdReq->target_proxy_guid().c_str(), proxy->guid) != 0)
-//	{
-//		err("subscriber receive wrong target_proxy_guid call");
-//	}
-	cmdReq->set_target_proxy_guid(targetGuid);
+	if(index != 17) {
+		buffer = (unsigned char *)zmq_msg_data(&msg);
+		info("buf: %s", buffer);
+	}
+	
+	dbg("found \\t at %d", index-1);
+	
+		
+	if(!cmdReq->ParseFromArray(buffer, len - index ))
+	{
+		info("error parse buf, orig size: %i, index: %i, proto size: %i", len, index, len-index);
+		info("byte size: %i", cmdReq->ByteSize());
+		buffer = (unsigned char *)zmq_msg_data(&msg);
+		err("parse failed!");
+		zmq_msg_close (&msg);
+		delete cmdReq;
+		return NULL;
+	}
+	cmdReq->set_target_proxy_guid(proxy->guid);
 	
 	auto ret = (SUBSCRIBER_POLL_MSG*)malloc(sizeof(SUBSCRIBER_POLL_MSG));
 	ret->cmdReq = cmdReq;

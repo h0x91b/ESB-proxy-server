@@ -64,18 +64,19 @@ void Proxy::ProxyHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 
 void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 {
+	info("Received hello from another Node");
 	auto payload = cmdReq.payload().c_str();
 	char response[256];
 	sprintf(response, "%s#%i", host, publisherPort);
-	info("response: %s", response);
-	dbg("payload: %s", payload);
+	info("Payload of request: %s", payload);
+	info("Response: %s", response);
 	auto tmp = split(payload, '#');
 	
 	char *connectionString = (char*)tmp[1].c_str();
 		
 	auto subscriber = new Subscriber(connectionString, tmp[0].c_str(), this);
 	if(subscriber->Connect()) {
-		info("connected successfull to %s %s", connectionString, tmp[0].c_str());
+		info("connected successfull to Node %s %s", connectionString, tmp[0].c_str());
 		
 		for(auto i = subscribers.begin(); i != subscribers.end(); i++){
 			auto& pair = *i;
@@ -96,7 +97,7 @@ void Proxy::NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp)
 		cmdResp.set_cmd(ESB::Command::RESPONSE);
 		cmdResp.set_payload(response);
 	} else {
-		err("can not connect");
+		err("Can not connect to Node '%s' '%s'", tmp[1].c_str(), tmp[0].c_str());
 		cmdResp.set_cmd(ESB::Command::ERROR);
 		char errBuf[512];
 		sprintf(errBuf, "ESB Proxy can not connect to your Node, check the firewall, connectionString: `%s`", connectionString);

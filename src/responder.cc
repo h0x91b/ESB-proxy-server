@@ -74,7 +74,7 @@ bool Responder::Poll()
 	assert(rc == 0);
 
 	cmdResp.SerializeToArray(zmq_msg_data (&msgResp), size);
-	info("Send response len: %zu bytes", size);
+	verb("Send response len: %zu bytes", size);
 	
 	rc = zmq_msg_send (&msgResp, zResponder, 0);
 	assert(rc == (int)(size));

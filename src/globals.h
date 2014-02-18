@@ -18,6 +18,7 @@
 #include <time.h>
 #include <sstream>
 #include <vector>
+#include <sys/socket.h>
 
 #define LOG_LEVEL 3
 #define GUID_SIZE 16

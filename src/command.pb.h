@@ -407,12 +407,12 @@ class Command : public ::google::protobuf::Message {
   inline ::std::string* release_guid_to();
   inline void set_allocated_guid_to(::std::string* guid_to);
 
-  // optional int32 version = 8;
-  inline bool has_version() const;
-  inline void clear_version();
-  static const int kVersionFieldNumber = 8;
-  inline ::google::protobuf::int32 version() const;
-  inline void set_version(::google::protobuf::int32 value);
+  // optional int32 recursion = 8;
+  inline bool has_recursion() const;
+  inline void clear_recursion();
+  static const int kRecursionFieldNumber = 8;
+  inline ::google::protobuf::int32 recursion() const;
+  inline void set_recursion(::google::protobuf::int32 value);
 
   // optional uint32 start_time = 9;
   inline bool has_start_time() const;
@@ -456,8 +456,8 @@ class Command : public ::google::protobuf::Message {
   inline void clear_has_guid_from();
   inline void set_has_guid_to();
   inline void clear_has_guid_to();
-  inline void set_has_version();
-  inline void clear_has_version();
+  inline void set_has_recursion();
+  inline void clear_has_recursion();
   inline void set_has_start_time();
   inline void clear_has_start_time();
   inline void set_has_timeout_ms();
@@ -469,7 +469,7 @@ class Command : public ::google::protobuf::Message {
   ::std::string* payload_;
   ::std::string* target_proxy_guid_;
   int cmd_;
-  ::google::protobuf::int32 version_;
+  ::google::protobuf::int32 recursion_;
   ::std::string* identifier_;
   ::std::string* guid_from_;
   ::std::string* guid_to_;
@@ -1174,26 +1174,26 @@ inline void Command::set_allocated_guid_to(::std::string* guid_to) {
   }
 }
 
-// optional int32 version = 8;
-inline bool Command::has_version() const {
+// optional int32 recursion = 8;
+inline bool Command::has_recursion() const {
   return (_has_bits_[0] & 0x00000080u) != 0;
 }
-inline void Command::set_has_version() {
+inline void Command::set_has_recursion() {
   _has_bits_[0] |= 0x00000080u;
 }
-inline void Command::clear_has_version() {
+inline void Command::clear_has_recursion() {
   _has_bits_[0] &= ~0x00000080u;
 }
-inline void Command::clear_version() {
-  version_ = 0;
-  clear_has_version();
+inline void Command::clear_recursion() {
+  recursion_ = 0;
+  clear_has_recursion();
 }
-inline ::google::protobuf::int32 Command::version() const {
-  return version_;
+inline ::google::protobuf::int32 Command::recursion() const {
+  return recursion_;
 }
-inline void Command::set_version(::google::protobuf::int32 value) {
-  set_has_version();
-  version_ = value;
+inline void Command::set_recursion(::google::protobuf::int32 value) {
+  set_has_recursion();
+  recursion_ = value;
 }
 
 // optional uint32 start_time = 9;

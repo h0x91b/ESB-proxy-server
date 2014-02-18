@@ -125,7 +125,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		cmdResp.set_guid_to(entry->methodGuid);
 		cmdResp.set_source_proxy_guid(guid);
 		cmdResp.set_identifier(entry->identifier);
-		cmdResp.set_version(cmdReq.version());
+		//cmdResp.set_version(cmdReq.version());
 		cmdResp.set_payload(cmdReq.payload());
 		
 		invokeResponses.insert(std::pair<std::string,std::string> {cmdReq.guid_from(), cmdReq.source_proxy_guid()});
@@ -155,7 +155,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		cmdResp.set_guid_from(cmdReq.guid_from());
 		cmdResp.set_source_proxy_guid(guid);
 		cmdResp.set_identifier(entry->identifier);
-		cmdResp.set_version(cmdReq.version());
+		//cmdResp.set_version(cmdReq.version());
 		cmdResp.set_payload(cmdReq.payload());
 		
 		invokeResponses.insert(std::pair<std::string,std::string> {cmdReq.guid_from(), cmdReq.source_proxy_guid()});
@@ -376,11 +376,14 @@ void Proxy::RemoteRegistryUpdate(ESB::Command &cmdReq)
 
 void Proxy::PublishReq(ESB::Command &cmdReq)
 {
+	if(cmdReq.recursion() > 0) return;
+	
 	ESB::Command cmdPub;
 	cmdPub.set_cmd(ESB::Command::PUBLISH);
 	cmdPub.set_identifier(cmdReq.identifier());
 	cmdPub.set_source_proxy_guid(guid);
 	cmdPub.set_payload(cmdReq.payload());
+	cmdPub.set_recursion(1);
 	
 	publisher->Publish(cmdReq.identifier().c_str(), cmdReq.identifier().length(), cmdPub);
 }
@@ -577,9 +580,11 @@ void Proxy::ConnectToAnotherProxy(const char *proxyGuid, const char *connectionS
 {
 	char buf[512];
 	sprintf(buf, "tcp://%s:%i", host, responderPort);
+	char redisKey[1024];
+	sprintf(redisKey, "%s#%s", proxyGuid, connectionString);
 	if(strcmp(buf, connectionString) == 0) {
 		err("found me in registry, but with wrong guid, will delete this entry");
-		redisCommand(redisCtx, "ZREM ZSET:PROXIES %s#%s", proxyGuid, connectionString);
+		redisCommand(redisCtx, "ZREM ZSET:PROXIES %s", redisKey);
 		return;
 	}
 	info("connecting to '%s' '%s'", proxyGuid, connectionString);
@@ -590,6 +595,7 @@ void Proxy::ConnectToAnotherProxy(const char *proxyGuid, const char *connectionS
 		char connectionString[512];
 		if(!requester->SendProxyHello(connectionString)){
 			err("hello failed");
+			redisCommand(redisCtx, "ZREM ZSET:PROXIES %s", redisKey);
 		} else {
 			info("hello ok: '%s'", connectionString);
 			
@@ -619,8 +625,8 @@ void Proxy::ConnectToAnotherProxy(const char *proxyGuid, const char *connectionS
 			}
 		}
 	} else {
-		err("can not connect to responder %s, remove it from redis", connectionString);
-		redisCommand(redisCtx, "ZREM ZSET:PROXIES %s#%s", proxyGuid, connectionString);
+		err("can not connect to responder %s, remove it from redis", redisKey);
+		redisCommand(redisCtx, "ZREM ZSET:PROXIES %s", redisKey);
 	}
 	delete requester;
 }
@@ -628,7 +634,7 @@ void Proxy::ConnectToAnotherProxy(const char *proxyGuid, const char *connectionS
 void Proxy::PingRedis()
 {
 	if(time(NULL)-lastRedisPing<2) return;
-	verb("ping redis");
+	dbg("ping redis");
 	auto reply = (redisReply*)redisCommand(
 										   redisCtx,
 										   "ZADD ZSET:PROXIES %i %s#tcp://%s:%i",
@@ -640,7 +646,7 @@ void Proxy::PingRedis()
 	freeReplyObject(reply);
 	reply = (redisReply*)redisCommand(redisCtx, "ZREVRANGE ZSET:PROXIES 0 -1");
 	if(reply->type == REDIS_REPLY_ARRAY) {
-		verb("get %zu proxies from redis", reply->elements);
+		dbg("get %zu proxies from redis", reply->elements);
 		for(size_t n=0;n<reply->elements;n++) {
 			auto proxy = (redisReply*)reply->element[n];
 			auto vector = split(proxy->str, '#');
@@ -660,7 +666,7 @@ void Proxy::PingRedis()
 			ConnectToAnotherProxy(guid2, connectionString);
 		}
 	} else {
-		err("Redis return weird answer... %i", reply->type);
+		err("Redis return weird answer... '%i'", reply->type);
 	}
 	freeReplyObject(reply);
 	lastRedisPing = time(NULL);

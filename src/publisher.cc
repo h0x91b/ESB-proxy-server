@@ -59,7 +59,7 @@ void Publisher::Publish(const char* targetGuid, size_t guidSize, ESB::Command &c
 	size_t size = cmd.ByteSize();
 	
 	zmq_msg_t msg;
-	int rc = zmq_msg_init_size (&msg, size+guidSize+1); //+1 \0 delimiter
+	int rc = zmq_msg_init_size (&msg, size+guidSize+1); //+1 \t delimiter
 	assert(rc == 0);
 	
 	char *bb = (char*)zmq_msg_data (&msg);

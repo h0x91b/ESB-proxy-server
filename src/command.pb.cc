@@ -47,7 +47,7 @@ void protobuf_AssignDesc_command_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, identifier_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, guid_from_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, guid_to_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, version_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, recursion_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, start_time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, timeout_ms_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, reg_entry_),
@@ -117,24 +117,24 @@ void protobuf_AddDesc_command_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rcommand.proto\022\003ESB\"\255\005\n\007Command\022\035\n\003cmd\030"
+    "\n\rcommand.proto\022\003ESB\"\257\005\n\007Command\022\035\n\003cmd\030"
     "\001 \002(\0162\020.ESB.Command.Cmd\022\031\n\021source_proxy_"
     "guid\030\002 \002(\t\022\017\n\007payload\030\003 \002(\014\022\031\n\021target_pr"
     "oxy_guid\030\004 \001(\t\022\022\n\nidentifier\030\005 \001(\t\022\021\n\tgu"
-    "id_from\030\006 \001(\t\022\017\n\007guid_to\030\007 \001(\t\022\017\n\007versio"
-    "n\030\010 \001(\005\022\022\n\nstart_time\030\t \001(\r\022\022\n\ntimeout_m"
-    "s\030\n \001(\005\022-\n\treg_entry\030\013 \003(\0132\032.ESB.Command"
-    ".RegistryEntry\032\211\001\n\rRegistryEntry\022;\n\004type"
-    "\030\001 \002(\0162\036.ESB.Command.RegistryEntryType:\r"
-    "INVOKE_METHOD\022\022\n\nidentifier\030\002 \002(\t\022\023\n\013met"
-    "hod_guid\030\003 \002(\t\022\022\n\nproxy_guid\030\004 \002(\t\"\347\001\n\003C"
-    "md\022\t\n\005ERROR\020\001\022\014\n\010RESPONSE\020\002\022\016\n\nNODE_HELL"
-    "O\020\003\022\017\n\013PROXY_HELLO\020\004\022\010\n\004PING\020\005\022\010\n\004PONG\020\006"
-    "\022\n\n\006INVOKE\020\007\022\023\n\017REGISTER_INVOKE\020\010\022\026\n\022REG"
-    "ISTER_INVOKE_OK\020\t\022\035\n\031REGISTRY_EXCHANGE_R"
-    "EQUEST\020\n\022\036\n\032REGISTRY_EXCHANGE_RESPONSE\020\013"
-    "\022\013\n\007PUBLISH\020\014\022\r\n\tSUBSCRIBE\020\r\"&\n\021Registry"
-    "EntryType\022\021\n\rINVOKE_METHOD\020\001", 708);
+    "id_from\030\006 \001(\t\022\017\n\007guid_to\030\007 \001(\t\022\021\n\trecurs"
+    "ion\030\010 \001(\005\022\022\n\nstart_time\030\t \001(\r\022\022\n\ntimeout"
+    "_ms\030\n \001(\005\022-\n\treg_entry\030\013 \003(\0132\032.ESB.Comma"
+    "nd.RegistryEntry\032\211\001\n\rRegistryEntry\022;\n\004ty"
+    "pe\030\001 \002(\0162\036.ESB.Command.RegistryEntryType"
+    ":\rINVOKE_METHOD\022\022\n\nidentifier\030\002 \002(\t\022\023\n\013m"
+    "ethod_guid\030\003 \002(\t\022\022\n\nproxy_guid\030\004 \002(\t\"\347\001\n"
+    "\003Cmd\022\t\n\005ERROR\020\001\022\014\n\010RESPONSE\020\002\022\016\n\nNODE_HE"
+    "LLO\020\003\022\017\n\013PROXY_HELLO\020\004\022\010\n\004PING\020\005\022\010\n\004PONG"
+    "\020\006\022\n\n\006INVOKE\020\007\022\023\n\017REGISTER_INVOKE\020\010\022\026\n\022R"
+    "EGISTER_INVOKE_OK\020\t\022\035\n\031REGISTRY_EXCHANGE"
+    "_REQUEST\020\n\022\036\n\032REGISTRY_EXCHANGE_RESPONSE"
+    "\020\013\022\013\n\007PUBLISH\020\014\022\r\n\tSUBSCRIBE\020\r\"&\n\021Regist"
+    "ryEntryType\022\021\n\rINVOKE_METHOD\020\001", 710);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "command.proto", &protobuf_RegisterTypes);
   Command::default_instance_ = new Command();
@@ -609,7 +609,7 @@ const int Command::kTargetProxyGuidFieldNumber;
 const int Command::kIdentifierFieldNumber;
 const int Command::kGuidFromFieldNumber;
 const int Command::kGuidToFieldNumber;
-const int Command::kVersionFieldNumber;
+const int Command::kRecursionFieldNumber;
 const int Command::kStartTimeFieldNumber;
 const int Command::kTimeoutMsFieldNumber;
 const int Command::kRegEntryFieldNumber;
@@ -638,7 +638,7 @@ void Command::SharedCtor() {
   identifier_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   guid_from_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   guid_to_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  version_ = 0;
+  recursion_ = 0;
   start_time_ = 0u;
   timeout_ms_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -725,7 +725,7 @@ void Command::Clear() {
         guid_to_->clear();
       }
     }
-    version_ = 0;
+    recursion_ = 0;
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     start_time_ = 0u;
@@ -857,19 +857,19 @@ bool Command::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(64)) goto parse_version;
+        if (input->ExpectTag(64)) goto parse_recursion;
         break;
       }
 
-      // optional int32 version = 8;
+      // optional int32 recursion = 8;
       case 8: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-         parse_version:
+         parse_recursion:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &version_)));
-          set_has_version();
+                 input, &recursion_)));
+          set_has_recursion();
         } else {
           goto handle_uninterpreted;
         }
@@ -999,9 +999,9 @@ void Command::SerializeWithCachedSizes(
       7, this->guid_to(), output);
   }
 
-  // optional int32 version = 8;
-  if (has_version()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(8, this->version(), output);
+  // optional int32 recursion = 8;
+  if (has_recursion()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(8, this->recursion(), output);
   }
 
   // optional uint32 start_time = 9;
@@ -1091,9 +1091,9 @@ void Command::SerializeWithCachedSizes(
         7, this->guid_to(), target);
   }
 
-  // optional int32 version = 8;
-  if (has_version()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(8, this->version(), target);
+  // optional int32 recursion = 8;
+  if (has_recursion()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(8, this->recursion(), target);
   }
 
   // optional uint32 start_time = 9;
@@ -1172,11 +1172,11 @@ int Command::ByteSize() const {
           this->guid_to());
     }
 
-    // optional int32 version = 8;
-    if (has_version()) {
+    // optional int32 recursion = 8;
+    if (has_recursion()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
-          this->version());
+          this->recursion());
     }
 
   }
@@ -1252,8 +1252,8 @@ void Command::MergeFrom(const Command& from) {
     if (from.has_guid_to()) {
       set_guid_to(from.guid_to());
     }
-    if (from.has_version()) {
-      set_version(from.version());
+    if (from.has_recursion()) {
+      set_recursion(from.recursion());
     }
   }
   if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
@@ -1297,7 +1297,7 @@ void Command::Swap(Command* other) {
     std::swap(identifier_, other->identifier_);
     std::swap(guid_from_, other->guid_from_);
     std::swap(guid_to_, other->guid_to_);
-    std::swap(version_, other->version_);
+    std::swap(recursion_, other->recursion_);
     std::swap(start_time_, other->start_time_);
     std::swap(timeout_ms_, other->timeout_ms_);
     reg_entry_.Swap(&other->reg_entry_);

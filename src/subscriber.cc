@@ -58,7 +58,10 @@ bool Subscriber::Connect()
 void Subscriber::Subscribe(std::string channel)
 {
 	verb("subscriber of %s subscribe on channel %s", targetGuid, channel.c_str());
-	zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, channel.c_str(), channel.length());
+	char *chan = new char[channel.length()+1];
+	sprintf(chan,"%s\t", channel.c_str());
+	zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, chan, channel.length()+1);
+	delete chan;
 }
 
 Subscriber::~Subscriber()
@@ -96,11 +99,6 @@ SUBSCRIBER_POLL_MSG *Subscriber::Poll()
 		}
 		index++;
 		buffer++;
-	}
-	
-	if(index != 17) {
-		buffer = (unsigned char *)zmq_msg_data(&msg);
-		info("buf: %s", buffer);
 	}
 	
 	dbg("found \\t at %d", index-1);

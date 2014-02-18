@@ -25,7 +25,7 @@ message Command {
 	optional string identifier = 5;
 	optional string guid_from = 6;
 	optional string guid_to = 7;
-	optional int32 version = 8;
+	optional int32 recursion = 8;
 	optional uint32 start_time = 9;
 	optional int32 timeout_ms = 10;
 	

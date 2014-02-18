@@ -117,7 +117,7 @@ void protobuf_AddDesc_command_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rcommand.proto\022\003ESB\"\221\005\n\007Command\022\035\n\003cmd\030"
+    "\n\rcommand.proto\022\003ESB\"\255\005\n\007Command\022\035\n\003cmd\030"
     "\001 \002(\0162\020.ESB.Command.Cmd\022\031\n\021source_proxy_"
     "guid\030\002 \002(\t\022\017\n\007payload\030\003 \002(\014\022\031\n\021target_pr"
     "oxy_guid\030\004 \001(\t\022\022\n\nidentifier\030\005 \001(\t\022\021\n\tgu"
@@ -127,13 +127,14 @@ void protobuf_AddDesc_command_2eproto() {
     ".RegistryEntry\032\211\001\n\rRegistryEntry\022;\n\004type"
     "\030\001 \002(\0162\036.ESB.Command.RegistryEntryType:\r"
     "INVOKE_METHOD\022\022\n\nidentifier\030\002 \002(\t\022\023\n\013met"
-    "hod_guid\030\003 \002(\t\022\022\n\nproxy_guid\030\004 \002(\t\"\313\001\n\003C"
+    "hod_guid\030\003 \002(\t\022\022\n\nproxy_guid\030\004 \002(\t\"\347\001\n\003C"
     "md\022\t\n\005ERROR\020\001\022\014\n\010RESPONSE\020\002\022\016\n\nNODE_HELL"
     "O\020\003\022\017\n\013PROXY_HELLO\020\004\022\010\n\004PING\020\005\022\010\n\004PONG\020\006"
     "\022\n\n\006INVOKE\020\007\022\023\n\017REGISTER_INVOKE\020\010\022\026\n\022REG"
     "ISTER_INVOKE_OK\020\t\022\035\n\031REGISTRY_EXCHANGE_R"
     "EQUEST\020\n\022\036\n\032REGISTRY_EXCHANGE_RESPONSE\020\013"
-    "\"&\n\021RegistryEntryType\022\021\n\rINVOKE_METHOD\020\001", 680);
+    "\022\013\n\007PUBLISH\020\014\022\r\n\tSUBSCRIBE\020\r\"&\n\021Registry"
+    "EntryType\022\021\n\rINVOKE_METHOD\020\001", 708);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "command.proto", &protobuf_RegisterTypes);
   Command::default_instance_ = new Command();
@@ -169,6 +170,8 @@ bool Command_Cmd_IsValid(int value) {
     case 9:
     case 10:
     case 11:
+    case 12:
+    case 13:
       return true;
     default:
       return false;
@@ -187,6 +190,8 @@ const Command_Cmd Command::REGISTER_INVOKE;
 const Command_Cmd Command::REGISTER_INVOKE_OK;
 const Command_Cmd Command::REGISTRY_EXCHANGE_REQUEST;
 const Command_Cmd Command::REGISTRY_EXCHANGE_RESPONSE;
+const Command_Cmd Command::PUBLISH;
+const Command_Cmd Command::SUBSCRIBE;
 const Command_Cmd Command::Cmd_MIN;
 const Command_Cmd Command::Cmd_MAX;
 const int Command::Cmd_ARRAYSIZE;

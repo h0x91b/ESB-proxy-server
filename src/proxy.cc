@@ -374,6 +374,30 @@ void Proxy::RemoteRegistryUpdate(ESB::Command &cmdReq)
 	}
 }
 
+void Proxy::PublishReq(ESB::Command &cmdReq)
+{
+	ESB::Command cmdPub;
+	cmdPub.set_cmd(ESB::Command::PUBLISH);
+	cmdPub.set_identifier(cmdReq.identifier());
+	cmdPub.set_source_proxy_guid(guid);
+	cmdPub.set_payload(cmdReq.payload());
+	
+	publisher->Publish(cmdReq.identifier().c_str(), cmdReq.identifier().length(), cmdPub);
+}
+
+void Proxy::SubscribeReq(ESB::Command &cmdReq)
+{
+	verb("subscribe request for channel '%s'", cmdReq.identifier().c_str());
+	subscribeChannels[cmdReq.identifier()] = cmdReq.identifier();
+	
+	for ( auto local_it = subscribers.begin(); local_it!= subscribers.end(); ++local_it )
+	{
+		auto sub = local_it->second;
+		sub->Subscribe(cmdReq.identifier());
+	}
+	
+}
+
 void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 {
 	dbg("subscriber callback from node: %s", nodeGuid);
@@ -408,6 +432,13 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 		case ESB::Command::PING:
 			dbg("getted ping request from %s", cmdReq.source_proxy_guid().c_str());
 			PingRequest(cmdReq);
+			return;
+		case ESB::Command::PUBLISH:
+			dbg("getted publish request from %s", cmdReq.source_proxy_guid().c_str());
+			PublishReq(cmdReq);
+			return;
+		case ESB::Command::SUBSCRIBE:
+			SubscribeReq(cmdReq);
 			return;
 		default:
 			err("Error, received unknown cmd: %i, payload: %s", cmdReq.cmd(), cmdReq.payload().c_str());
@@ -536,7 +567,7 @@ void *Proxy::MainLoop(void *p)
 			self->RequestRegistryExchange();
 		}
 		
-		if(needToSleep) usleep(15000);
+		if(needToSleep) usleep(10000);
 	}
 	
 	return 0;

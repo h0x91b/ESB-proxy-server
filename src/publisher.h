@@ -23,6 +23,7 @@ public:
 	Publisher(int port);
 	~Publisher();
 	void Publish(const char* targetGuid, ESB::Command &cmd);
+	void Publish(const char* targetGuid, size_t guidSize, ESB::Command &cmd);
 	
 	int port;
 private:

@@ -30,6 +30,7 @@ class Subscriber
 {
 public:
 	Subscriber(const char *, const char*, Proxy*);
+	void Subscribe(std::string channel);
 	bool Connect();
 	~Subscriber();
 	SUBSCRIBER_POLL_MSG *Poll();

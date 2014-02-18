@@ -48,11 +48,13 @@ enum Command_Cmd {
   Command_Cmd_REGISTER_INVOKE = 8,
   Command_Cmd_REGISTER_INVOKE_OK = 9,
   Command_Cmd_REGISTRY_EXCHANGE_REQUEST = 10,
-  Command_Cmd_REGISTRY_EXCHANGE_RESPONSE = 11
+  Command_Cmd_REGISTRY_EXCHANGE_RESPONSE = 11,
+  Command_Cmd_PUBLISH = 12,
+  Command_Cmd_SUBSCRIBE = 13
 };
 bool Command_Cmd_IsValid(int value);
 const Command_Cmd Command_Cmd_Cmd_MIN = Command_Cmd_ERROR;
-const Command_Cmd Command_Cmd_Cmd_MAX = Command_Cmd_REGISTRY_EXCHANGE_RESPONSE;
+const Command_Cmd Command_Cmd_Cmd_MAX = Command_Cmd_SUBSCRIBE;
 const int Command_Cmd_Cmd_ARRAYSIZE = Command_Cmd_Cmd_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* Command_Cmd_descriptor();
@@ -278,6 +280,8 @@ class Command : public ::google::protobuf::Message {
   static const Cmd REGISTER_INVOKE_OK = Command_Cmd_REGISTER_INVOKE_OK;
   static const Cmd REGISTRY_EXCHANGE_REQUEST = Command_Cmd_REGISTRY_EXCHANGE_REQUEST;
   static const Cmd REGISTRY_EXCHANGE_RESPONSE = Command_Cmd_REGISTRY_EXCHANGE_RESPONSE;
+  static const Cmd PUBLISH = Command_Cmd_PUBLISH;
+  static const Cmd SUBSCRIBE = Command_Cmd_SUBSCRIBE;
   static inline bool Cmd_IsValid(int value) {
     return Command_Cmd_IsValid(value);
   }

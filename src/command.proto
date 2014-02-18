@@ -14,6 +14,8 @@ message Command {
 		REGISTER_INVOKE_OK = 9;
 		REGISTRY_EXCHANGE_REQUEST = 10;
 		REGISTRY_EXCHANGE_RESPONSE = 11;
+		PUBLISH = 12;
+		SUBSCRIBE = 13;
 	};
 	
 	required Cmd cmd = 1;

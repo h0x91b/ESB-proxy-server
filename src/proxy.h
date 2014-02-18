@@ -54,6 +54,8 @@ public:
 	bool RemoteRegistryHealthCheck();
 	bool LocalRegistryHealthCheck();
 	void PingRequest(ESB::Command &cmdReq);
+	void PublishReq(ESB::Command &cmdReq);
+	void SubscribeReq(ESB::Command &cmdReq);
 	
 	char guid[GUID_SIZE+1];
 	Responder *responder;
@@ -70,6 +72,7 @@ public:
 	int registerInvoke;
 	int lastRedisPing;
 	int lastRegistryExchange;
+	std::map<std::string, std::string> subscribeChannels;
 
 private:
 	Proxy(const v8::Arguments& args);

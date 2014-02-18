@@ -38,12 +38,27 @@ bool Subscriber::Connect()
 		info("subscribe on channel %s", proxy->guid);
 		rc = zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, proxy->guid, GUID_SIZE);
 		assert(rc == 0);
+		
+		for ( auto local_ch = proxy->subscribeChannels.begin(); local_ch!= proxy->subscribeChannels.end(); ++local_ch )
+		{
+			auto channel = local_ch->second;
+			info("subscribe also on channel %s", channel.c_str());
+			rc = zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, channel.c_str(), channel.length());
+			assert(rc == 0);
+		}
+		
 		return true;
 	}
 	
 	dbg("zmq failed to connect, errcode: %i, desc: %s", zmq_errno(), zmq_strerror(zmq_errno()));
 	
 	return false;
+}
+
+void Subscriber::Subscribe(std::string channel)
+{
+	verb("subscriber of %s subscribe on channel %s", targetGuid, channel.c_str());
+	zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, channel.c_str(), channel.length());
 }
 
 Subscriber::~Subscriber()

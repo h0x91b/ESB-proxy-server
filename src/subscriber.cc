@@ -28,7 +28,7 @@ bool Subscriber::Connect()
 	const int lingerTimeout = 250;
 	zmq_setsockopt(zResponder, ZMQ_LINGER, &lingerTimeout, sizeof(int));
 	
-	int rcvBufSize = 256*1024;
+	int rcvBufSize = 512*1024;
 	zmq_setsockopt(zResponder, ZMQ_RCVBUF, &rcvBufSize, sizeof(int));
 	
 	auto rc = zmq_connect(zResponder, connectString);

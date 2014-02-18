@@ -16,7 +16,7 @@ Publisher::Publisher(int _port)
 	zResponder = zmq_socket (zContext, ZMQ_PUB);
 	uint64_t highWaterMark = 10000;
 	zmq_setsockopt(zResponder, ZMQ_SNDHWM, &highWaterMark, sizeof(uint64_t));
-	int sndBufSize = 256*1024;
+	int sndBufSize = 512*1024;
 	zmq_setsockopt(zResponder, ZMQ_SNDBUF, &sndBufSize, sizeof(int));
 	
 	int retries = 0;

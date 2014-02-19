@@ -130,6 +130,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		cmdResp.set_payload(cmdReq.payload());
 		
 		invokeResponses.insert(std::pair<std::string,std::string> {cmdReq.guid_from(), cmdReq.source_proxy_guid()});
+		invokeResponsesCallTime.insert(std::pair<std::string,int> {cmdReq.guid_from(), time(NULL)});
 		cmdResp.set_guid_from(cmdReq.guid_from());
 		
 		publisher->Publish(entry->nodeGuid, cmdResp);
@@ -160,6 +161,7 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 		cmdResp.set_payload(cmdReq.payload());
 		
 		invokeResponses.insert(std::pair<std::string,std::string> {cmdReq.guid_from(), cmdReq.source_proxy_guid()});
+		invokeResponsesCallTime.insert(std::pair<std::string,int> {cmdReq.guid_from(), time(NULL)});
 		
 		publisher->Publish(entry->proxyGuid, cmdResp);
 		return;
@@ -170,6 +172,24 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 	cmdResp.set_guid_from(guid);
 	
 	publisher->Publish(cmdReq.source_proxy_guid().c_str(), cmdResp);
+}
+
+void Proxy::CleanUpResponsesMap()
+{
+	int now = time(NULL);
+	int found = 0;
+	for (auto it = invokeResponsesCallTime.begin(); it != invokeResponsesCallTime.end();) {
+		auto t = it->second;
+		if (now-t > 3) {
+			found++;
+			invokeResponses.erase(it->first);
+			it = invokeResponsesCallTime.erase(it);
+			if(it == invokeResponsesCallTime.end() || found >= 10000) break;
+		} else it++;
+	}
+	if(found > 0) {
+		info("found %i dead callbacks, clean up them, total size of container: %lu", found, invokeResponsesCallTime.size());
+	}
 }
 
 void Proxy::RegisterInvoke(ESB::Command &cmdReq)
@@ -291,7 +311,7 @@ void Proxy::InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid)
 	
 	publisher->Publish(targetNode->second.c_str(), cmdResp);
 	invokeResponses.erase(cmdReq.guid_to());
-
+	invokeResponsesCallTime.erase(cmdReq.guid_to());
 }
 
 void Proxy::RegistryExchangeResponder(ESB::Command &cmdReq)
@@ -572,6 +592,10 @@ void *Proxy::MainLoop(void *p)
 			while(self->RemoteRegistryHealthCheck());
 			while(self->LocalRegistryHealthCheck());
 			self->RequestRegistryExchange();
+		}
+		
+		if(loop % 1000 == 0) {
+			self->CleanUpResponsesMap();
 		}
 		
 		if(needToSleep) usleep(10000);

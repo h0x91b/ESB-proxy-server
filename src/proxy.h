@@ -82,6 +82,7 @@ private:
 	static v8::Persistent<v8::Function> constructor;
 	void NodeHello(ESB::Command &cmdReq, ESB::Command &cmdResp);
 	void ProxyHello(ESB::Command &cmdReq, ESB::Command &cmdResp);
+	void CleanUpResponsesMap();
 	
 	static void *MainLoop(void *p);
 	bool isWork;
@@ -94,6 +95,7 @@ private:
 	std::unordered_map<std::string, std::vector<RemoteInvokeMethod*>> remoteInvokeMethods; //identifier, struct
 	
 	std::unordered_map<std::string, std::string> invokeResponses; //identifier, struct
+	std::unordered_map<std::string, int> invokeResponsesCallTime;
 };
 
 

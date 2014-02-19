@@ -21,6 +21,7 @@ Proxy::Proxy(const v8::Arguments& args)
 	registerInvoke = 0;
 	lastRedisPing = 0;
 	lastRegistryExchange = 0;
+	lastResponsesCleanUp = time(NULL);
 	
 	redisPort = 6379;
 	responderPort = 7770;
@@ -177,6 +178,8 @@ void Proxy::Invoke(ESB::Command &cmdReq)
 void Proxy::CleanUpResponsesMap()
 {
 	int now = time(NULL);
+	if(now-lastResponsesCleanUp < 60) return;
+	lastResponsesCleanUp= now;
 	int found = 0;
 	for (auto it = invokeResponsesCallTime.begin(); it != invokeResponsesCallTime.end();) {
 		auto t = it->second;
@@ -184,7 +187,7 @@ void Proxy::CleanUpResponsesMap()
 			found++;
 			invokeResponses.erase(it->first);
 			it = invokeResponsesCallTime.erase(it);
-			if(it == invokeResponsesCallTime.end() || found >= 10000) break;
+			if(it == invokeResponsesCallTime.end() || found >= 100000) break;
 		} else it++;
 	}
 	if(found > 0) {
@@ -203,6 +206,7 @@ void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 	
 	auto vec = localInvokeMethods[cmdReq.identifier().c_str()];
 	bool found = false;
+	char *pIdentifier = NULL;
 	if(vec.size()>0)
 	{
 		for (auto it = vec.begin(); it != vec.end(); ++it)
@@ -212,6 +216,7 @@ void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 			{
 				found = true;
 				tEntry->lastCheckTime = time(NULL);
+				pIdentifier = tEntry->identifier;
 				break;
 			}
 		}
@@ -227,12 +232,15 @@ void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 		);
 		registerInvoke++;
 		
+		//verb("Allocate %lu bytes for '%s'", (cmdReq.identifier().length()+1), cmdReq.identifier().c_str());
 		LocalInvokeMethod *entry = (LocalInvokeMethod*)calloc(sizeof(LocalInvokeMethod), sizeof(LocalInvokeMethod));
 		strcpy(entry->nodeGuid, cmdReq.source_proxy_guid().c_str());
 		strcpy(entry->methodGuid, cmdReq.payload().c_str());
 		
-		entry->identifier = (char*)malloc((cmdReq.payload().length()*2));
+		entry->identifier = (char*)malloc((cmdReq.identifier().length()+1));
 		strcpy(entry->identifier, cmdReq.identifier().c_str());
+		
+		pIdentifier = entry->identifier;
 		
 		entry->lastCheckTime = time(NULL);
 
@@ -248,7 +256,7 @@ void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 	cmdResp.set_guid_to(cmdReq.source_proxy_guid());
 	cmdResp.set_source_proxy_guid(guid);
 	
-	cmdResp.set_payload(cmdReq.identifier().c_str());
+	cmdResp.set_payload(pIdentifier);
 	
 	publisher->Publish(cmdReq.source_proxy_guid().c_str(), cmdResp);
 }
@@ -536,10 +544,10 @@ bool Proxy::LocalRegistryHealthCheck()
 		auto& pair = *i;
 	//for (auto& pair: localInvokeMethods) {
 		auto vec = pair.second;
-		for (auto it = vec.begin(); it != vec.end(); ++it)
+		for (auto it = vec.begin(); it != vec.end();)
 		{
 			auto tEntry = *it;
-			if( now > tEntry->lastCheckTime + 5)
+			if( now > tEntry->lastCheckTime + 10)
 			{
 				warn("delete local method `%s` with guid %s", tEntry->identifier, tEntry->methodGuid);
 				free(tEntry->identifier);
@@ -547,7 +555,7 @@ bool Proxy::LocalRegistryHealthCheck()
 				it = vec.erase(it);
 				localInvokeMethods[pair.first] = vec;
 				return true;
-			}
+			} else ++it;
 		}
 	}
 	return false;
@@ -605,9 +613,6 @@ void *Proxy::MainLoop(void *p)
 			while(self->RemoteRegistryHealthCheck());
 			while(self->LocalRegistryHealthCheck());
 			self->RequestRegistryExchange();
-		}
-		
-		if(loop % 1000 == 0) {
 			self->CleanUpResponsesMap();
 		}
 		

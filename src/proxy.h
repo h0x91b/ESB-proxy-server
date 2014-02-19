@@ -72,6 +72,7 @@ public:
 	int registerInvoke;
 	int lastRedisPing;
 	int lastRegistryExchange;
+	int lastResponsesCleanUp;
 	std::map<std::string, std::string> subscribeChannels;
 
 private:

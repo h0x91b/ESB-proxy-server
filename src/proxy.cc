@@ -569,13 +569,24 @@ void *Proxy::MainLoop(void *p)
 		bool needToSleep = true;
 		
 		self->responder->Poll();
-		
-		for ( auto local_it = self->subscribers.begin(); local_it!= self->subscribers.end(); ++local_it )
+		auto now = time(NULL);
+		for ( auto local_it = self->subscribers.begin(); local_it != self->subscribers.end();)
 		{
 			auto s = local_it->second;
-			for(auto r=0;r<500;r++){
+			for(auto r=0;r<1000;r++)
+			{
 				auto msg = s->Poll();
-				if(msg==NULL) break;
+				if(msg==NULL)
+				{
+					if(now - s->lastActiveTime > MAX_INACTIVE_SUBSCRIBER)
+					{
+						warn("subscriber %s was active last time more then %i sec ago, kill it", s->targetGuid, MAX_INACTIVE_SUBSCRIBER);
+						delete local_it->second;
+						local_it = self->subscribers.erase(local_it);
+						if(local_it == self->subscribers.end()) break;
+					}
+					break;
+				}
 				needToSleep = false;
 				
 				auto nodeGuid = local_it->first;
@@ -585,6 +596,8 @@ void *Proxy::MainLoop(void *p)
 				delete msg->cmdReq;
 				free(msg);
 			}
+			if(local_it == self->subscribers.end()) break;
+			local_it++;
 		}
 		
 		if(loop++ % 25 == 0){

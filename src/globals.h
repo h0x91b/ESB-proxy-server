@@ -66,6 +66,8 @@
 #define ADDR_IN_USE_ERROR 98
 #endif
 
+#define MAX_INACTIVE_SUBSCRIBER 30
+
 void GenerateGuid(char *guidStr, const size_t len);
 unsigned long mix(unsigned long a, unsigned long b, unsigned long c);
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);

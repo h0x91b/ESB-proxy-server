@@ -15,6 +15,7 @@ Subscriber::Subscriber(const char *_connectString, const char *_targetGuid, Prox
 	proxy = _proxy;
 	zContext = zmq_ctx_new();
 	zResponder = zmq_socket (zContext, ZMQ_SUB);
+	lastActiveTime = time(NULL);
 	
 	info("new subscriber for target: %s", targetGuid);
 }
@@ -46,6 +47,7 @@ bool Subscriber::Connect()
 			rc = zmq_setsockopt(zResponder, ZMQ_SUBSCRIBE, channel.c_str(), channel.length());
 			assert(rc == 0);
 		}
+		lastActiveTime = time(NULL);
 		
 		return true;
 	}
@@ -66,7 +68,7 @@ void Subscriber::Subscribe(std::string channel)
 
 Subscriber::~Subscriber()
 {
-	info("The end for subscriber for target: %s, %s", targetGuid, connectString);
+	info("The end of life for subscriber: %s, %s", targetGuid, connectString);
 	zmq_close(zResponder);
 	zmq_ctx_term(zContext);
 }
@@ -119,5 +121,6 @@ SUBSCRIBER_POLL_MSG *Subscriber::Poll()
 	auto ret = (SUBSCRIBER_POLL_MSG*)malloc(sizeof(SUBSCRIBER_POLL_MSG));
 	ret->cmdReq = cmdReq;
 	ret->msg = msg;
+	lastActiveTime = time(NULL);
 	return ret;
 }

@@ -36,11 +36,12 @@ public:
 	SUBSCRIBER_POLL_MSG *Poll();
 	
 	char connectString[512];
+	char targetGuid[GUID_SIZE+1];
+	int lastActiveTime;
 private:
 	void *zContext;
 	void *zResponder;
 	
-	char targetGuid[GUID_SIZE+1];
 	Proxy *proxy;
 };
 

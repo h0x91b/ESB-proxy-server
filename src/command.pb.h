@@ -40,17 +40,18 @@ class Command_RegistryEntry;
 enum Command_Cmd {
   Command_Cmd_ERROR = 1,
   Command_Cmd_RESPONSE = 2,
-  Command_Cmd_NODE_HELLO = 3,
-  Command_Cmd_PROXY_HELLO = 4,
-  Command_Cmd_PING = 5,
-  Command_Cmd_PONG = 6,
-  Command_Cmd_INVOKE = 7,
-  Command_Cmd_REGISTER_INVOKE = 8,
-  Command_Cmd_REGISTER_INVOKE_OK = 9,
-  Command_Cmd_REGISTRY_EXCHANGE_REQUEST = 10,
-  Command_Cmd_REGISTRY_EXCHANGE_RESPONSE = 11,
-  Command_Cmd_PUBLISH = 12,
-  Command_Cmd_SUBSCRIBE = 13
+  Command_Cmd_ERROR_RESPONSE = 3,
+  Command_Cmd_NODE_HELLO = 4,
+  Command_Cmd_PROXY_HELLO = 5,
+  Command_Cmd_PING = 6,
+  Command_Cmd_PONG = 7,
+  Command_Cmd_INVOKE = 8,
+  Command_Cmd_REGISTER_INVOKE = 9,
+  Command_Cmd_REGISTER_INVOKE_OK = 10,
+  Command_Cmd_REGISTRY_EXCHANGE_REQUEST = 11,
+  Command_Cmd_REGISTRY_EXCHANGE_RESPONSE = 12,
+  Command_Cmd_PUBLISH = 13,
+  Command_Cmd_SUBSCRIBE = 14
 };
 bool Command_Cmd_IsValid(int value);
 const Command_Cmd Command_Cmd_Cmd_MIN = Command_Cmd_ERROR;
@@ -271,6 +272,7 @@ class Command : public ::google::protobuf::Message {
   typedef Command_Cmd Cmd;
   static const Cmd ERROR = Command_Cmd_ERROR;
   static const Cmd RESPONSE = Command_Cmd_RESPONSE;
+  static const Cmd ERROR_RESPONSE = Command_Cmd_ERROR_RESPONSE;
   static const Cmd NODE_HELLO = Command_Cmd_NODE_HELLO;
   static const Cmd PROXY_HELLO = Command_Cmd_PROXY_HELLO;
   static const Cmd PING = Command_Cmd_PING;

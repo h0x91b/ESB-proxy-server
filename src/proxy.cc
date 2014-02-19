@@ -310,7 +310,7 @@ void Proxy::InvokeResponse(ESB::Command &cmdReq, const char *sourceNodeGuid)
 		return;
 	}
 	
-	cmdResp.set_cmd(ESB::Command::RESPONSE);
+	cmdResp.set_cmd(cmdReq.cmd());
 	cmdResp.set_payload(cmdReq.payload());
 	
 	cmdResp.set_guid_from(cmdReq.guid_from());
@@ -436,6 +436,7 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 	ESB::Command cmdResp;
 	char errBuf[512];
 	switch (cmdReq.cmd()) {
+		case ESB::Command::ERROR_RESPONSE:
 		case ESB::Command::RESPONSE:
 			dbg("get response for %s", cmdReq.guid_to().c_str());
 			InvokeResponse(cmdReq, nodeGuid);

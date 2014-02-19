@@ -117,7 +117,7 @@ void protobuf_AddDesc_command_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rcommand.proto\022\003ESB\"\257\005\n\007Command\022\035\n\003cmd\030"
+    "\n\rcommand.proto\022\003ESB\"\303\005\n\007Command\022\035\n\003cmd\030"
     "\001 \002(\0162\020.ESB.Command.Cmd\022\031\n\021source_proxy_"
     "guid\030\002 \002(\t\022\017\n\007payload\030\003 \002(\014\022\031\n\021target_pr"
     "oxy_guid\030\004 \001(\t\022\022\n\nidentifier\030\005 \001(\t\022\021\n\tgu"
@@ -127,14 +127,15 @@ void protobuf_AddDesc_command_2eproto() {
     "nd.RegistryEntry\032\211\001\n\rRegistryEntry\022;\n\004ty"
     "pe\030\001 \002(\0162\036.ESB.Command.RegistryEntryType"
     ":\rINVOKE_METHOD\022\022\n\nidentifier\030\002 \002(\t\022\023\n\013m"
-    "ethod_guid\030\003 \002(\t\022\022\n\nproxy_guid\030\004 \002(\t\"\347\001\n"
-    "\003Cmd\022\t\n\005ERROR\020\001\022\014\n\010RESPONSE\020\002\022\016\n\nNODE_HE"
-    "LLO\020\003\022\017\n\013PROXY_HELLO\020\004\022\010\n\004PING\020\005\022\010\n\004PONG"
-    "\020\006\022\n\n\006INVOKE\020\007\022\023\n\017REGISTER_INVOKE\020\010\022\026\n\022R"
-    "EGISTER_INVOKE_OK\020\t\022\035\n\031REGISTRY_EXCHANGE"
-    "_REQUEST\020\n\022\036\n\032REGISTRY_EXCHANGE_RESPONSE"
-    "\020\013\022\013\n\007PUBLISH\020\014\022\r\n\tSUBSCRIBE\020\r\"&\n\021Regist"
-    "ryEntryType\022\021\n\rINVOKE_METHOD\020\001", 710);
+    "ethod_guid\030\003 \002(\t\022\022\n\nproxy_guid\030\004 \002(\t\"\373\001\n"
+    "\003Cmd\022\t\n\005ERROR\020\001\022\014\n\010RESPONSE\020\002\022\022\n\016ERROR_R"
+    "ESPONSE\020\003\022\016\n\nNODE_HELLO\020\004\022\017\n\013PROXY_HELLO"
+    "\020\005\022\010\n\004PING\020\006\022\010\n\004PONG\020\007\022\n\n\006INVOKE\020\010\022\023\n\017RE"
+    "GISTER_INVOKE\020\t\022\026\n\022REGISTER_INVOKE_OK\020\n\022"
+    "\035\n\031REGISTRY_EXCHANGE_REQUEST\020\013\022\036\n\032REGIST"
+    "RY_EXCHANGE_RESPONSE\020\014\022\013\n\007PUBLISH\020\r\022\r\n\tS"
+    "UBSCRIBE\020\016\"&\n\021RegistryEntryType\022\021\n\rINVOK"
+    "E_METHOD\020\001", 730);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "command.proto", &protobuf_RegisterTypes);
   Command::default_instance_ = new Command();
@@ -172,6 +173,7 @@ bool Command_Cmd_IsValid(int value) {
     case 11:
     case 12:
     case 13:
+    case 14:
       return true;
     default:
       return false;
@@ -181,6 +183,7 @@ bool Command_Cmd_IsValid(int value) {
 #ifndef _MSC_VER
 const Command_Cmd Command::ERROR;
 const Command_Cmd Command::RESPONSE;
+const Command_Cmd Command::ERROR_RESPONSE;
 const Command_Cmd Command::NODE_HELLO;
 const Command_Cmd Command::PROXY_HELLO;
 const Command_Cmd Command::PING;

@@ -179,7 +179,7 @@ void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 		 cmdReq.identifier().c_str(),
 		 cmdReq.source_proxy_guid().c_str(),
 		 cmdReq.payload().c_str()
-		 );
+	);
 	
 	auto vec = localInvokeMethods[cmdReq.identifier().c_str()];
 	bool found = false;
@@ -211,7 +211,7 @@ void Proxy::RegisterInvoke(ESB::Command &cmdReq)
 		strcpy(entry->nodeGuid, cmdReq.source_proxy_guid().c_str());
 		strcpy(entry->methodGuid, cmdReq.payload().c_str());
 		
-		entry->identifier = (char*)malloc((cmdReq.payload().length()+1)*sizeof(char));
+		entry->identifier = (char*)malloc((cmdReq.payload().length()*2));
 		strcpy(entry->identifier, cmdReq.identifier().c_str());
 		
 		entry->lastCheckTime = time(NULL);
@@ -417,6 +417,7 @@ void Proxy::SubscriberCallback(ESB::Command &cmdReq, const char *nodeGuid)
 			return;
 		case ESB::Command::REGISTER_INVOKE:
 			dbg("get RegisterInvoke from %s", nodeGuid);
+			//sometime crash here...
 			RegisterInvoke(cmdReq);
 			return;
 		case ESB::Command::INVOKE:
@@ -552,16 +553,18 @@ void *Proxy::MainLoop(void *p)
 		for ( auto local_it = self->subscribers.begin(); local_it!= self->subscribers.end(); ++local_it )
 		{
 			auto s = local_it->second;
-			auto msg = s->Poll();
-			if(msg==NULL) continue;
-			needToSleep = false;
-			
-			auto nodeGuid = local_it->first;
-			self->SubscriberCallback(*msg->cmdReq, nodeGuid.c_str());
-			
-			zmq_msg_close(&msg->msg);
-			delete msg->cmdReq;
-			free(msg);
+			for(auto r=0;r<500;r++){
+				auto msg = s->Poll();
+				if(msg==NULL) break;
+				needToSleep = false;
+				
+				auto nodeGuid = local_it->first;
+				self->SubscriberCallback(*msg->cmdReq, nodeGuid.c_str());
+				
+				zmq_msg_close(&msg->msg);
+				delete msg->cmdReq;
+				free(msg);
+			}
 		}
 		
 		if(loop++ % 25 == 0){

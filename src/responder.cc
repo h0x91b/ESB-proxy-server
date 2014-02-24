@@ -44,7 +44,7 @@ Responder::Responder(int _port, char *_guid, Proxy* _proxy)
 Responder::~Responder()
 {
 	dbg("Destructor");
-	zmq_ctx_term(zContext);
+	zmq_term(zContext);
 }
 
 bool Responder::Poll()

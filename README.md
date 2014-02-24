@@ -48,8 +48,8 @@ Redhat based Linux
 	
 	#zmq
 	cd /tmp/
-	wget http://download.zeromq.org/zeromq-4.0.3.tar.gz
-	tar -xzvf zeromq-4.0.3.tar.gz
+	wget http://download.zeromq.org/zeromq-3.2.4.tar.gz
+	tar -xzvf zeromq-3.2.4.tar.gz
 	cd zeromq-*
 	./configure
 	make && make install

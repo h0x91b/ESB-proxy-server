@@ -31,7 +31,7 @@ Requester::~Requester()
 {
 	dbg("the end");
 	zmq_close(zResponder);
-	zmq_ctx_term(zContext);
+	zmq_term(zContext);
 }
 
 bool Requester::Connect()

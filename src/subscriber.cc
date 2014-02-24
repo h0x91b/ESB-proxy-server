@@ -70,7 +70,7 @@ Subscriber::~Subscriber()
 {
 	info("The end of life for subscriber: %s, %s", targetGuid, connectString);
 	zmq_close(zResponder);
-	zmq_ctx_term(zContext);
+	zmq_term(zContext);
 }
 
 SUBSCRIBER_POLL_MSG *Subscriber::Poll()
@@ -94,8 +94,13 @@ SUBSCRIBER_POLL_MSG *Subscriber::Poll()
 	
 	int index = 0;
 	bool found = false;
-	while (!found || index > len)
+	while (!found)
 	{
+		if(index >= len) {
+			warn("Can not find delimiter in buffer!");
+			buffer = (unsigned char *)zmq_msg_data(&msg);
+			return NULL;
+		}
 		if(*buffer == '\t') {
 			found = true;
 		}

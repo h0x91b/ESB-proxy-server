@@ -1,7 +1,7 @@
 ESB
 ===
 
-Enterprise service bus
+Enterprise service bus - Project discontinued due rewriting it to C#
 
 The Server
 ===
